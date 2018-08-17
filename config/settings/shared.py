@@ -1,6 +1,7 @@
 import os
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 SECRET_KEY = 'ou$@l5=z0h#^l!or)35eyf6wcb2y%+=1vik%f(ww^=++$apsab'
 DEBUG = True
 ALLOWED_HOSTS = []
@@ -21,7 +22,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-ROOT_URLCONF = 'base.urls'
+ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -37,7 +38,7 @@ TEMPLATES = [
         },
     },
 ]
-WSGI_APPLICATION = 'base.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -45,10 +46,10 @@ DATABASES = {
     }
 }
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},  # noqa: E501
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},  # noqa: E501
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},  # noqa: E501
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},  # noqa: E501
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
