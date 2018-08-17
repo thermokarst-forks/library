@@ -1,5 +1,6 @@
 from .shared import (
     BASE_DIR,
+    PROJ_DIR,
     SECRET_KEY,
     ALLOWED_HOSTS,
     INSTALLED_APPS,
@@ -17,5 +18,25 @@ from .shared import (
     STATIC_URL,
 )
 
+__all__ = [
+    'BASE_DIR',
+    'PROJ_DIR',
+    'SECRET_KEY',
+    'DEBUG',
+    'ALLOWED_HOSTS',
+    'INSTALLED_APPS',
+    'MIDDLEWARE',
+    'ROOT_URLCONF',
+    'TEMPLATES',
+    'WSGI_APPLICATION',
+    'DATABASES',
+    'AUTH_PASSWORD_VALIDATORS',
+    'LANGUAGE_CODE',
+    'TIME_ZONE',
+    'USE_I18N',
+    'USE_L10N',
+    'USE_TZ',
+    'STATIC_URL',
+]
 
 DEBUG = False
