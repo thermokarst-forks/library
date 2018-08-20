@@ -1,7 +1,6 @@
 from .shared import (
     BASE_DIR,
     PROJ_DIR,
-    ALLOWED_HOSTS,
     INSTALLED_APPS,
     MIDDLEWARE,
     ROOT_URLCONF,
@@ -46,3 +45,4 @@ __all__ = [
 DEBUG = False
 DATABASES['default'] = env.db('DATABASE_URL')
 SECRET_KEY = env('SECRET_KEY')
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
