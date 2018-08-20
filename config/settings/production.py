@@ -1,7 +1,6 @@
 from .shared import (
     BASE_DIR,
     PROJ_DIR,
-    SECRET_KEY,
     ALLOWED_HOSTS,
     INSTALLED_APPS,
     MIDDLEWARE,
@@ -18,6 +17,7 @@ from .shared import (
     STATIC_URL,
     STATICFILES_DIRS,
     STATIC_ROOT,
+    env
 )
 
 __all__ = [
@@ -45,3 +45,4 @@ __all__ = [
 
 DEBUG = False
 DATABASES['default'] = env.db('DATABASE_URL')
+SECRET_KEY = env('SECRET_KEY')
