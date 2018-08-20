@@ -1,2 +1,60 @@
-base
-{% block 'content' %}{% endblock %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block 'title' %}QIIME 2 Library{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/bulma.min.css' %}">
+    {% block 'head' %}{% endblock %}
+  </head>
+  <body>
+    <nav class="navbar is-light" role="navigation" aria-label="main navigation">
+      <div class="container">
+        <div class="navbar-brand">
+          <a class="navbar-item" href="/">
+            <img src="{% static 'img/qiime2.svg' %}">
+          </a>
+        </div>
+
+        <div class="navbar-menu">
+          <div class="navbar-start">
+            <a class="navbar-item" href="/">
+              Home
+            </a>
+            <a class="navbar-item" target="_blank" href="https://docs.qiime2.org/">
+              Docs
+            </a>
+            <a class="navbar-item" target="_blank" href="https://dev.qiime2.org/">
+              Dev Docs
+            </a>
+            <a class="navbar-item" target="_blank" href="https://forum.qiime2.org/">
+              Forum
+            </a>
+            <a class="navbar-item" target="_blank" href="https://workshops.qiime2.org/">
+              Workshops
+            </a>
+            <a class="navbar-item" target="_blank" href="https://view.qiime2.org/">
+              View
+            </a>
+          </div>
+          {# TODO: add in conditional user-account hamburger #}
+        </div>
+      </div>
+    </nav>
+
+    <section class="section">
+      <div class="container">
+        {% block 'content' %}{% endblock %}
+      </div>
+    </section>
+    <footer class="footer" style="padding-bottom: 3rem;">
+      <div class="content has-text-centered">
+        <p>
+        &#169; 2018, <strong>QIIME 2 development team</strong>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

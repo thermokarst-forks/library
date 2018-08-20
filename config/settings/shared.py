@@ -66,3 +66,6 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 STATIC_URL = '/static/'
+# Note that these paths should use Unix-style forward slashes, even on Windows
+STATICFILES_DIRS = ['%s/static' % PROJ_DIR]
+STATIC_ROOT = os.path.join(PROJ_DIR, 'collected_static')

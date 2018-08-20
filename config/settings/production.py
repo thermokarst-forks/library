@@ -16,6 +16,8 @@ from .shared import (
     USE_L10N,
     USE_TZ,
     STATIC_URL,
+    STATICFILES_DIRS,
+    STATIC_ROOT,
 )
 
 __all__ = [
@@ -37,6 +39,8 @@ __all__ = [
     'USE_L10N',
     'USE_TZ',
     'STATIC_URL',
+    'STATICFILES_DIRS',
+    'STATIC_ROOT',
 ]
 
 DEBUG = False
