@@ -40,3 +40,4 @@ __all__ = [
 ]
 
 DEBUG = False
+DATABASES['default'] = env.db('DATABASE_URL')

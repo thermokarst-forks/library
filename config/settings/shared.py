@@ -1,10 +1,15 @@
 import os
 
+import environ
+
+
+env = environ.Env()
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 PROJ_DIR = os.path.join(BASE_DIR, 'library')
-SECRET_KEY = 'ou$@l5=z0h#^l!or)35eyf6wcb2y%+=1vik%f(ww^=++$apsab'
-DEBUG = True
+SECRET_KEY = env('SECRET_KEY',
+                 default='ou$@l5=z0h#^l!or)35eyf6wcb2y%+=1vik%f(ww^=++$apsab')
+DEBUG = env('DEBUG', default=True)
 ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -45,8 +50,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'qiime2-library',
     }
 }
 AUTH_PASSWORD_VALIDATORS = [
