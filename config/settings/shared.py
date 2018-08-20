@@ -69,5 +69,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 # Note that these paths should use Unix-style forward slashes, even on Windows
 STATICFILES_DIRS = ['%s/static' % PROJ_DIR]
-STATIC_ROOT = os.path.join(PROJ_DIR, 'collected_static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
 APPEND_SLASH = True  # This is the default, but just want make it explicit
+
