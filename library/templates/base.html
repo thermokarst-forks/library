@@ -16,30 +16,56 @@
           <a class="navbar-item" href="/">
             <img src="{% static 'img/qiime2.svg' %}">
           </a>
+          <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
         </div>
 
-        <div class="navbar-menu">
+        <div class="navbar-menu" id="navMenu">
           <div class="navbar-start">
-            <a class="navbar-item" href="/">
+            <a class="navbar-item {% if request.resolver_match.url_name == 'index' %}is-active{% endif %}" href="{% url 'index' %}">
               Home
             </a>
-            <a class="navbar-item" target="_blank" href="https://docs.qiime2.org/">
-              Docs
+            <a class="navbar-item {% if request.resolver_match.app_name == 'plugin' %}is-active{% endif %}" href="{% url 'plugin:list' %}">
+              Plugins
             </a>
-            <a class="navbar-item" target="_blank" href="https://dev.qiime2.org/">
-              Dev Docs
+            <a class="navbar-item" href="/">
+              Tutorials
             </a>
-            <a class="navbar-item" target="_blank" href="https://forum.qiime2.org/">
-              Forum
+            <a class="navbar-item" href="/">
+              Interfaces
             </a>
-            <a class="navbar-item" target="_blank" href="https://workshops.qiime2.org/">
-              Workshops
-            </a>
-            <a class="navbar-item" target="_blank" href="https://view.qiime2.org/">
-              View
+            <a class="navbar-item" href="/">
+              Datasets
             </a>
           </div>
-          {# TODO: add in conditional user-account hamburger #}
+          <div class="navbar-end">
+            <div class="navbar-item has-dropdown is-hoverable">
+              <p class="navbar-link">
+                Resources
+              </p>
+              <div class="navbar-dropdown is-boxed">
+                <a class="navbar-item" target="_blank" href="https://docs.qiime2.org/">
+                  Docs
+                </a>
+                <a class="navbar-item" target="_blank" href="https://dev.qiime2.org/">
+                  Dev Docs
+                </a>
+                <a class="navbar-item" target="_blank" href="https://forum.qiime2.org/">
+                  Forum
+                </a>
+                <a class="navbar-item" target="_blank" href="https://workshops.qiime2.org/">
+                  Workshops
+                </a>
+                <a class="navbar-item" target="_blank" href="https://view.qiime2.org/">
+                  View
+                </a>
+              </div>
+            </div>
+          </div>
+          {# TODO: add in conditional user-account dropdown #}
         </div>
       </div>
     </nav>
@@ -56,5 +82,22 @@
         </p>
       </div>
     </footer>
+
+    <script>
+      // https://bulma.io/documentation/components/navbar/#navbarJsExample
+      document.addEventListener('DOMContentLoaded', function() {
+        var burgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+        if (burgers.length > 0) {
+          burgers.forEach(function(burger) {
+            burger.addEventListener('click', function() {
+              var target = burger.dataset.target;
+              var targetEl = document.getElementById(target);
+              burger.classList.toggle('is-active');
+              targetEl.classList.toggle('is-active');
+            });
+          });
+        }
+      });
+    </script>
   </body>
 </html>
