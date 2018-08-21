@@ -18,6 +18,7 @@ from .shared import (
     STATIC_URL,
     STATICFILES_DIRS,
     STATIC_ROOT,
+    APPEND_SLASH,
 )
 
 __all__ = [
@@ -41,6 +42,7 @@ __all__ = [
     'STATIC_URL',
     'STATICFILES_DIRS',
     'STATIC_ROOT',
+    'APPEND_SLASH',
 ]
 
 DEBUG = False
