@@ -1,8 +1,8 @@
 from django.urls import path
 
-from .views import ListView
+from .views import PluginList
 
 
 urlpatterns = [
-    path('', ListView.as_view(), name='list'),
+    path('', PluginList.as_view(), name='list'),
 ]

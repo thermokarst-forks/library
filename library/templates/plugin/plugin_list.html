@@ -1,5 +1,9 @@
 {% extends 'plugin/base.html' %}
 
 {% block 'plugin_content' %}
-lorem ipsum
+
+{% for object in object_list %}
+  {{ object.name }}
+{% endfor %}
+
 {% endblock %}

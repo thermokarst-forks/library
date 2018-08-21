@@ -1,5 +1,7 @@
-from django.views.generic import TemplateView
+from django.views.generic import ListView
+
+from .models import Plugin
 
 
-class ListView(TemplateView):
-    template_name = 'plugin/list.html'
+class PluginList(ListView):
+    queryset = Plugin.objects.filter(draft=False)

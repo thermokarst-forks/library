@@ -1,3 +1,4 @@
 -r shared.txt
 
 flake8
+django-debug-toolbar
