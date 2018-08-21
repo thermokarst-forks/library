@@ -4,7 +4,7 @@ from .models import Plugin
 
 
 class PluginAdmin(admin.ModelAdmin):
-    list_display = ('name', 'draft', 'short_summary', 'help_url')
+    list_display = ('name', 'published', 'short_summary')
 
 
 admin.site.register(Plugin, PluginAdmin)

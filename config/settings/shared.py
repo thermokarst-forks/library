@@ -21,6 +21,7 @@ INSTALLED_APPS = [
 
     # internal apps
     'library.plugin',
+    'library.util',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

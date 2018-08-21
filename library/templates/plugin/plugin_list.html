@@ -1,9 +1,16 @@
 {% extends 'plugin/base.html' %}
+{% load card list_of_lists %}
 
 {% block 'plugin_content' %}
 
-{% for object in object_list %}
-  {{ object.name }}
+{% for row in plugins|list_of_lists:3 %}
+  <div class="columns">
+    {% for plugin in row %}
+      <div class="column is-one-third">
+        {% card plugin %}
+      </div>
+    {% endfor %}
+  </div>
 {% endfor %}
 
 {% endblock %}

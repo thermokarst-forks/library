@@ -25,11 +25,10 @@
 
         <div class="navbar-menu" id="navMenu">
           <div class="navbar-start">
-            <a class="navbar-item" href="{% url 'index' %}">
+            <a class="navbar-item {% if request.resolver_match.url_name == 'index' %}is-active{% endif %}" href="{% url 'index' %}">
               Home
             </a>
-            {# TODO: set these as "active" when appropriate #}
-            <a class="navbar-item" href="{% url 'plugin:list' %}">
+            <a class="navbar-item {% if request.resolver_match.app_name == 'plugin' %}is-active{% endif %}" href="{% url 'plugin:list' %}">
               Plugins
             </a>
             <a class="navbar-item" href="/">
