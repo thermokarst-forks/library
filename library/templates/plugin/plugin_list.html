@@ -3,6 +3,17 @@
 
 {% block 'plugin_content' %}
 
+{% if perms.plugin.can_add_plugin %}
+  <div class="level">
+    <div class="level-left"></div>
+    <div class="level-right">
+      <a class="button is-success level-item" href="{% url 'plugin:new' %}">
+        Add new plugin
+      </a>
+    </div>
+  </div>
+{% endif %}
+
 {% for row in plugins|list_of_lists:3 %}
   <div class="columns">
     {% for plugin in row %}

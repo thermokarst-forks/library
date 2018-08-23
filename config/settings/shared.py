@@ -72,4 +72,5 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = ['%s/static' % PROJ_DIR]
 STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
 APPEND_SLASH = True  # This is the default, but just want make it explicit
-
+LOGIN_URL = 'admin:login'  # TODO: this should be updated when SSO is ready
+LOGOUT_REDIRECT_URL = 'index'

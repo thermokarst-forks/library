@@ -20,6 +20,8 @@ from .shared import (
     STATICFILES_DIRS,
     STATIC_ROOT,
     APPEND_SLASH,
+    LOGIN_URL,
+    LOGOUT_REDIRECT_URL,
 )
 
 
@@ -46,6 +48,8 @@ __all__ = [
     'STATIC_ROOT',
     'APPEND_SLASH',
     'INTERNAL_IPS',
+    'LOGIN_URL',
+    'LOGOUT_REDIRECT_URL',
 ]
 
 MIDDLEWARE.extend([
