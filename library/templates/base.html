@@ -64,8 +64,19 @@
                 </a>
               </div>
             </div>
+            {% if user.is_authenticated %}
+            <a class="navbar-item" href="{% url 'admin:logout' %}">
+              Logout
+            </a>
+            {% else %}
+            {# TODO: for MVP, should this link be private? e.g. invite-only #}
+            {# this qp business is a bit gross but it's because the admin login #}
+            {# route doesn't expose a qp in its regex for some reason... #}
+            <a class="navbar-item" href="{% url 'admin:login' %}?next={% url 'index' %}">
+              Login
+            </a>
+            {% endif %}
           </div>
-          {# TODO: add in conditional user-account dropdown #}
         </div>
       </div>
     </nav>

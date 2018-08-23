@@ -8,3 +8,4 @@ class PluginAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Plugin, PluginAdmin)
+
