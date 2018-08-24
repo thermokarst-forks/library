@@ -18,6 +18,8 @@ from .shared import (
     STATIC_ROOT,
     env,
     APPEND_SLASH,
+    LOGIN_URL,
+    LOGOUT_DIRECT_URL,
 )
 
 __all__ = [
@@ -42,6 +44,8 @@ __all__ = [
     'STATICFILES_DIRS',
     'STATIC_ROOT',
     'APPEND_SLASH',
+    'LOGIN_URL',
+    'LOGOUT_DIRECT_URL',
 ]
 
 DEBUG = False
