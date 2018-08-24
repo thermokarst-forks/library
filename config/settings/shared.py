@@ -5,6 +5,11 @@ import environ
 
 env = environ.Env()
 
+
+def list_of_tuples(var):
+    return [tuple(p.split(',')) for p in var.split(';')]
+
+
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 PROJ_DIR = os.path.join(BASE_DIR, 'library')
 SECRET_KEY = env('SECRET_KEY',
@@ -74,3 +79,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
 APPEND_SLASH = True  # This is the default, but just want make it explicit
 LOGIN_URL = 'admin:login'  # TODO: this should be updated when SSO is ready
 LOGOUT_REDIRECT_URL = 'index'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+ADMINS = env('ADMINS', default=list_of_tuples('x,x@x.com;y,y@y.com'),
+             cast=list_of_tuples)

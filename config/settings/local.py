@@ -22,6 +22,8 @@ from .shared import (
     APPEND_SLASH,
     LOGIN_URL,
     LOGOUT_REDIRECT_URL,
+    EMAIL_BACKEND,
+    ADMINS,
 )
 
 
@@ -50,6 +52,8 @@ __all__ = [
     'INTERNAL_IPS',
     'LOGIN_URL',
     'LOGOUT_REDIRECT_URL',
+    'EMAIL_BACKEND',
+    'ADMINS',
 ]
 
 MIDDLEWARE.extend([

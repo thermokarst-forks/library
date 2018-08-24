@@ -15,11 +15,13 @@ python manage.py runserver
 
 ## Produdction Environment Variables
 
+- `ADMINS`
 - `ALLOWED_HOSTS`
 - `DATABASE_URL`
 - `DISCOURSE_SSO_SECRET`
 - `DJANGO_SETTINGS_MODULE`
 - `SECRET_KEY`
+- `SPARKPOST_API_KEY`
 
 ## Misc
 
