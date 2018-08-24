@@ -26,6 +26,7 @@ INSTALLED_APPS = [
 
     # internal apps
     'library.plugins',
+    'library.users',
     'library.utils',  # this needs to be registered for template tags
 ]
 MIDDLEWARE = [
@@ -82,3 +83,4 @@ LOGOUT_REDIRECT_URL = 'index'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ADMINS = env('ADMINS', default=list_of_tuples('x,x@x.com;y,y@y.com'),
              cast=list_of_tuples)
+AUTH_USER_MODEL = 'users.User'

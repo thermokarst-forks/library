@@ -24,6 +24,7 @@ from .shared import (
     LOGOUT_REDIRECT_URL,
     EMAIL_BACKEND,
     ADMINS,
+    AUTH_USER_MODEL,
 )
 
 
@@ -54,6 +55,7 @@ __all__ = [
     'LOGOUT_REDIRECT_URL',
     'EMAIL_BACKEND',
     'ADMINS',
+    'AUTH_USER_MODEL',
 ]
 
 MIDDLEWARE.extend([

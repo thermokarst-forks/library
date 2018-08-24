@@ -21,6 +21,7 @@ from .shared import (
     LOGIN_URL,
     LOGOUT_REDIRECT_URL,
     list_of_tuples,
+    AUTH_USER_MODEL,
 )
 
 __all__ = [
@@ -47,6 +48,7 @@ __all__ = [
     'APPEND_SLASH',
     'LOGIN_URL',
     'LOGOUT_REDIRECT_URL',
+    'AUTH_USER_MODEL',
 ]
 
 DEBUG = False
