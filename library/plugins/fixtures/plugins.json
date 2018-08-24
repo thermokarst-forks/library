@@ -9,7 +9,7 @@
       "short_summary": "Plugin for working with Metadata.",
       "updated_at": "2018-08-24T16:28:31.351173+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 0
   },
   {
@@ -22,7 +22,7 @@
       "short_summary": "Plugin for compositional data analysis.",
       "updated_at": "2018-08-24T16:28:31.351221+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 1
   },
   {
@@ -35,7 +35,7 @@
       "short_summary": "Plugin for sequence quality control with DADA2.",
       "updated_at": "2018-08-24T16:28:31.351249+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 2
   },
   {
@@ -48,7 +48,7 @@
       "short_summary": "Plugin for paired sample and time series analyses.",
       "updated_at": "2018-08-24T16:28:31.351374+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 3
   },
   {
@@ -61,7 +61,7 @@
       "short_summary": "Plugin for demultiplexing & viewing sequence quality.",
       "updated_at": "2018-08-24T16:28:31.351440+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 4
   },
   {
@@ -74,7 +74,7 @@
       "short_summary": "Plugin for sequence quality control with Deblur.",
       "updated_at": "2018-08-24T16:28:31.351469+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 5
   },
   {
@@ -87,7 +87,7 @@
       "short_summary": "Plugin for working with sample by feature tables.",
       "updated_at": "2018-08-24T16:28:31.351483+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 6
   },
   {
@@ -100,7 +100,7 @@
       "short_summary": "Plugin defining types for microbiome analysis.",
       "updated_at": "2018-08-24T16:28:31.351505+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 7
   },
   {
@@ -113,7 +113,7 @@
       "short_summary": "Plugin for clustering and dereplicating with vsearch.",
       "updated_at": "2018-08-24T16:28:31.351528+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 8
   },
   {
@@ -126,7 +126,7 @@
       "short_summary": "Plugin for generating and manipulating alignments.",
       "updated_at": "2018-08-24T16:28:31.351554+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 9
   },
   {
@@ -139,7 +139,7 @@
       "short_summary": "Plugin for working with feature taxonomy annotations.",
       "updated_at": "2018-08-24T16:28:31.351579+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 10
   },
   {
@@ -152,7 +152,7 @@
       "short_summary": "Plugin for removing adapter sequences, primers, and other unwanted sequence from sequence data.",
       "updated_at": "2018-08-24T16:28:31.351606+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 11
   },
   {
@@ -165,7 +165,7 @@
       "short_summary": "Plugin for exploring community diversity.",
       "updated_at": "2018-08-24T16:28:31.351630+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 12
   },
   {
@@ -178,7 +178,7 @@
       "short_summary": "Plugin for quality control of feature and sequence data.",
       "updated_at": "2018-08-24T16:28:31.351652+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 13
   },
   {
@@ -191,7 +191,7 @@
       "short_summary": "Plugin for taxonomic classification.",
       "updated_at": "2018-08-24T16:28:31.351753+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 14
   },
   {
@@ -204,7 +204,7 @@
       "short_summary": "Plugin for machine learning prediction of sample metadata.",
       "updated_at": "2018-08-24T16:28:31.351781+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 15
   },
   {
@@ -217,7 +217,7 @@
       "short_summary": "Plugin for building compositional models.",
       "updated_at": "2018-08-24T16:28:31.351808+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 16
   },
   {
@@ -230,7 +230,7 @@
       "short_summary": "Plugin for ordination plotting with Emperor.",
       "updated_at": "2018-08-24T16:28:31.351870+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 17
   },
   {
@@ -243,7 +243,7 @@
       "short_summary": "Plugin for PHRED-based filtering and trimming.",
       "updated_at": "2018-08-24T16:28:31.351916+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 18
   },
   {
@@ -256,7 +256,7 @@
       "short_summary": "Plugin for generating and manipulating phylogenies.",
       "updated_at": "2018-08-24T16:28:31.351941+00:00"
     },
-    "model": "plugin.Plugin",
+    "model": "plugins.Plugin",
     "pk": 19
   }
 ]

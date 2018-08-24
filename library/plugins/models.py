@@ -1,6 +1,6 @@
 from django.db import models
 
-from library.util.models import AuditModel
+from library.utils.models import AuditModel
 
 
 # Fixtures script:

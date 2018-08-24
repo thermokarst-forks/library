@@ -25,8 +25,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # internal apps
-    'library.plugin',
-    'library.util',
+    'library.plugins',
+    'library.utils',  # this needs to be registered for template tags
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

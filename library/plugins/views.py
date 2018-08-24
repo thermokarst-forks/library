@@ -10,4 +10,4 @@ class PluginList(ListView):
 
 # TODO: make this a real view, instead of an admin redirect
 class PluginNew(RedirectView):
-    pattern_name = 'admin:plugin_plugin_add'
+    pattern_name = 'admin:plugins_plugin_add'

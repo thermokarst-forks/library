@@ -28,7 +28,7 @@
             <a class="navbar-item {% if request.resolver_match.url_name == 'index' %}is-active{% endif %}" href="{% url 'index' %}">
               Home
             </a>
-            <a class="navbar-item {% if request.resolver_match.app_name == 'plugin' %}is-active{% endif %}" href="{% url 'plugin:list' %}">
+            <a class="navbar-item {% if request.resolver_match.app_name == 'plugins' %}is-active{% endif %}" href="{% url 'plugins:list' %}">
               Plugins
             </a>
             <a class="navbar-item" href="/">
