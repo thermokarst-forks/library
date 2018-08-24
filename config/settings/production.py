@@ -19,7 +19,7 @@ from .shared import (
     env,
     APPEND_SLASH,
     LOGIN_URL,
-    LOGOUT_DIRECT_URL,
+    LOGOUT_REDIRECT_URL,
 )
 
 __all__ = [
@@ -45,7 +45,7 @@ __all__ = [
     'STATIC_ROOT',
     'APPEND_SLASH',
     'LOGIN_URL',
-    'LOGOUT_DIRECT_URL',
+    'LOGOUT_REDIRECT_URL',
 ]
 
 DEBUG = False

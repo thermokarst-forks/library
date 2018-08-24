@@ -1,6 +1,6 @@
-# library
+# QIIME 2 Library
 
-## Dev Quickstart
+## Development Quickstart
 
 ```
 conda create -n library
@@ -12,3 +12,15 @@ python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver
 ```
+
+## Produdction Environment Variables
+
+- `ALLOWED_HOSTS`
+- `DATABASE_URL`
+- `DISCOURSE_SSO_SECRET`
+- `DJANGO_SETTINGS_MODULE`
+- `SECRET_KEY`
+
+## Misc
+
+- `openssl rand -base64 66 | tr -d '\n'`
