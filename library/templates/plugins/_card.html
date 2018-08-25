@@ -3,16 +3,17 @@
     <h2 class="title">
       {{ plugin.name }}
     </h2>
-    <h3 class="subtitle">
-      <a href="">
-        {# TODO: deal with this #}
-        @q2d2
+    <h5 class="subtitle">
+      {% for author in plugin.authors.all %}
+      <a href="https://forum.qiime2.org/u/{{ author.username }}" target="_blank">
+        @{{ author.username }}
       </a>
-      <span class="tag is-success is-pulled-right">
+      {% endfor %}
+      <span class="tag is-pulled-right">
         {# TODO: deal with this #}
         2018.6
       </span>
-    </h3>
+    </h5>
     <p>
       {{ plugin.description }}
     </p>

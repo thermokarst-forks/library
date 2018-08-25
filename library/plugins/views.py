@@ -4,7 +4,7 @@ from .models import Plugin
 
 
 class PluginList(ListView):
-    queryset = Plugin.objects.filter(published=True)
+    queryset = Plugin.including.sorted_authors().filter(published=True)
     context_object_name = 'plugins'
 
 
