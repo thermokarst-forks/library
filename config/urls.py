@@ -7,10 +7,10 @@ from library.utils import views as util_views
 
 urlpatterns = [
     path('', util_views.ListView.as_view(), name='index'),
-    path('plugins/', include(('library.plugins.urls', 'plugins'),
-                             namespace='plugins')),
+    path('plugins/', include(('library.plugins.urls', 'plugins'))),
     path('admin/', admin.site.urls),
 ]
+
 
 # Debug toolbar
 if settings.DEBUG:

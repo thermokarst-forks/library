@@ -20,6 +20,7 @@ class PluginIncludingXQuerySet(models.QuerySet):
 
 class Plugin(AuditModel):
     name = models.CharField(max_length=500, unique=True)
+    slug = models.SlugField(max_length=500, unique=True, default='slug')
     short_summary = models.CharField(max_length=500)
     description = models.TextField()
     install_guide = models.TextField()
@@ -27,6 +28,7 @@ class Plugin(AuditModel):
 
     # TODO: version/release
 
+    objects = models.Manager()
     authors = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                      # use a bridge table with ordering info
                                      through='PluginAuthorship',
@@ -34,11 +36,13 @@ class Plugin(AuditModel):
 
     including = PluginIncludingXQuerySet.as_manager()
 
+    class Meta:
+        ordering = ['-updated_at']
+
     def __str__(self):
         return self.name
 
-    class Meta:
-        ordering = ['-updated_at']
+    # def get_absolute_url(self):
 
 
 class PluginAuthorship(AuditModel):

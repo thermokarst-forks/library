@@ -10,6 +10,7 @@ class AuthorInline(admin.TabularInline):
 
 class PluginAdmin(admin.ModelAdmin):
     list_display = ('name', 'published', 'short_summary')
+    readonly_fields = ('slug',)
     inlines = [AuthorInline]
 
 
