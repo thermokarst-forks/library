@@ -3,9 +3,8 @@
 ## Development Quickstart
 
 ```
-conda create -n library
+conda create -n library python=3.6
 source activate library
-conda install pip
 pip install -r requirements/local.txt
 createdb qiime2-library
 python manage.py migrate
