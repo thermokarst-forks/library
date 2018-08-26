@@ -1,9 +1,13 @@
-from django.urls import path
+from django.urls import path, include
 
-from .views import PluginList, PluginNew
+from .views import PluginList, PluginNew, PluginDetail
 
 
 urlpatterns = [
     path('', PluginList.as_view(), name='list'),
     path('new/', PluginNew.as_view(), name='new'),
+    path('<slug:slug>/', include([
+        path('', PluginDetail.as_view(), name='detail_slug'),
+        path('<int:pk>/', PluginDetail.as_view(), name='detail_pk'),
+    ])),
 ]

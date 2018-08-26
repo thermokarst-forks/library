@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block 'content' %}
+<div class="columns">
+  <div class="column">
+    <div class="card">
+      <div class="card-content">
+        <div class="columns">
+          <h1 class="title column is-paddingless">
+            {{ plugin.name }}
+          </h1>
+          <h2 class="column">
+            {% for author in plugin.authors.all %}
+            {# TODO: make User.get_absolute_url #}
+            <a class="is-pulled-right" href="https://forum.qiime2.org/u/{{ author.username }}" target="_blank">
+              @{{ author.username }}
+            </a>
+            {% endfor %}
+          </h2>
+        </div>
+
+        <div class="columns">
+          <div class="tags">
+            <span class="tag">2018.6</span>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="content">
+          <p>
+            <span class="has-text-weight-bold">source:</span>
+            <a href="">https://github.com/qiime2/q2-dada2</a>
+          </p>
+          <p>
+            <span class="has-text-weight-bold">dependencies:</span>
+            <ul>
+              <li>
+                <a href="">
+                  q2-types
+                </a>
+              </li>
+            </ul>
+          </p>
+          <hr>
+          <h4>install guide:</h4>
+          <div class="content">
+            {# TODO: markdown #}
+            {{ plugin.install_guide }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="column">
+    <div class="content">
+      {# TODO: markdown #}
+      {{ plugin.description }}
+    </div>
+  </div>
+</div>
+{% endblock %}
