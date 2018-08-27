@@ -29,13 +29,12 @@ class Plugin(AuditModel):
     source_url = models.URLField(max_length=500, blank=True)
     version = models.CharField(max_length=500, blank=True)
 
-    # TODO: dependencies
-
     objects = models.Manager()
     authors = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                      # use a bridge table with ordering info
                                      through='PluginAuthorship',
                                      related_name='plugins')
+    # For now, no reverse relationships. Also, no order on relationships.
     dependencies = models.ManyToManyField('self', symmetrical=False, db_table='plugins_plugin_dependencies')
 
     including = PluginIncludingXQuerySet.as_manager()
