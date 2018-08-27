@@ -18,10 +18,10 @@ from .shared import (
     STATIC_ROOT,
     env,
     APPEND_SLASH,
-    LOGIN_URL,
     LOGOUT_REDIRECT_URL,
     list_of_tuples,
     AUTH_USER_MODEL,
+    LOGIN_URL,
 )
 
 __all__ = [
@@ -46,9 +46,9 @@ __all__ = [
     'STATICFILES_DIRS',
     'STATIC_ROOT',
     'APPEND_SLASH',
-    'LOGIN_URL',
     'LOGOUT_REDIRECT_URL',
     'AUTH_USER_MODEL',
+    'LOGIN_URL',
 ]
 
 DEBUG = False
@@ -62,3 +62,5 @@ DEFAULT_FROM_EMAIL = 'no-reply@library.qiime2.org'
 SERVER_EMAIL = 'no-reply@library.qiime2.org'
 EMAIL_HOST = 'library.qiime2.org'
 EMAIL_SUBJECT_PREFIX = '[library.qiime2.org] '
+DISCOURSE_SSO_PROVIDER = 'forum.qiime2.org'
+DISCOURSE_SSO_SECRET = env('DISCOURSE_SSO_SECRET')
