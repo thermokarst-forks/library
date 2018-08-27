@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 
 
-class PluginConfig(AppConfig):
+class PluginsConfig(AppConfig):
     name = 'library.plugins'
 
     def ready(self):

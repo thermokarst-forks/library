@@ -25,8 +25,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # internal apps
-    'library.plugins.apps.PluginConfig',
-    'library.users',
+    'library.plugins.apps.PluginsConfig',
+    'library.users.apps.UsersConfig',
     'library.utils.apps.UtilsConfig',  # this needs to be registered for template tags
 ]
 MIDDLEWARE = [

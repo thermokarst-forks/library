@@ -20,13 +20,16 @@ class PluginIncludingXQuerySet(models.QuerySet):
 
 class Plugin(AuditModel):
     name = models.CharField(max_length=500, unique=True)
-    slug = models.SlugField(max_length=500, unique=True, default='slug')
+    slug = models.SlugField(max_length=500, unique=True)
     short_summary = models.CharField(max_length=500)
     description = models.TextField()
     install_guide = models.TextField()
     published = models.BooleanField(default=False)
 
     # TODO: version/release
+    # TODO: source_url
+    # TODO: title
+    # TODO: dependencies
 
     objects = models.Manager()
     authors = models.ManyToManyField(settings.AUTH_USER_MODEL,
@@ -36,13 +39,15 @@ class Plugin(AuditModel):
 
     including = PluginIncludingXQuerySet.as_manager()
 
-    class Meta:
-        ordering = ['-updated_at']
-
     def __str__(self):
         return self.name
 
-    # def get_absolute_url(self):
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('plugins:detail_pk', args=[self.slug, str(self.id)])
+
+    class Meta:
+        ordering = ['-updated_at']
 
 
 class PluginAuthorship(AuditModel):

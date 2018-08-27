@@ -1,7 +1,9 @@
 <div class="card">
   <div class="card-content">
     <h2 class="title">
-      {{ plugin.name }}
+      <a href="{{ plugin.get_absolute_url }}" style="color:#363636;">
+        {{ plugin.name }}
+      </a>
     </h2>
     <h5 class="subtitle">
       {% for author in plugin.authors.all %}

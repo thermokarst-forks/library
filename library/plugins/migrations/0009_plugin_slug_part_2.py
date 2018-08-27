@@ -2,6 +2,9 @@ from django.db import migrations
 
 from library.utils import slug
 
+# Three-part migration:
+# https://docs.djangoproject.com/en/2.1/howto/writing-migrations/#migrations-that-add-unique-fields
+
 
 class Migration(migrations.Migration):
     def migrate(apps, schema_editor):

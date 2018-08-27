@@ -1,5 +1,8 @@
 from django.db import migrations, models
 
+# Three-part migration:
+# https://docs.djangoproject.com/en/2.1/howto/writing-migrations/#migrations-that-add-unique-fields
+
 
 class Migration(migrations.Migration):
 

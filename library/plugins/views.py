@@ -1,5 +1,6 @@
 from django.views.generic import ListView, RedirectView, DetailView
 
+from library.utils.views import SlugPKDetailView
 from .models import Plugin
 
 
@@ -13,6 +14,6 @@ class PluginNew(RedirectView):
     pattern_name = 'admin:plugins_plugin_add'
 
 
-class PluginDetail(DetailView):
-    query_pk_and_slug = True
+class PluginDetail(SlugPKDetailView):
     model = Plugin
+    context_object_name = 'plugin'
