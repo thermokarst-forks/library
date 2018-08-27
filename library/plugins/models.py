@@ -19,16 +19,16 @@ class PluginIncludingXQuerySet(models.QuerySet):
 
 
 class Plugin(AuditModel):
-    name = models.CharField(max_length=500, unique=True)
+    name = models.CharField(max_length=500, unique=True, help_text='The plugin\'s name, as registered in QIIME 2.')
     slug = models.SlugField(max_length=500, unique=True)
+    title = models.CharField(max_length=500, help_text='The plugin\'s project title (e.g. q2-my-plugin).')
     short_summary = models.CharField(max_length=500)
     description = models.TextField()
     install_guide = models.TextField()
     published = models.BooleanField(default=False)
+    source_url = models.URLField(max_length=500, blank=True)
+    version = models.CharField(max_length=500, blank=True)
 
-    # TODO: version/release
-    # TODO: source_url
-    # TODO: title
     # TODO: dependencies
 
     objects = models.Manager()
@@ -36,6 +36,7 @@ class Plugin(AuditModel):
                                      # use a bridge table with ordering info
                                      through='PluginAuthorship',
                                      related_name='plugins')
+    dependencies = models.ManyToManyField('self', symmetrical=False, db_table='plugins_plugin_dependencies')
 
     including = PluginIncludingXQuerySet.as_manager()
 

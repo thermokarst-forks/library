@@ -15,5 +15,5 @@ class PluginNew(RedirectView):
 
 
 class PluginDetail(SlugPKDetailView):
-    model = Plugin
+    queryset = Plugin.including.sorted_authors()
     context_object_name = 'plugin'
