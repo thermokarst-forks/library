@@ -2,19 +2,20 @@
   <div class="card-content">
     <h2 class="title">
       <a href="{{ plugin.get_absolute_url }}" style="color:#363636;">
-        {{ plugin.name }}
+        {{ plugin.title }}
       </a>
     </h2>
     <h5 class="subtitle">
       {% for author in plugin.authors.all %}
-      <a href="https://forum.qiime2.org/u/{{ author.username }}" target="_blank">
+      <a href="{{ author.get_absolute_url }}" target="_blank">
         @{{ author.username }}
       </a>
       {% endfor %}
+      {% if plugin.version.strip %}
       <span class="tag is-pulled-right">
-        {# TODO: deal with this #}
-        2018.6
+        {{ plugin.version }}
       </span>
+      {% endif %}
     </h5>
     <p>
       {{ plugin.description }}

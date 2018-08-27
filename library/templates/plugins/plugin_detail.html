@@ -7,39 +7,52 @@
       <div class="card-content">
         <div class="columns">
           <h1 class="title column is-paddingless">
-            {{ plugin.name }}
+            {{ plugin.title }}
           </h1>
           <h2 class="column">
             {% for author in plugin.authors.all %}
-            {# TODO: make User.get_absolute_url #}
-            <a class="is-pulled-right" href="https://forum.qiime2.org/u/{{ author.username }}" target="_blank">
+            <a class="is-pulled-right" href="{{ author.get_absolute_url }}" target="_blank">
               @{{ author.username }}
             </a>
             {% endfor %}
           </h2>
         </div>
 
+        {% if plugin.version.strip %}
         <div class="columns">
           <div class="tags">
-            <span class="tag">2018.6</span>
+            <span class="tag">
+              {{ plugin.version }}
+            </span>
           </div>
         </div>
+        {% endif %}
 
         <hr>
 
         <div class="content">
           <p>
             <span class="has-text-weight-bold">source:</span>
-            <a href="">https://github.com/qiime2/q2-dada2</a>
+            {% if plugin.source_url.strip %}
+            <a href="{{ plugin.source_url }}" target="_blank">
+              {{ plugin.source_url }}
+            </a>
+            {% else %}
+            <span>No source URL on file</span>
+            {% endif %}
           </p>
           <p>
             <span class="has-text-weight-bold">dependencies:</span>
             <ul>
-              <li>
-                <a href="">
-                  q2-types
-                </a>
-              </li>
+              {% for dependency in plugin.dependencies.all %}
+                <li>
+                  <a href="{{ dependency.get_absolute_url }}">
+                    {{ dependency.title }}
+                  </a>
+                </li>
+              {% empty %}
+                Plugin has no dependencies
+              {% endfor %}
             </ul>
           </p>
           <hr>

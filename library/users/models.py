@@ -16,3 +16,6 @@ class User(AbstractUser, AuditModel):
 
     def get_short_name(self):
         return self.full_name.strip()
+
+    def get_absolute_url(self):
+        return 'https://forum.qiime2.org/u/%s' % self.username
