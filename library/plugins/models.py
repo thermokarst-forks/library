@@ -27,7 +27,7 @@ class Plugin(AuditModel):
     install_guide = models.TextField()
     published = models.BooleanField(default=False)
     source_url = models.URLField(max_length=500, blank=True)
-    version = models.TextField(blank=True)
+    version = models.CharField(max_length=500, blank=True)
 
     # TODO: dependencies
 

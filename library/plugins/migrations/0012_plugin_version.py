@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='plugin',
             name='version',
-            field=models.TextField(blank=True),
+            field=models.CharField(blank=True, max_length=500),
         ),
         migrations.AlterField(
             model_name='plugin',
