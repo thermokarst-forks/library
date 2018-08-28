@@ -8,9 +8,16 @@ from library.utils.models import AuditModel
 User = get_user_model()
 
 
-class PluginIncludingXQuerySet(models.QuerySet):
-    def sorted_authors(self):
-        return self.prefetch_related(
+# Global Workgroup Access Restriction
+class GWARManager(models.Manager):
+    def get_queryset(self, user):
+        return super().get_queryset().filter(models.Q(published=True) | models.Q(authors=user))
+
+    def all(self, user):
+        return self.get_queryset(user)
+
+    def sorted_authors(self, user):
+        return self.get_queryset(user).prefetch_related(
             models.Prefetch(
                 'authors',
                 queryset=User.objects.order_by('plugin_author_list__list_position'),
@@ -38,8 +45,8 @@ class Plugin(AuditModel):
     dependencies = models.ManyToManyField('self', symmetrical=False, db_table='plugins_plugin_dependencies')
 
     # MANAGERS
-    objects = models.Manager()
-    including = PluginIncludingXQuerySet.as_manager()
+    objects = GWARManager()
+    unsafe = models.Manager()
 
     def __str__(self):
         return self.name
@@ -50,6 +57,8 @@ class Plugin(AuditModel):
 
     class Meta:
         ordering = ['-updated_at']
+        # This is so that the `admin` app still works as expected
+        default_manager_name = 'unsafe'
 
 
 class PluginAuthorship(AuditModel):

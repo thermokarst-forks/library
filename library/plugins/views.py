@@ -5,8 +5,10 @@ from .models import Plugin
 
 
 class PluginList(ListView):
-    queryset = Plugin.including.sorted_authors().filter(published=True)
     context_object_name = 'plugins'
+
+    def get_queryset(self):
+        return Plugin.objects.sorted_authors(self.request.user)
 
 
 # TODO: make this a real view, instead of an admin redirect
@@ -15,5 +17,7 @@ class PluginNew(RedirectView):
 
 
 class PluginDetail(SlugPKDetailView):
-    queryset = Plugin.including.sorted_authors()
     context_object_name = 'plugin'
+
+    def get_queryset(self):
+        return Plugin.objects.all(self.request.user)
