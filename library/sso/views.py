@@ -97,7 +97,6 @@ def sso_client_callback(request):
     user.groups.add(*users_groups)
 
     login(request, user)
-    del request.session['sso_nonce']
 
     return HttpResponseRedirect(request.GET.get('next', '/'))
 
