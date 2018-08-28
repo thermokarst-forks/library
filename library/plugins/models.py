@@ -41,10 +41,6 @@ class Plugin(AuditModel):
     objects = models.Manager()
     including = PluginIncludingXQuerySet.as_manager()
 
-    # PROPERTIES
-    def is_unpublished(self):
-        return not self.published
-
     def __str__(self):
         return self.name
 

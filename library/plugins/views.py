@@ -1,5 +1,4 @@
 from django.views.generic import ListView, RedirectView, DetailView
-from django.contrib.auth.mixins import UserPassesTestMixin
 
 from library.utils.views import SlugPKDetailView
 from .models import Plugin
@@ -15,16 +14,6 @@ class PluginNew(RedirectView):
     pattern_name = 'admin:plugins_plugin_add'
 
 
-class PluginAuthMixin(UserPassesTestMixin):
-    login_url = 'foo'
-
-    def test_func(self):
-        plugin = self.get_object()
-        if plugin.published:
-            return True
-        return self.request.user in plugin.authors.all()
-
-
-class PluginDetail(PluginAuthMixin, SlugPKDetailView):
+class PluginDetail(SlugPKDetailView):
     queryset = Plugin.including.sorted_authors()
     context_object_name = 'plugin'
