@@ -86,16 +86,20 @@ def sso_client_callback(request):
         }
     )
     if user_was_created:
+        # Recommended for SSO/LDAP created users.
         user.set_unusable_password()
         user.save()
 
     users_groups = []
     for group in [g.strip() for g in payload['groups'].split(',')]:
-        user_group, _ = Group.objects.get_or_create(name=group)
+        # Prefix the groups so that we can differentiate their source
+        user_group, _ = Group.objects.get_or_create(name='forum_%s' % group)
         users_groups.append(user_group)
 
+    # Operation is idempotent.
     user.groups.add(*users_groups)
 
+    # Update the session auth hash or else we lose the original session, forcing the user to login twice.
     update_session_auth_hash(request, user)
     login(request, user)
 
