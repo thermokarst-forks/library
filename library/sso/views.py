@@ -81,8 +81,8 @@ def sso_client_callback(request):
             'full_name': payload['name'],
             'forum_external_id': payload['external_id'],
             'forum_avatar_url': payload['avatar_url'],
-            'forum_is_admin': payload['admin'],
-            'forum_is_moderator': payload['moderator'],
+            'forum_is_admin': payload['admin'] == 'true',
+            'forum_is_moderator': payload['moderator'] == 'true',
         }
     )
     if user_was_created:
