@@ -1,4 +1,4 @@
-from django.views.generic import ListView, RedirectView, DetailView
+from django.views.generic import ListView, RedirectView
 
 from library.utils.views import SlugPKDetailView
 from .models import Plugin
