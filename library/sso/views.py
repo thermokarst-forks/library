@@ -3,8 +3,7 @@ import base64
 import hashlib
 import hmac
 
-from django.contrib.auth import get_user_model
-from django.contrib.auth import login, logout
+from django.contrib.auth import get_user_model, login, logout, update_session_auth_hash
 from django.contrib.auth.models import Group
 from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 from django.conf import settings
@@ -88,6 +87,7 @@ def sso_client_callback(request):
     )
     if user_was_created:
         user.set_unusable_password()
+        user.save()
 
     users_groups = []
     for group in [g.strip() for g in payload['groups'].split(',')]:
@@ -96,6 +96,7 @@ def sso_client_callback(request):
 
     user.groups.add(*users_groups)
 
+    update_session_auth_hash(request, user)
     login(request, user)
 
     return HttpResponseRedirect(request.GET.get('next', '/'))
