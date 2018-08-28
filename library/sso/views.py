@@ -67,7 +67,7 @@ def sso_client_callback(request):
     payload = QueryDict(base64.b64decode(payload).decode('utf8'))
     nonce = payload['nonce']
     try:
-        exp_nonce = request.session.pop('sso_nonce')
+        exp_nonce = request.session['sso_nonce']
     except KeyError:
         return HttpResponse('Invalid session.', status=422)
     if nonce != exp_nonce:
@@ -81,6 +81,7 @@ def sso_client_callback(request):
             'full_name': payload['name'],
             'forum_external_id': payload['external_id'],
             'forum_avatar_url': payload['avatar_url'],
+            # TODO: come up with better casting here
             'forum_is_admin': payload['admin'] == 'true',
             'forum_is_moderator': payload['moderator'] == 'true',
         }
@@ -96,6 +97,7 @@ def sso_client_callback(request):
     user.groups.add(*users_groups)
 
     login(request, user)
+    del request.session['sso_nonce']
 
     return HttpResponseRedirect(request.GET.get('next', '/'))
 
