@@ -66,7 +66,7 @@ def sso_client_callback(request):
     payload = QueryDict(base64.b64decode(payload).decode('utf8'))
     nonce = payload['nonce']
     try:
-        exp_nonce = request.session['sso_nonce']
+        exp_nonce = request.session.pop('sso_nonce')
     except KeyError:
         return HttpResponse('Invalid session.', status=422)
     if nonce != exp_nonce:
