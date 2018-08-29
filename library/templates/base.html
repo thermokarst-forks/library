@@ -66,11 +66,7 @@
             </div>
             {% if user.is_authenticated %}
             <a class="navbar-item" href="{% url 'logout' %}">
-	      Logout ({{ user }})
-            </a>
-            {% else %}
-            <a class="navbar-item" href="{% url 'login' %}">
-              Login
+              Logout ({{ user }})
             </a>
             {% endif %}
           </div>

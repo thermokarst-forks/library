@@ -1,5 +1,3 @@
-import operator
-
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -13,7 +11,18 @@ User = get_user_model()
 # Global Workgroup Access Restriction
 class GWARManager(models.Manager):
     def get_queryset(self, user):
-        return super().get_queryset().filter(authors=user)
+        qs = super().get_queryset()
+        # If current user is a `superuser` let them go wherever they want!
+        # With great power comes great responsibility.
+        if user.is_superuser:
+            return qs
+        # Can't filter on an AnonymousUser, so, we just limit to `published`,
+        # since they can't be an author, anyway.
+        if user.is_anonymous:
+            return qs.filter(published=True)
+        # Finally, for a regular, logged in user, only show them `published`
+        # plugins, unless they are an author on an unpublished plugin.
+        return qs.filter(models.Q(authors=user) | models.Q(published=True))
 
     def all(self, user):
         return self.get_queryset(user)
@@ -25,11 +34,6 @@ class GWARManager(models.Manager):
                 queryset=User.objects.order_by('plugin_author_list__list_position'),
             )
         )
-
-    # TODO: remove?
-    def is_published(self, user):
-        base_qs = self.get_queryset(user)
-        return base_qs | super().get_queryset().filter(published=True)
 
 
 class Plugin(AuditModel):

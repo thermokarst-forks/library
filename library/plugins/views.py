@@ -1,34 +1,34 @@
-from django.views.generic import ListView, RedirectView
-from django.db import models
+from django.views.generic import ListView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from library.utils.views import SlugPKDetailView, SlugPKUpdateView
 from .models import Plugin
+from .forms import PluginForm
 
 
 class PluginList(ListView):
     context_object_name = 'plugins'
 
     def get_queryset(self):
-        qs = Plugin.objects.sorted_authors(self.request.user) | Plugin.unsafe.filter(published=True)
-        return qs.distinct()
-
-
-# TODO: make this a real view, instead of an admin redirect
-class PluginNew(RedirectView):
-    pattern_name = 'admin:plugins_plugin_add'
+        return Plugin.objects.sorted_authors(self.request.user)
 
 
 class PluginDetail(SlugPKDetailView):
     context_object_name = 'plugin'
 
     def get_queryset(self):
-        qs = Plugin.objects.all(self.request.user) | Plugin.unsafe.filter(published=True)
-        return qs.distinct()
+        return Plugin.objects.sorted_authors(self.request.user)
 
 
-class PluginEdit(SlugPKUpdateView):
+class PluginNew(LoginRequiredMixin, CreateView):
     context_object_name = 'plugin'
-    fields = ['name']
+    model = Plugin
+    form_class = PluginForm
+
+
+class PluginEdit(LoginRequiredMixin, SlugPKUpdateView):
+    context_object_name = 'plugin'
+    form_class = PluginForm
 
     def get_queryset(self):
-        return Plugin.objects.all(self.request.user)
+        return Plugin.objects.sorted_authors(self.request.user)
