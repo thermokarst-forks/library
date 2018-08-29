@@ -1,8 +1,38 @@
 {% extends 'base.html' %}
 
+{% load form_field %}
+
 {% block 'content' %}
-<form method="POST">{% csrf_token %}
-  {{ form.as_p }}
+<form method="POST" novalidate="true">
+  {% csrf_token %}
+
+  {{ form.non_field_errors }}
+
+  <div class="columns">
+    <div class="column">
+      {% form_field form.title %}
+      {% form_field form.name %}
+      {% form_field form.version %}
+      {% form_field form.source_url %}
+    </div>
+
+    <div class="column">
+      <label class="checkbox">
+        {{ form.published }}
+        Publish to site?
+        <span class="help">{{ form.published.help_text }}</span>
+      </label>
+      {% form_field form.short_summary %}
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="columns">
+    <div class="column">
+    </div>
+  </div>
+
   <input type="submit" value="Save" />
 </form>
 {% endblock %}
