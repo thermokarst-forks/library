@@ -3,7 +3,34 @@ from django import forms
 from .models import Plugin
 
 
+_description_initial = '''# New Plugin Description
+
+> A few things to consider adding here:
+
+* Include a brief summary or the plugin and what it does
+* Is there a corresponding publication? Maybe throw a link or two in here.
+* Are there docs published somewhere? If so, put a link in! If not, consider publishing those here!
+* How should users go about getting help? Should they post to the forum?
+  * Consider asking the moderators if they can set up a new tag or category on the forum for you to handle support in.
+'''
+
+_install_initial = '''# Directions
+1. Install QIIME 2:
+        wget ...
+
+2. Run the following:
+        conda install ...
+'''
+
+
 class PluginForm(forms.ModelForm):
+    description = forms.CharField(widget=forms.Textarea(attrs={'id': 'description', 'class': 'textarea'}),
+                                  initial=_description_initial,
+                                  help_text=Plugin._meta.get_field('description').help_text)
+    install_guide = forms.CharField(widget=forms.Textarea(attrs={'id': 'install-guide', 'class': 'textarea'}),
+                                    initial=_install_initial,
+                                    help_text=Plugin._meta.get_field('install_guide').help_text)
+
     def is_valid(self):
         is_valid = super().is_valid()
         for field in self.errors:
@@ -14,8 +41,8 @@ class PluginForm(forms.ModelForm):
 
     class Meta:
         model = Plugin
-        fields = ['name', 'title', 'version', 'source_url', 'published', 'short_summary', 'install_guide',
-                  'description']
+        fields = ['name', 'title', 'version', 'source_url', 'published', 'short_summary', 'description',
+                  'install_guide']
         # TODO: , 'authors', 'dependencies'
         widgets = {
             'name': forms.TextInput(attrs={'class': 'input', 'placeholder': 'e.g. my_plugin'}),

@@ -41,9 +41,11 @@ class Plugin(AuditModel):
                             ' e.g. my_plugin')
     slug = models.SlugField(max_length=500, unique=True)
     title = models.CharField(max_length=500, help_text='The plugin\'s project title (e.g. q2-my-plugin).')
-    short_summary = models.CharField(max_length=500)
-    description = models.TextField()
-    install_guide = models.TextField()
+    short_summary = models.CharField(max_length=500, help_text='This field is displayed in "overviews" such as the '
+                                     'plugin listing page.')
+    description = models.TextField(help_text='A free-form description of the plugin.')
+    install_guide = models.TextField(help_text='This field should contain directions (or a link to directions) on how '
+                                               'to install the plugin.')
     published = models.BooleanField(default=False, help_text='This field controls the plugin\'s visibility to other '
                                     'users on library.qiime2.org.  Only mark as "true" if you are prepared for the '
                                     'plugin to go "live"!')

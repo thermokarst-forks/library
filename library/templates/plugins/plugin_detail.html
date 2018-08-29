@@ -69,8 +69,7 @@
           <hr>
           <h4>install guide:</h4>
           <div class="content">
-            {# TODO: markdown #}
-            {{ plugin.install_guide }}
+            <div id="install-guide"></div>
           </div>
         </div>
       </div>
@@ -78,9 +77,18 @@
   </div>
   <div class="column">
     <div class="content">
-      {# TODO: markdown #}
-      {{ plugin.description }}
+      <div id="description"></div>
     </div>
   </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+  var opts = {
+    smartLists: true,
+    sanitize: true,
+  };
+  document.getElementById('description').innerHTML = marked('{{ plugin.description|escapejs }}', opts);
+  document.getElementById('install-guide').innerHTML = marked('{{ plugin.install_guide|escapejs }}', opts);
+</script>
 {% endblock %}
