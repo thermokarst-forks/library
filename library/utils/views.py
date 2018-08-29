@@ -1,4 +1,4 @@
-from django.views.generic import TemplateView, DetailView
+from django.views.generic import TemplateView, DetailView, UpdateView
 from django.http import HttpResponseRedirect
 
 
@@ -7,7 +7,7 @@ class ListView(TemplateView):
     template_name = 'index.html'
 
 
-class SlugPKDetailView(DetailView):
+class SlugPKMixin:
     query_pk_and_slug = True
 
     def get(self, request, *args, **kwargs):
@@ -16,3 +16,11 @@ class SlugPKDetailView(DetailView):
             return HttpResponseRedirect(self.object.get_absolute_url())
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
+
+
+class SlugPKDetailView(SlugPKMixin, DetailView):
+    pass
+
+
+class SlugPKUpdateView(SlugPKMixin, UpdateView):
+    pass

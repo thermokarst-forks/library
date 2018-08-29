@@ -1,3 +1,5 @@
+import operator
+
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -11,7 +13,7 @@ User = get_user_model()
 # Global Workgroup Access Restriction
 class GWARManager(models.Manager):
     def get_queryset(self, user):
-        return super().get_queryset().filter(models.Q(published=True) | models.Q(authors=user))
+        return super().get_queryset().filter(authors=user)
 
     def all(self, user):
         return self.get_queryset(user)
@@ -23,6 +25,11 @@ class GWARManager(models.Manager):
                 queryset=User.objects.order_by('plugin_author_list__list_position'),
             )
         )
+
+    # TODO: remove?
+    def is_published(self, user):
+        base_qs = self.get_queryset(user)
+        return base_qs | super().get_queryset().filter(published=True)
 
 
 class Plugin(AuditModel):
