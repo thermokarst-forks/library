@@ -1,10 +1,5 @@
-from django.views.generic import TemplateView, DetailView, UpdateView
+from django.views.generic import DetailView, UpdateView
 from django.http import HttpResponseRedirect
-
-
-# TODO: rename this
-class ListView(TemplateView):
-    template_name = 'index.html'
 
 
 class SlugPKMixin:

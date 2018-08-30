@@ -1,7 +1,20 @@
 {% extends 'base.html' %}
 
+{% load card %}
+{% load list_of_lists %}
+
 {% block 'content' %}
 <div class="content">
-  Welcome
+  <h3>Latest Plugins</h3>
+  {% for row in plugins|list_of_lists:3 %}
+    <div class="columns">
+      {% for plugin in row %}
+        <div class="column is-one-third">
+          {% card plugin %}
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+  <h4><a href="{% url 'plugins:list' %}">Take me to all the plugins</a></h4>
 </div>
 {% endblock %}
