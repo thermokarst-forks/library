@@ -37,8 +37,8 @@ class GWARManager(models.Manager):
 
 
 _help_text = {
-    'name': 'The plugin\'s name, as registered in QIIME 2. (e.g. my_plugin).',
-    'title': 'The plugin\'s project title (e.g. q2-my-plugin).',
+    'name': 'The plugin\'s name, as registered in QIIME 2.',
+    'title': 'The plugin\'s project title.',
     'short_summary': 'This field is displayed in "overviews" such as the plugin listing page.',
     'description': 'A free-form description of the plugin.',
     'install_guide': 'This field should contain directions (or a link to directions) on how to install the plugin.',
