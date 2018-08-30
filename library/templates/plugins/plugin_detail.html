@@ -2,6 +2,11 @@
 
 {% load card %}
 
+{% block 'head' %}
+<script src="https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/highlight.js/latest/styles/github.min.css">
+{% endblock %}
+
 {% block 'content' %}
 {% if current_user_is_author %}
 <div class="level">
@@ -74,6 +79,7 @@
   var opts = {
     smartLists: true,
     sanitize: true,
+    highlight: function(code) { return hljs.highlightAuto(code).value; },
   };
   document.getElementById('description').innerHTML = marked('{{ plugin.description|escapejs }}', opts);
   document.getElementById('install-guide').innerHTML = marked('{{ plugin.install_guide|escapejs }}', opts);
