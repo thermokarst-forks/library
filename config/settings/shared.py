@@ -24,10 +24,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # internal apps
+    # utils needs to be registered for template tags, and needs to come first
+    # because other apps use it
+    'library.utils.apps.UtilsConfig',
     'library.plugins.apps.PluginsConfig',
     'library.users.apps.UsersConfig',
-    'library.utils.apps.UtilsConfig',  # this needs to be registered for template tags
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

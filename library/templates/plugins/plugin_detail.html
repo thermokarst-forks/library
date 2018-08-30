@@ -1,6 +1,17 @@
 {% extends 'base.html' %}
 
 {% block 'content' %}
+{% if current_user_is_author %}
+<div class="level">
+  <div class="level-left"></div>
+  <div class="level-right">
+    <a class="button is-warning level-item" href="{% url 'plugins:edit' pk=plugin.pk slug=plugin.slug %}">
+      Edit plugin
+    </a>
+  </div>
+</div>
+{% endif %}
+
 <div class="columns">
   <div class="column">
     <div class="card">
@@ -10,7 +21,7 @@
             {{ plugin.title }}
           </h1>
           <h2 class="column">
-            {% for author in plugin.authors.all %}
+            {% for author in authors %}
             <a class="is-pulled-right" href="{{ author.get_absolute_url }}" target="_blank">
               @{{ author.username }}
             </a>
@@ -58,8 +69,7 @@
           <hr>
           <h4>install guide:</h4>
           <div class="content">
-            {# TODO: markdown #}
-            {{ plugin.install_guide }}
+            <div id="install-guide"></div>
           </div>
         </div>
       </div>
@@ -67,9 +77,18 @@
   </div>
   <div class="column">
     <div class="content">
-      {# TODO: markdown #}
-      {{ plugin.description }}
+      <div id="description"></div>
     </div>
   </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+  var opts = {
+    smartLists: true,
+    sanitize: true,
+  };
+  document.getElementById('description').innerHTML = marked('{{ plugin.description|escapejs }}', opts);
+  document.getElementById('install-guide').innerHTML = marked('{{ plugin.install_guide|escapejs }}', opts);
+</script>
 {% endblock %}

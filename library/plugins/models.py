@@ -11,7 +11,18 @@ User = get_user_model()
 # Global Workgroup Access Restriction
 class GWARManager(models.Manager):
     def get_queryset(self, user):
-        return super().get_queryset().filter(models.Q(published=True) | models.Q(authors=user))
+        qs = super().get_queryset()
+        # If current user is a `superuser` let them go wherever they want!
+        # With great power comes great responsibility.
+        if user.is_superuser:
+            return qs
+        # Can't filter on an AnonymousUser, so, we just limit to `published`,
+        # since they can't be an author, anyway.
+        if user.is_anonymous:
+            return qs.filter(published=True)
+        # Finally, for a regular, logged in user, only show them `published`
+        # plugins, unless they are an author on an unpublished plugin.
+        return qs.filter(models.Q(authors=user) | models.Q(published=True))
 
     def all(self, user):
         return self.get_queryset(user)
@@ -26,13 +37,18 @@ class GWARManager(models.Manager):
 
 
 class Plugin(AuditModel):
-    name = models.CharField(max_length=500, unique=True, help_text='The plugin\'s name, as registered in QIIME 2.')
+    name = models.CharField(max_length=500, unique=True, help_text='The plugin\'s name, as registered in QIIME 2.'
+                            ' e.g. my_plugin')
     slug = models.SlugField(max_length=500, unique=True)
     title = models.CharField(max_length=500, help_text='The plugin\'s project title (e.g. q2-my-plugin).')
-    short_summary = models.CharField(max_length=500)
-    description = models.TextField()
-    install_guide = models.TextField()
-    published = models.BooleanField(default=False)
+    short_summary = models.CharField(max_length=500, help_text='This field is displayed in "overviews" such as the '
+                                     'plugin listing page.')
+    description = models.TextField(help_text='A free-form description of the plugin.')
+    install_guide = models.TextField(help_text='This field should contain directions (or a link to directions) on how '
+                                               'to install the plugin.')
+    published = models.BooleanField(default=False, help_text='This field controls the plugin\'s visibility to other '
+                                    'users on library.qiime2.org.  Only mark as "true" if you are prepared for the '
+                                    'plugin to go "live"!')
     source_url = models.URLField(max_length=500, blank=True)
     version = models.CharField(max_length=500, blank=True)
 

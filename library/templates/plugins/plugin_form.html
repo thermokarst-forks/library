@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% load form_field %}
+
+{% block 'head' %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+
+<style>
+.editor-toolbar.fullscreen {
+  z-index: 1000;
+}
+</style>
+{% endblock %}
+
+{% block 'content' %}
+<form method="POST" novalidate="true">
+  {% csrf_token %}
+
+  {{ form.non_field_errors }}
+
+  <div class="columns">
+    <div class="column">
+      {% form_field form.title %}
+      {% form_field form.name %}
+      {% form_field form.version %}
+      {% form_field form.source_url %}
+    </div>
+
+    <div class="column">
+      <article class="message is-warning">
+        <div class="message-body">
+          <label class="checkbox">
+            {{ form.published }}
+            Publish to site?
+            <span class="help">{{ form.published.help_text }}</span>
+          </label>
+        </div>
+      </article>
+      {% form_field form.short_summary %}
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="columns">
+    <div class="column">
+      <label class="label">Install Guide</label>
+      <p class="help">{{ form.install_guide.help_text }}</p>
+      {{ form.install_guide }}
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="columns">
+    <div class="column">
+      <label class="label">Plugin Description</label>
+      <p class="help">{{ form.description.help_text }}</p>
+      {{ form.description }}
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="field is-grouped">
+    <div class="control">
+      <input type="submit" class="button is-link" value="Save">
+    </div>
+    <div class="control">
+      {# TODO: route back to relevant view #}
+      <button class="button is-text">Cancel</button>
+    </div>
+  </div>
+</form>
+
+<script>
+  var previewRender = function(plainText, preview) {
+    // This class is needed for bulma styling in the preview window
+    preview.className += ' content';
+    return this.parent.markdown(plainText);
+  }
+
+  var description = document.getElementById('description');
+  new SimpleMDE({ element: description, previewRender: previewRender, });
+
+  var installGuide = document.getElementById('install-guide');
+  new SimpleMDE({ element: installGuide, previewRender: previewRender, });
+</script>
+{% endblock %}
