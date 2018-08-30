@@ -1,9 +1,19 @@
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.http import HttpResponseRedirect
 
-from library.utils.views import SlugPKDetailView, SlugPKUpdateView
 from .models import Plugin
 from .forms import PluginForm
+
+
+class RedirectSlugMixin:
+    query_pk_and_slug = True
+
+    def get(self, request, *args, **kwargs):
+        resp = super().get(request, *args, **kwargs)
+        if self.kwargs.get(self.pk_url_kwarg) is None:
+            return HttpResponseRedirect(self.object.get_absolute_url())
+        return resp
 
 
 class PluginList(ListView):
@@ -13,7 +23,7 @@ class PluginList(ListView):
         return Plugin.objects.sorted_authors(self.request.user).order_by('title')
 
 
-class PluginDetail(SlugPKDetailView):
+class PluginDetail(RedirectSlugMixin, DetailView):
     context_object_name = 'plugin'
 
     def get_queryset(self):
@@ -34,7 +44,7 @@ class PluginNew(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     form_class = PluginForm
 
 
-class PluginEdit(LoginRequiredMixin, SlugPKUpdateView):
+class PluginEdit(LoginRequiredMixin, RedirectSlugMixin, UpdateView):
     context_object_name = 'plugin'
     form_class = PluginForm
 
