@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.http import HttpResponseRedirect
 
 from .models import Plugin
-from .forms import PluginForm
+from .forms import PluginForm, PluginAuthorshipFormSet
 
 
 class RedirectSlugMixin:
@@ -37,11 +37,42 @@ class PluginDetail(RedirectSlugMixin, DetailView):
         return ctx
 
 
+# https://stackoverflow.com/a/11910420/313548
 class PluginNew(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     context_object_name = 'plugin'
     permission_required = 'forum_trust_level_1'
     model = Plugin
     form_class = PluginForm
+
+    def get_named_formsets(self):
+        return {
+            'plugin_author': PluginAuthorshipFormSet(self.request.POST or None, prefix='plugin_author'),
+        }
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['named_formsets'] = self.get_named_formsets()
+        return ctx
+
+    def form_valid(self, form):
+        named_formsets = self.get_named_formsets()
+
+        if not all((x.is_valid() for x in named_formsets.values())):
+            return self.render_to_response(self.get_context_data(form=form))
+
+        print('neat')
+        self.object = form.save()
+        # resp = self.form_valid(form)
+
+        for name, formset in named_formsets.items():
+            print(name)
+            formset_save_func = getattr(self, 'formset_{0}_valid'.format(name), None)
+            if formset_save_func is not None:
+                formset_save_func(formset)
+            else:
+                formset.save()
+        print('why')
+        return resp
 
 
 class PluginEdit(LoginRequiredMixin, RedirectSlugMixin, UpdateView):

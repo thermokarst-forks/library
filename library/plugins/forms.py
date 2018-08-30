@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Plugin
+from .models import Plugin, PluginAuthorship
 
 
 _description_initial = '''# New Plugin Description
@@ -52,3 +52,6 @@ class PluginForm(forms.ModelForm):
                                                 'placeholder': 'e.g. https://example.com/q2-my-plugin.git'}),
             'short_summary': forms.Textarea(attrs={'class': 'textarea', 'placeholder': 'e.g. All about my plugin!'}),
         }
+
+
+PluginAuthorshipFormSet = forms.inlineformset_factory(Plugin, PluginAuthorship, fields=('plugin', 'author', 'list_position'))

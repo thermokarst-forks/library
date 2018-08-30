@@ -28,6 +28,10 @@
       {% form_field form.name %}
       {% form_field form.version %}
       {% form_field form.source_url %}
+      {% with named_formsets.plugin_author as formset %}
+        {{ formset }}
+        {{ formset.management_form }}
+      {% endwith %}
     </div>
 
     <div class="column">
