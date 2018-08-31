@@ -10,10 +10,15 @@
         {% endif %}
       </div>
 
-      <div class="media-right">
+      <div class="media-right tags">
         {% if plugin.version.strip %}
-        <span class="tag is-pulled-right">
+        <span class="tag">
           {{ plugin.version }}
+        </span>
+        {% endif %}
+        {% if not plugin.published %}
+        <span class="tag is-warning">
+          DRAFT
         </span>
         {% endif %}
       </div>
