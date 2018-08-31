@@ -39,7 +39,7 @@ class PluginDetail(RedirectSlugMixin, DetailView):
 
 class PluginNew(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     context_object_name = 'plugin'
-    permission_required = 'forum_trust_level_1'
+    permission_required = 'plugins.add_plugin'
     model = Plugin
     form_class = PluginForm
 
