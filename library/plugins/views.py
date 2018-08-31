@@ -10,7 +10,7 @@ class PluginList(ListView):
     context_object_name = 'plugins'
 
     def get_queryset(self):
-        return Plugin.objects.sorted_authors(self.request.user)
+        return Plugin.objects.sorted_authors(self.request.user).order_by('title')
 
 
 class PluginDetail(SlugPKDetailView):

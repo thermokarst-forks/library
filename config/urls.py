@@ -3,12 +3,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
 
-from library.utils import views as util_views
+from library.index import views as index_views
 from library.sso import views as sso_views
 
 
 urlpatterns = [
-    path('', util_views.ListView.as_view(), name='index'),
+    path('', index_views.IndexView.as_view(), name='index'),
     path('plugins/', include(('library.plugins.urls', 'plugins'))),
     path('admin/', admin.site.urls),
 ]

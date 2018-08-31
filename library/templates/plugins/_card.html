@@ -1,24 +1,39 @@
 <div class="card">
   <div class="card-content">
-    <h2 class="title">
-      <a href="{{ plugin.get_absolute_url }}" style="color:#363636;">
-        {{ plugin.title }}
-      </a>
-    </h2>
-    <h5 class="subtitle">
-      {% for author in plugin.authors.all %}
-      <a href="{{ author.get_absolute_url }}" target="_blank">
-        @{{ author.username }}
-      </a>
-      {% endfor %}
-      {% if plugin.version.strip %}
-      <span class="tag is-pulled-right">
-        {{ plugin.version }}
-      </span>
-      {% endif %}
-    </h5>
-    <p>
+
+    <div class="media">
+      <div class="media-content">
+        {% if is_detail %}
+        <p class="title is-3">{{ plugin.title }}</p>
+        {% else %}
+        <p class="title is-4"><a href="{{ plugin.get_absolute_url }}">{{ plugin.title }}</a></p>
+        {% endif %}
+      </div>
+
+      <div class="media-right">
+        {% if plugin.version.strip %}
+        <span class="tag is-pulled-right">
+          {{ plugin.version }}
+        </span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="content">
       {{ plugin.short_summary }}
-    </p>
+    </div>
+
+    <div class="media">
+      <div class="subtitle columns">
+      {% for author in plugin.authors.all %}
+        <a href="{{ author.get_absolute_url }}" target="_blank" class="column is-narrow">
+          <div class="image is-32x32">
+            <img class="is-rounded" src="{% if author.forum_avatar_url %}{{ author.forum_avatar_url }}{% else %}https://avatars.dicebear.com/v2/identicon/{{ author.username }}.svg{% endif %}">
+          </div>
+        </a>
+      {% endfor %}
+      </div>
+    </div>
+
   </div>
 </div>

@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
 
+{% load card %}
+
+{% block 'head' %}
+<script src="https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/highlight.js/latest/styles/github.min.css">
+{% endblock %}
+
 {% block 'content' %}
 {% if current_user_is_author %}
 <div class="level">
@@ -14,33 +21,11 @@
 
 <div class="columns">
   <div class="column">
+
+    {% card plugin is_detail=True %}
+
     <div class="card">
       <div class="card-content">
-        <div class="columns">
-          <h1 class="title column is-paddingless">
-            {{ plugin.title }}
-          </h1>
-          <h2 class="column">
-            {% for author in authors %}
-            <a class="is-pulled-right" href="{{ author.get_absolute_url }}" target="_blank">
-              @{{ author.username }}
-            </a>
-            {% endfor %}
-          </h2>
-        </div>
-
-        {% if plugin.version.strip %}
-        <div class="columns">
-          <div class="tags">
-            <span class="tag">
-              {{ plugin.version }}
-            </span>
-          </div>
-        </div>
-        {% endif %}
-
-        <hr>
-
         <div class="content">
           <p>
             <span class="has-text-weight-bold">source:</span>
@@ -66,7 +51,13 @@
               {% endfor %}
             </ul>
           </p>
-          <hr>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-content">
+        <div class="content">
           <h4>install guide:</h4>
           <div class="content">
             <div id="install-guide"></div>
@@ -74,6 +65,7 @@
         </div>
       </div>
     </div>
+
   </div>
   <div class="column">
     <div class="content">
@@ -87,6 +79,7 @@
   var opts = {
     smartLists: true,
     sanitize: true,
+    highlight: function(code) { return hljs.highlightAuto(code).value; },
   };
   document.getElementById('description').innerHTML = marked('{{ plugin.description|escapejs }}', opts);
   document.getElementById('install-guide').innerHTML = marked('{{ plugin.install_guide|escapejs }}', opts);

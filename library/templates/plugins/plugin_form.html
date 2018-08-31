@@ -6,6 +6,9 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
 <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/highlight.js/latest/styles/github.min.css">
+
 <style>
 .editor-toolbar.fullscreen {
   z-index: 1000;
@@ -68,8 +71,9 @@
       <input type="submit" class="button is-link" value="Save">
     </div>
     <div class="control">
-      {# TODO: route back to relevant view #}
-      <button class="button is-text">Cancel</button>
+      <a href="{% if plugin.pk %}{{ plugin.get_absolute_url }}{% else %}{% url 'plugins:list' %}{% endif %}" class="button is-text">
+        Cancel
+      </a>
     </div>
   </div>
 </form>
@@ -82,9 +86,9 @@
   }
 
   var description = document.getElementById('description');
-  new SimpleMDE({ element: description, previewRender: previewRender, });
+  new SimpleMDE({ element: description, previewRender: previewRender, renderingConfig: { codeSyntaxHighlighting: true }});
 
   var installGuide = document.getElementById('install-guide');
-  new SimpleMDE({ element: installGuide, previewRender: previewRender, });
+  new SimpleMDE({ element: installGuide, previewRender: previewRender, renderingConfig: { codeSyntaxHighlighting: true }});
 </script>
 {% endblock %}
