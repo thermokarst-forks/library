@@ -75,7 +75,7 @@ class Plugin(AuditModel):
     unsafe = models.Manager()
 
     def __str__(self):
-        return self.name
+        return self.title
 
     def get_absolute_url(self):
         from django.urls import reverse

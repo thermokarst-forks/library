@@ -36,7 +36,9 @@ class PluginForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields['dependencies'] = forms.ModelMultipleChoiceField(
-            queryset=Plugin.objects.all(current_user), help_text=Plugin._meta.get_field('dependencies').help_text)
+            required=False,
+            queryset=Plugin.objects.all(current_user),
+            help_text=Plugin._meta.get_field('dependencies').help_text)
 
     def is_valid(self):
         is_valid = super().is_valid()
@@ -70,5 +72,5 @@ class PluginAuthorshipForm(forms.ModelForm):
 
 
 PluginAuthorshipFormSet = forms.inlineformset_factory(
-        Plugin, PluginAuthorship, form=PluginAuthorshipForm, extra=2,
+        Plugin, PluginAuthorship, form=PluginAuthorshipForm, extra=1,
         fk_name='plugin')

@@ -57,7 +57,9 @@ class PluginNew(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         self.object = None
         form = self.get_form()
         author_formset = PluginAuthorshipFormSet(self.request.POST)
-        if form.is_valid() and author_formset.is_valid():
+        form_is_valid = form.is_valid()
+        author_formset_is_valid = author_formset.is_valid()
+        if form_is_valid and author_formset_is_valid:
             return self.form_valid(form, author_formset)
         else:
             return self.form_invalid(form, author_formset)
@@ -100,7 +102,9 @@ class PluginEdit(LoginRequiredMixin, RedirectSlugMixin, UpdateView):
         self.object = self.get_object()
         form = self.get_form()
         author_formset = PluginAuthorshipFormSet(self.request.POST, instance=self.object)
-        if form.is_valid() and author_formset.is_valid():
+        form_is_valid = form.is_valid()
+        author_formset_is_valid = author_formset.is_valid()
+        if form_is_valid and author_formset_is_valid:
             return self.form_valid(form, author_formset)
         else:
             return self.form_invalid(form, author_formset)
@@ -111,6 +115,8 @@ class PluginEdit(LoginRequiredMixin, RedirectSlugMixin, UpdateView):
         for author_form in author_forms:
             author_form.plugin = self.object
             author_form.save()
+        for author in author_formset.deleted_objects:
+            author.delete()
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form, author_formset):
