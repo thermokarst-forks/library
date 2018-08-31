@@ -46,6 +46,7 @@ _help_text = {
                  '"true" if you are prepared for the plugin to go "live"!',
     'source_url': 'The URL for obtaining the plugin\'s source code.',
     'version': 'The current version of the plugin.',
+    'dependencies': 'Other plugins that this plugin depends on.',
 }
 
 
@@ -66,7 +67,8 @@ class Plugin(AuditModel):
                                      through='PluginAuthorship',
                                      related_name='plugins')
     # For now, no reverse relationships. Also, no order on relationships.
-    dependencies = models.ManyToManyField('self', symmetrical=False, db_table='plugins_plugin_dependencies')
+    dependencies = models.ManyToManyField('self', symmetrical=False, db_table='plugins_plugin_dependencies',
+                                          help_text=_help_text['dependencies'])
 
     # MANAGERS
     objects = GWARManager()

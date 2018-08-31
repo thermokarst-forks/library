@@ -23,7 +23,6 @@ _install_initial = '''# Directions
 '''
 
 
-# TODO: 'dependencies'
 class PluginForm(forms.ModelForm):
     description = forms.CharField(widget=forms.Textarea(attrs={'id': 'description', 'class': 'textarea'}),
                                   initial=_description_initial,
@@ -31,6 +30,13 @@ class PluginForm(forms.ModelForm):
     install_guide = forms.CharField(widget=forms.Textarea(attrs={'id': 'install-guide', 'class': 'textarea'}),
                                     initial=_install_initial,
                                     help_text=Plugin._meta.get_field('install_guide').help_text)
+
+    def __init__(self, *args, **kwargs):
+        current_user = kwargs.pop('user')
+        super().__init__(*args, **kwargs)
+
+        self.fields['dependencies'] = forms.ModelMultipleChoiceField(
+            queryset=Plugin.objects.all(current_user), help_text=Plugin._meta.get_field('dependencies').help_text)
 
     def is_valid(self):
         is_valid = super().is_valid()
@@ -43,7 +49,7 @@ class PluginForm(forms.ModelForm):
     class Meta:
         model = Plugin
         fields = ['name', 'title', 'version', 'source_url', 'published', 'short_summary', 'description',
-                  'install_guide']
+                  'install_guide', 'dependencies']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'input', 'placeholder': 'e.g. my_plugin'}),
             'title': forms.TextInput(attrs={'class': 'input', 'placeholder': 'e.g. q2-my-plugin'}),

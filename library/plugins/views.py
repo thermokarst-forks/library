@@ -43,6 +43,11 @@ class PluginNew(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Plugin
     form_class = PluginForm
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
     def get(self, request, *args, **kwargs):
         self.object = None
         ctx = self.get_context_data(form=self.get_form(), author_formset=PluginAuthorshipFormSet())
@@ -76,6 +81,11 @@ class PluginEdit(LoginRequiredMixin, RedirectSlugMixin, UpdateView):
 
     def get_queryset(self):
         return Plugin.objects.all(self.request.user)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
