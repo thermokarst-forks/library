@@ -50,5 +50,5 @@ class PluginForm(forms.ModelForm):
             'version': forms.TextInput(attrs={'class': 'input', 'placeholder': 'e.g. 0.2.1'}),
             'source_url': forms.URLInput(attrs={'class': 'input',
                                                 'placeholder': 'e.g. https://example.com/q2-my-plugin.git'}),
-            'short_summary': forms.Textarea(attrs={'class': 'textarea', 'placeholder': 'e.g. 0.2.1'}),
+            'short_summary': forms.Textarea(attrs={'class': 'textarea', 'placeholder': 'e.g. All about my plugin!'}),
         }

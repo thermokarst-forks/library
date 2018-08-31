@@ -7,4 +7,4 @@ from .models import Plugin
 
 @receiver(pre_save, sender=Plugin)
 def slug_handler(sender, instance, **kwargs):
-    instance.slug = slug(instance, 'name', 'slug')
+    instance.slug = slug(instance, 'title', 'slug')
