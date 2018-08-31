@@ -64,4 +64,5 @@ class PluginAuthorshipForm(forms.ModelForm):
 
 
 PluginAuthorshipFormSet = forms.inlineformset_factory(
-        Plugin, PluginAuthorship, form=PluginAuthorshipForm, extra=2)
+        Plugin, PluginAuthorship, form=PluginAuthorshipForm, extra=2,
+        fk_name='plugin')

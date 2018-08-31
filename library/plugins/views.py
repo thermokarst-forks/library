@@ -2,7 +2,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponseRedirect
 
-from .models import Plugin
+from .models import Plugin, PluginAuthorship
 from .forms import PluginForm, PluginAuthorshipFormSet
 
 
@@ -75,12 +75,15 @@ class PluginEdit(LoginRequiredMixin, RedirectSlugMixin, UpdateView):
     form_class = PluginForm
 
     def get_queryset(self):
-        return Plugin.objects.sorted_authors(self.request.user)
+        return Plugin.objects.all(self.request.user)
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        ctx = self.get_context_data(form=self.get_form(),
-                                    author_formset=PluginAuthorshipFormSet(instance=self.object))
+        qs = PluginAuthorship.objects.all().order_by('list_position')
+        ctx = self.get_context_data(
+            form=self.get_form(),
+            author_formset=PluginAuthorshipFormSet(instance=self.object,
+                                                   queryset=qs))
         return self.render_to_response(ctx)
 
     def post(self, request, *args, **kwargs):

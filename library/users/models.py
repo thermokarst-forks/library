@@ -25,3 +25,6 @@ class User(AbstractUser, AuditModel):
 
     def get_absolute_url(self):
         return 'https://forum.qiime2.org/u/%s' % self.username
+
+    class Meta:
+        ordering = ['username']
