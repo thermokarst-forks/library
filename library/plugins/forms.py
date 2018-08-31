@@ -23,6 +23,7 @@ _install_initial = '''# Directions
 '''
 
 
+# TODO: 'dependencies'
 class PluginForm(forms.ModelForm):
     description = forms.CharField(widget=forms.Textarea(attrs={'id': 'description', 'class': 'textarea'}),
                                   initial=_description_initial,
@@ -43,7 +44,6 @@ class PluginForm(forms.ModelForm):
         model = Plugin
         fields = ['name', 'title', 'version', 'source_url', 'published', 'short_summary', 'description',
                   'install_guide']
-        # TODO: , 'authors', 'dependencies'
         widgets = {
             'name': forms.TextInput(attrs={'class': 'input', 'placeholder': 'e.g. my_plugin'}),
             'title': forms.TextInput(attrs={'class': 'input', 'placeholder': 'e.g. q2-my-plugin'}),
@@ -54,4 +54,14 @@ class PluginForm(forms.ModelForm):
         }
 
 
-PluginAuthorshipFormSet = forms.inlineformset_factory(Plugin, PluginAuthorship, fields=('plugin', 'author', 'list_position'))
+class PluginAuthorshipForm(forms.ModelForm):
+    class Meta:
+        model = PluginAuthorship
+        fields = ['plugin', 'author', 'list_position']
+        widgets = {
+            'list_position': forms.NumberInput(attrs={'class': 'input'}),
+        }
+
+
+PluginAuthorshipFormSet = forms.inlineformset_factory(
+        Plugin, PluginAuthorship, form=PluginAuthorshipForm, extra=2)

@@ -28,8 +28,18 @@
       {% form_field form.name %}
       {% form_field form.version %}
       {% form_field form.source_url %}
-      {{ author_formset }}
+
+      <div class="box">
       {{ author_formset.management_form }}
+      {% for author_form in author_formset %}
+        <div class="columns">
+        {% if not forloop.first %}<hr>{% endif %}
+        {# TODO: just make a table, duh #}
+        <div class="column">{% form_field author_form.author outer_class='select'%}</div>
+        <div class="column">{% form_field author_form.list_position %}</div>
+        </div>
+      {% endfor %}
+      </div>
     </div>
 
     <div class="column">
