@@ -28,6 +28,7 @@
       {% form_field form.name %}
       {% form_field form.version %}
       {% form_field form.source_url %}
+      {% form_field form.short_summary %}
     </div>
 
     <div class="column">
@@ -40,7 +41,49 @@
           </label>
         </div>
       </article>
-      {% form_field form.short_summary %}
+
+      <div class="box">
+        <strong>Plugin Authors</strong>
+        {{ author_formset.management_form }}
+        <p class="help">
+          Every time you edit this page there will be 2 blank author fields at
+          the bottom. Use this to your advantage if you have more authors to add
+          than current form fields shown!
+        </p>
+        <table class="table is-fullwidth">
+          <thead>
+            <tr>
+              <th>{{ author_formset.0.author.label }}</th>
+              <th>
+                {{ author_formset.0.list_position.label }}<br>
+                <span class="help">{{ author_formset.0.list_position.help_text }}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for author_form in author_formset %}
+            <tr class="has-text-danger"><td colspan="2">{{ author_form.non_field_errors }}</td></tr>
+            <tr {% if author_form.errors %}class="has-background-danger"{% endif %}>
+              <td>
+                {# Tuck these here for safe-keeping #}
+                {{ author_form.id }}{{ author_form.plugin }}
+                <span class="select">{{ author_form.author }}</span>
+              </td>
+              <td>{{ author_form.list_position }}</td>
+            </tr>
+            {% if author_form.author.errors or author_form.list_position.errors %}
+            <tr>
+              <td>{{ author_form.author.errors.as_text }}</td>
+              <td>{{ author_form.list_position.errors.as_text }}</td>
+            </tr>
+            {% endif %}
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% form_field form.dependencies outer_class='select is-multiple is-fullwidth' %}
+
     </div>
   </div>
 

@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Plugin
+from .models import Plugin, PluginAuthorship
 
 
 _description_initial = '''# New Plugin Description
@@ -31,6 +31,13 @@ class PluginForm(forms.ModelForm):
                                     initial=_install_initial,
                                     help_text=Plugin._meta.get_field('install_guide').help_text)
 
+    def __init__(self, *args, **kwargs):
+        current_user = kwargs.pop('user')
+        super().__init__(*args, **kwargs)
+
+        self.fields['dependencies'] = forms.ModelMultipleChoiceField(
+            queryset=Plugin.objects.all(current_user), help_text=Plugin._meta.get_field('dependencies').help_text)
+
     def is_valid(self):
         is_valid = super().is_valid()
         for field in self.errors:
@@ -42,8 +49,7 @@ class PluginForm(forms.ModelForm):
     class Meta:
         model = Plugin
         fields = ['name', 'title', 'version', 'source_url', 'published', 'short_summary', 'description',
-                  'install_guide']
-        # TODO: , 'authors', 'dependencies'
+                  'install_guide', 'dependencies']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'input', 'placeholder': 'e.g. my_plugin'}),
             'title': forms.TextInput(attrs={'class': 'input', 'placeholder': 'e.g. q2-my-plugin'}),
@@ -52,3 +58,17 @@ class PluginForm(forms.ModelForm):
                                                 'placeholder': 'e.g. https://example.com/q2-my-plugin.git'}),
             'short_summary': forms.Textarea(attrs={'class': 'textarea', 'placeholder': 'e.g. All about my plugin!'}),
         }
+
+
+class PluginAuthorshipForm(forms.ModelForm):
+    class Meta:
+        model = PluginAuthorship
+        fields = ['plugin', 'author', 'list_position']
+        widgets = {
+            'list_position': forms.NumberInput(attrs={'class': 'input'}),
+        }
+
+
+PluginAuthorshipFormSet = forms.inlineformset_factory(
+        Plugin, PluginAuthorship, form=PluginAuthorshipForm, extra=2,
+        fk_name='plugin')

@@ -1,6 +1,6 @@
 <div class="field">
   <label class="label">{{ field.label }}</label>
-  <div class="control">{{ field }}</div>
+  <div class="{{ outer_class }}">{{ field }}</div>
   <p class="help">{{ field.help_text }}</p>
   {% if field.errors %}<p class="help is-danger">{{ field.errors.as_text }}</p>{% endif %}
 </div>
