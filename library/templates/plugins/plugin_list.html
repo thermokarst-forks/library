@@ -5,23 +5,27 @@
 
 {% block 'content' %}
 
-<div class="level">
-  <div class="level-left"></div>
-  <div class="level-right">
-    <a class="button is-success level-item" href="{% url 'plugins:new' %}">
-      Add new plugin
-    </a>
+<div class="content">
+  <div class="level">
+    <div class="level-left"></div>
+    <div class="level-right">
+      <a class="button is-success level-item" href="{% url 'plugins:new' %}">
+        Add new plugin
+      </a>
+    </div>
   </div>
-</div>
 
-{% for row in plugins|list_of_lists:3 %}
-  <div class="columns">
-    {% for plugin in row %}
-      <div class="column is-one-third">
-        {% card plugin %}
-      </div>
-    {% endfor %}
-  </div>
-{% endfor %}
+  {% for row in plugins|list_of_lists:3 %}
+    <div class="columns">
+      {% for plugin in row %}
+        <div class="column is-one-third">
+          {% card plugin %}
+        </div>
+      {% endfor %}
+    </div>
+  {% empty %}
+    <h4>No plugins in the Library.</h4>
+  {% endfor %}
+</div>
 
 {% endblock %}

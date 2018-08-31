@@ -37,7 +37,6 @@ class GWARManager(models.Manager):
 
 
 _help_text = {
-    'name': 'The plugin\'s name, as registered in QIIME 2.',
     'title': 'The plugin\'s project title.',
     'short_summary': 'This field is displayed in "overviews" such as the plugin listing page.',
     'description': 'A free-form description of the plugin.',
@@ -51,7 +50,6 @@ _help_text = {
 
 
 class Plugin(AuditModel):
-    name = models.CharField(max_length=500, unique=True, help_text=_help_text['name'])
     title = models.CharField(max_length=500, unique=True, help_text=_help_text['title'])
     slug = models.SlugField(max_length=500, unique=True)
     short_summary = models.CharField(max_length=500, help_text=_help_text['short_summary'])

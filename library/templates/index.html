@@ -14,7 +14,8 @@
         </div>
       {% endfor %}
     </div>
+  {% empty %}
+  <h4>No plugins in the Library.</h4>
   {% endfor %}
-  <h4><a href="{% url 'plugins:list' %}">Take me to all the plugins</a></h4>
 </div>
 {% endblock %}

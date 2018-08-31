@@ -7,19 +7,18 @@ _description_initial = '''# New Plugin Description
 
 > A few things to consider adding here:
 
-* Include a brief summary or the plugin and what it does
+* Include a brief summary of the plugin and what it does.
 * Is there a corresponding publication? Maybe throw a link or two in here.
 * Are there docs published somewhere? If so, put a link in! If not, consider publishing those here!
-* How should users go about getting help? Should they post to the forum?
+* How should users go about getting help? Should they post to the QIIME 2 Forum?
   * Consider asking the moderators if they can set up a new tag or category on the forum for you to handle support in.
 '''
 
 _install_initial = '''# Directions
-1. Install QIIME 2:
-        wget ...
-
-2. Run the following:
-        conda install ...
+Run the following:
+```bash
+conda install -c my_conda_channel q2-my-plugin
+```
 '''
 
 
@@ -50,10 +49,9 @@ class PluginForm(forms.ModelForm):
 
     class Meta:
         model = Plugin
-        fields = ['name', 'title', 'version', 'source_url', 'published', 'short_summary', 'description',
+        fields = ['title', 'version', 'source_url', 'published', 'short_summary', 'description',
                   'install_guide', 'dependencies']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'input', 'placeholder': 'e.g. my_plugin'}),
             'title': forms.TextInput(attrs={'class': 'input', 'placeholder': 'e.g. q2-my-plugin'}),
             'version': forms.TextInput(attrs={'class': 'input', 'placeholder': 'e.g. 0.2.1'}),
             'source_url': forms.URLInput(attrs={'class': 'input',
