@@ -8,6 +8,7 @@
     <link rel="icon" type="image/png" href="{% static 'img/favicon.ico' %}">
     <title>{% block 'title' %}QIIME 2 Library{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/bulma.min.css' %}">
+    {% if GOOGLE_ANALYTICS_PROPERTY_ID %}{% include 'utils/_google_analytics.html' %}{% endif %}
     {% block 'head' %}{% endblock %}
   </head>
   <body>

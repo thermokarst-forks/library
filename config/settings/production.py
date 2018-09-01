@@ -33,7 +33,6 @@ __all__ = [
     'INSTALLED_APPS',
     'MIDDLEWARE',
     'ROOT_URLCONF',
-    'TEMPLATES',
     'WSGI_APPLICATION',
     'DATABASES',
     'AUTH_PASSWORD_VALIDATORS',
@@ -64,3 +63,5 @@ EMAIL_HOST = 'library.qiime2.org'
 EMAIL_SUBJECT_PREFIX = '[library.qiime2.org] '
 DISCOURSE_SSO_PROVIDER = 'forum.qiime2.org'
 DISCOURSE_SSO_SECRET = env('DISCOURSE_SSO_SECRET')
+GOOGLE_ANALYTICS_PROPERTY_ID = env('GOOGLE_ANALYTICS_PROPERTY_ID')
+TEMPLATES[0]['OPTIONS']['context_processors'].append('library.utils.context_processors.google_analytics')
