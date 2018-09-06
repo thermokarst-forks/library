@@ -16,7 +16,7 @@
       <div class="container">
         <div class="navbar-brand">
           <a class="navbar-item" href="{% url 'index' %}">
-            <img src="{% static 'img/qiime2.svg' %}">
+            <img src="{% static 'img/qiime2.svg' %}" style="max-height: 40px;">
           </a>
           <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
             <span aria-hidden="true"></span>
@@ -27,14 +27,15 @@
 
         <div class="navbar-menu" id="navMenu">
           <div class="navbar-start">
+          </div>
+          <div class="navbar-end">
             <a class="navbar-item {% if request.resolver_match.url_name == 'index' %}is-active{% endif %}" href="{% url 'index' %}">
               Home
             </a>
             <a class="navbar-item {% if request.resolver_match.app_name == 'plugins' %}is-active{% endif %}" href="{% url 'plugins:list' %}">
               Plugins
             </a>
-          </div>
-          <div class="navbar-end">
+
             <div class="navbar-item has-dropdown is-hoverable">
               <p class="navbar-link">
                 Resources

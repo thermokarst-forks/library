@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="no"?>
 
-<svg xmlns="http://www.w3.org/2000/svg" width="340" height="154">
+<svg xmlns="http://www.w3.org/2000/svg" width="535" height="154">
   <defs>
     <clipPath id="cut-bottom">
       <rect x="217" y="177" width="108" height="30" />
@@ -51,5 +51,8 @@
       <line x1="312" y1="297" x2="270" y2="339" stroke="#000000" stroke-width="12" />
       <line x1="266" y1="340" x2="325" y2="340" stroke="#000000" stroke-width="12" />
     </g>
+    <text x="460" y="238" font-family="Verdana" font-size="60">
+      library
+    </text>
   </g>
 </svg>
