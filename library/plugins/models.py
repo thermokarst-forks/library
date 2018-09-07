@@ -22,7 +22,7 @@ class GWARManager(models.Manager):
             return qs.filter(published=True)
         # Finally, for a regular, logged in user, only show them `published`
         # plugins, unless they are an author on an unpublished plugin.
-        return qs.filter(models.Q(authors=user) | models.Q(published=True))
+        return qs.filter(models.Q(authors=user) | models.Q(published=True)).distinct()
 
     def all(self, user):
         return self.get_queryset(user)
