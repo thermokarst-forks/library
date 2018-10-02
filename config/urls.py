@@ -9,6 +9,7 @@ from library.sso import views as sso_views
 
 urlpatterns = [
     path('', index_views.IndexView.as_view(), name='index'),
+    path('about/', index_views.AboutView.as_view(), name='about'),
     path('plugins/', include(('library.plugins.urls', 'plugins'))),
     path('admin/', admin.site.urls),
 ]
