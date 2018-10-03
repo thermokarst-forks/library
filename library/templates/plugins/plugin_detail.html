@@ -37,20 +37,6 @@
             <span>No source URL on file</span>
             {% endif %}
           </p>
-          <p>
-            <span class="has-text-weight-bold">dependencies:</span>
-            <ul>
-              {% for dependency in plugin.dependencies.all %}
-                <li>
-                  <a href="{{ dependency.get_absolute_url }}">
-                    {{ dependency.title }}
-                  </a>
-                </li>
-              {% empty %}
-                Plugin has no dependencies
-              {% endfor %}
-            </ul>
-          </p>
         </div>
       </div>
     </div>
