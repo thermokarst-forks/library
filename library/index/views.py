@@ -1,4 +1,4 @@
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 
 from library.plugins.models import Plugin
 
@@ -9,3 +9,7 @@ class IndexView(ListView):
 
     def get_queryset(self):
         return Plugin.objects.sorted_authors(self.request.user).order_by('-created_at')[:6]
+
+
+class AboutView(TemplateView):
+    template_name = 'about.html'

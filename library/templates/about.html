@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block 'content' %}
+<div class="content">
+  <h2>About the QIIME 2 Library</h2>
+  <p>
+    This site is currently an early (but still useful) example of our plans for
+    supporting the continued decentralized development of QIIME 2. Our goal is
+    that this site becomes a one-stop-shop for finding resources and software
+    related to the QIIME 2 ecosystem. The central goal is that this site will
+    be <em>community driven</em>, where developers and authors can share
+    information with their users, and where users can discover tools and
+    resources.
+  </p>
+
+  <h4>Phase 1 (We are here!)</h4>
+  <ul>
+    <li>
+      Provide a central collection of available QIIME 2 plugins that can be
+      installed. Plugins can be added by any forum member with a trust level of
+      1 or more.
+    </li>
+  </ul>
+
+  <h5>Phase 1.1</h5>
+  <ul>
+    <li>
+      Add interfaces to the site, allowing developers to add their own, and
+      allowing users to discover new ones.
+    </li>
+    <li>
+      Add the "official" QIIME 2 plugins to the Library. These are the plugins
+      that are built and maintained by the
+      <a href="https://forum.qiime2.org/u/q2d2">@q2d2</a> /
+      <a href="https://github.com/orgs/qiime2/people">@qiime2 team</a>.
+    </li>
+  </ul>
+
+  <h4>Phase 2</h4>
+  <ul>
+    <li>
+      Support a <em>revision controlled</em> and automated ingest of plugin and
+      interface information. This will reduce the burden on developers to
+      specifically manage the content on this site and allow further automated
+      tooling to exist. One option for this is for a developer to tell Library
+      where to find it's source, and Library automatically interrogates the
+      project to learn more.
+    </li>
+    <li>
+      Provide a new section of the site for creating <em>automatically</em>
+      tested tutorials. This will require a way to upload (or share)
+      testing/tutorial datasets. Additionally the site will need a task-queue
+      to execute the tutorials.
+    </li>
+    <li>
+      Plugins and interfaces should have well defined installation scripts by
+      this point to support automated tutorial testing.
+    </li>
+    <li>
+      Support search and categorization of content available on the site. Maybe
+      this could be accomplished with tags and customized search panels.
+    </li>
+  </ul>
+
+  <h5>Phase 2.1</h5>
+  <ul>
+    <li>
+      Improve the various index pages to provide better overviews of available
+      content. Perhaps we could set up something like an "App Store," with
+      "Featured Plugin" or "Featured Tutorial."
+    </li>
+    <li>
+      Migrate existing tutorials from
+      <a href="https://docs.qiime2.org">docs.qiime2.org</a> to
+      <a href="https://library.qiime2.org">library.qiime2.org</a>.
+      Ideally users will visit the Library to learn about the latest and
+      greatest techniques and tools available in QIIME 2.
+    </li>
+  </ul>
+
+  <h4>Phase 3</h4>
+  <ul>
+    <li>
+      Provide more advanced descriptions of plugin information such as
+      automatically documenting actions, types, and formats (effectively
+      replacing the
+      <a href="https://docs.qiime2.org/2018.8/plugins/available/">
+        "Available Plugins" section of the User Docs
+      </a>).
+    </li>
+    <li>
+      By this point, the docs.qiime2.org should have become a relatively brief
+      description of QIIME 2 and how to use it, while all domain specific
+      documentation has been migrated to this site.
+    </li>
+  </ul>
+
+  <h4>Phase "the more distant future"</h4>
+  <ul>
+    <li>
+      Create customizable automated installers, which install only plugins and
+      interfaces requested. Think of this like a "shopping cart" - you pick and
+      choose the plugins and interfaces you want, the Library makes an
+      installer for you.
+    </li>
+    <li>
+      Provide a mechanism for user to review plugins and provide ratings.
+    </li>
+    <li>
+      Create an automated checklist of "best practices" to additionally rank
+      plugins by, such as "install-ability", test coverage, the presence of
+      documentation, etc.
+    </li>
+  </ul>
+</div>
+{% endblock %}
