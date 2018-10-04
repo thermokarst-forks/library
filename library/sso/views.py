@@ -72,6 +72,8 @@ def sso_client_callback(request):
     if nonce != exp_nonce:
         return HttpResponse('Login replay detected.', status=422)
 
+    print(payload)
+
     user, user_was_created = User.objects.update_or_create(
         forum_external_id=payload['external_id'],
         defaults={
