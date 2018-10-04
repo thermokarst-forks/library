@@ -81,7 +81,7 @@ def sso_client_callback(request):
             'email': payload['email'],
             'full_name': payload['name'],
             'forum_external_id': payload['external_id'],
-            'forum_avatar_url': payload['avatar_url'],
+            'forum_avatar_url': payload.get('avatar_url', ''),
             # TODO: come up with better casting here
             'forum_is_admin': payload['admin'] == 'true',
             'forum_is_moderator': payload['moderator'] == 'true',
