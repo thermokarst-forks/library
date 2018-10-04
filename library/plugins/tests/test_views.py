@@ -4,7 +4,7 @@ from django import test
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 
-from library.plugins.models import Plugin
+from library.plugins.models import Plugin, PluginAuthorship
 
 User = get_user_model()
 
@@ -31,19 +31,6 @@ _BASE_PLUGIN = {
 
 
 class AnonymousUserAuthorizationTests(test.TestCase):
-    # @classmethod
-    # def setUpTestData(cls):
-    #     cls.author = User.objects.create_user('author', **{**_BASE_USER, 'forum_external_id': '1'})
-    #     cls.author.groups.add(Group.objects.get(name='forum_trust_level_1'))
-    #     cls.anon = User.objects.create_user('anon', **{**_BASE_USER, 'forum_external_id': '2'})
-
-    #     cls.published_plugin_1 = Plugin.unsafe.create(
-    #         **{**_BASE_PLUGIN, 'title': 'published_plugin_1'})
-    #     cls.published_plugin_2 = Plugin.unsafe.create(
-    #         **{**_BASE_PLUGIN, 'title': 'published_plugin_2'})
-    #     cls.unpublished_plugin = Plugin.unsafe.create(
-    #         **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
-
     def setUp(self):
         self.client = test.Client()
 
@@ -109,8 +96,6 @@ class AnonymousUserAuthorizationTests(test.TestCase):
 class LoggedInUserAuthorizationTests(test.TestCase):
     @classmethod
     def setUpTestData(cls):
-        # cls.author = User.objects.create_user('author', **{**_BASE_USER, 'forum_external_id': '1'})
-        # cls.author.groups.add(Group.objects.get(name='forum_trust_level_1'))
         cls.user = User.objects.create_user('user',
             **{**_BASE_USER, 'forum_external_id': '1', 'password': 'peanut'})
 
@@ -175,45 +160,121 @@ class LoggedInUserAuthorizationTests(test.TestCase):
 
         self.assertEqual(response.status_code, 404)
 
-class AuthorAuthorizationTests(unittest.TestCase):
+class AuthorAuthorizationTests(test.TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user('author',
+            **{**_BASE_USER, 'forum_external_id': '1', 'password': 'peanut'})
+        cls.user.groups.add(Group.objects.get(name='forum_trust_level_1'))
+
     def setUp(self):
         self.client = test.Client()
+        self.client.login(username='author', password='peanut')
 
     def test_plugin_list_one_unpublished(self):
-        pass
+        unpublished = Plugin.unsafe.create(
+            **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
+        PluginAuthorship.objects.create(plugin=unpublished, author=self.user, list_position=0)
+
+        response = self.client.get('/plugins/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['plugins']), 1)
 
     def test_plugin_list_one_published(self):
-        pass
+        p = Plugin.unsafe.create(**{**_BASE_PLUGIN, 'title': 'published_plugin'})
+        PluginAuthorship.objects.create(plugin=p, author=self.user, list_position=0)
+
+        response = self.client.get('/plugins/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['plugins']), 1)
 
     def test_plugin_list_published_and_unpublished(self):
-        pass
+        p1 = Plugin.unsafe.create(**{**_BASE_PLUGIN, 'title': 'published_plugin'})
+        PluginAuthorship.objects.create(plugin=p1, author=self.user, list_position=0)
+        p2 = Plugin.unsafe.create(
+            **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
+        PluginAuthorship.objects.create(plugin=p2, author=self.user, list_position=0)
+
+        response = self.client.get('/plugins/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['plugins']), 2)
 
     def test_plugin_detail_unpublished_not_coauthor(self):
-        pass
+        plugin = Plugin.unsafe.create(
+            **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
+
+        response = self.client.get('/plugins/%s/%d/' % (plugin.slug, plugin.id))
+
+        self.assertEqual(response.status_code, 404)
 
     def test_plugin_detail_unpublished_is_coauthor(self):
-        pass
+        plugin = Plugin.unsafe.create(
+            **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
+        PluginAuthorship.objects.create(plugin=plugin, author=self.user, list_position=0)
+
+        response = self.client.get('/plugins/%s/%d/' % (plugin.slug, plugin.id))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['plugin'], plugin)
 
     def test_plugin_detail_published_not_coauthor(self):
-        pass
+        plugin = Plugin.unsafe.create(**{**_BASE_PLUGIN, 'title': 'published_plugin'})
+
+        response = self.client.get('/plugins/%s/%d/' % (plugin.slug, plugin.id))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['plugin'], plugin)
 
     def test_plugin_detail_published_is_coauthor(self):
-        pass
+        plugin = Plugin.unsafe.create(**{**_BASE_PLUGIN, 'title': 'published_plugin'})
+        PluginAuthorship.objects.create(plugin=plugin, author=self.user, list_position=0)
+
+        response = self.client.get('/plugins/%s/%d/' % (plugin.slug, plugin.id))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['plugin'], plugin)
 
     def test_plugin_new(self):
-        pass
+        response = self.client.get('/plugins/new/')
+
+        self.assertEqual(response.status_code, 200)
 
     def test_plugin_edit_unpublished_not_coauthor(self):
-        pass
+        plugin = Plugin.unsafe.create(
+            **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
+
+        response = self.client.get('/plugins/%s/%d/edit/' % (plugin.slug, plugin.id))
+
+        self.assertEqual(response.status_code, 404)
 
     def test_plugin_edit_unpublished_is_coauthor(self):
-        pass
+        plugin = Plugin.unsafe.create(
+            **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
+        PluginAuthorship.objects.create(plugin=plugin, author=self.user, list_position=0)
+
+        response = self.client.get('/plugins/%s/%d/edit/' % (plugin.slug, plugin.id))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['plugin'], plugin)
 
     def test_plugin_edit_published_not_coauthor(self):
-        pass
+        plugin = Plugin.unsafe.create(**{**_BASE_PLUGIN, 'title': 'published_plugin'})
+
+        response = self.client.get('/plugins/%s/%d/edit/' % (plugin.slug, plugin.id))
+
+        self.assertEqual(response.status_code, 404)
 
     def test_plugin_edit_published_is_coauthor(self):
-        pass
+        plugin = Plugin.unsafe.create(**{**_BASE_PLUGIN, 'title': 'unpublished_plugin'})
+        PluginAuthorship.objects.create(plugin=plugin, author=self.user, list_position=0)
+
+        response = self.client.get('/plugins/%s/%d/edit/' % (plugin.slug, plugin.id))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['plugin'], plugin)
 
 
 class AdminAuthorizationTests(unittest.TestCase):
