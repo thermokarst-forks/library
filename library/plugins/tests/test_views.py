@@ -278,8 +278,16 @@ class AuthorAuthorizationTests(test.TestCase):
 
 
 class AdminAuthorizationTests(unittest.TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user('admin',
+            **{**_BASE_USER, 'forum_external_id': '1', 'password': 'peanut',
+               'is_superuser': True, 'forum_is_admin': True})
+        cls.user.groups.add(Group.objects.get(name='forum_trust_level_1'))
+
     def setUp(self):
         self.client = test.Client()
+        self.client.login(username='admin', password='peanut')
 
     def test_plugin_list_no_unpublished(self):
         pass
