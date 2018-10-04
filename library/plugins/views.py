@@ -82,7 +82,8 @@ class PluginEdit(LoginRequiredMixin, RedirectSlugMixin, UpdateView):
     form_class = PluginForm
 
     def get_queryset(self):
-        return Plugin.objects.all(self.request.user)
+        user = self.request.user
+        return Plugin.objects.all(user).filter(authors__in=[user])
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
