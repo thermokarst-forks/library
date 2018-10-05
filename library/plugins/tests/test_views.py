@@ -277,35 +277,71 @@ class AuthorAuthorizationTests(test.TestCase):
         self.assertEqual(response.context['plugin'], plugin)
 
 
-class AdminAuthorizationTests(unittest.TestCase):
+class AdminAuthorizationTests(test.TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create_user('admin',
             **{**_BASE_USER, 'forum_external_id': '1', 'password': 'peanut',
                'is_superuser': True, 'forum_is_admin': True})
-        cls.user.groups.add(Group.objects.get(name='forum_trust_level_1'))
 
     def setUp(self):
         self.client = test.Client()
         self.client.login(username='admin', password='peanut')
 
     def test_plugin_list_no_unpublished(self):
-        pass
+        Plugin.unsafe.create(**{**_BASE_PLUGIN, 'title': 'published_plugin_1'})
+        Plugin.unsafe.create(**{**_BASE_PLUGIN, 'title': 'published_plugin_2'})
+
+        response = self.client.get('/plugins/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['plugins']), 2)
 
     def test_plugin_list_some_unpublished(self):
-        pass
+        Plugin.unsafe.create(**{**_BASE_PLUGIN, 'title': 'published_plugin'})
+        Plugin.unsafe.create(
+            **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
+
+        response = self.client.get('/plugins/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['plugins']), 2)
 
     def test_plugin_detail_unpublished(self):
-        pass
+        plugin = Plugin.unsafe.create(
+            **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
+
+        response = self.client.get('/plugins/%s/%d/' % (plugin.slug, plugin.id))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['plugin'], plugin)
 
     def test_plugin_detail_published(self):
-        pass
+        plugin = Plugin.unsafe.create(**{**_BASE_PLUGIN, 'title': 'unpublished_plugin'})
+
+        response = self.client.get('/plugins/%s/%d/' % (plugin.slug, plugin.id))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['plugin'], plugin)
 
     def test_plugin_new(self):
-        pass
+        response = self.client.get('/plugins/new/')
+
+        self.assertEqual(response.status_code, 200)
 
     def test_plugin_edit_unpublished(self):
-        pass
+        plugin = Plugin.unsafe.create(
+            **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
+
+        response = self.client.get('/plugins/%s/%d/edit/' % (plugin.slug, plugin.id))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['plugin'], plugin)
 
     def test_plugin_edit_published(self):
-        pass
+        plugin = Plugin.unsafe.create(**{**_BASE_PLUGIN, 'title': 'unpublished_plugin'})
+
+        response = self.client.get('/plugins/%s/%d/edit/' % (plugin.slug, plugin.id))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['plugin'], plugin)
