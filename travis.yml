@@ -1,0 +1,17 @@
+dist: trusty
+sudo: false
+language: python
+python:
+  -3.6
+addons:
+  postgresql: '11.1'
+before_install:
+  - psql -c 'create database testdb;' -U postgres
+  - export DJANGO_SETTINGS_MODULE=config.settings.travis
+  - export DATABASE_URL=postgres://postgres@localhost/testdb
+install:
+  - pip install -r requirements/travis.txt
+  - pip install -q https://github.com/qiime2/q2lint/archive/master.zip
+script:
+  - python manage.py migrate
+  - make lint

@@ -1,5 +1,3 @@
-import unittest
-
 from django import test
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -63,7 +61,7 @@ class AnonymousUserAuthorizationTests(test.TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_plugin_detail_published(self):
-        plugin = Plugin.unsafe.create( **{**_BASE_PLUGIN, 'title': 'published_plugin'})
+        plugin = Plugin.unsafe.create(**{**_BASE_PLUGIN, 'title': 'published_plugin'})
 
         response = self.client.get('/plugins/%s/%d/' % (plugin.slug, plugin.id))
 
@@ -96,7 +94,8 @@ class AnonymousUserAuthorizationTests(test.TestCase):
 class LoggedInUserAuthorizationTests(test.TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create_user('user',
+        cls.user = User.objects.create_user(
+            'user',
             **{**_BASE_USER, 'forum_external_id': '1', 'password': 'peanut'})
 
     def setUp(self):
@@ -132,7 +131,7 @@ class LoggedInUserAuthorizationTests(test.TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_plugin_detail_published(self):
-        plugin = Plugin.unsafe.create( **{**_BASE_PLUGIN, 'title': 'published_plugin'})
+        plugin = Plugin.unsafe.create(**{**_BASE_PLUGIN, 'title': 'published_plugin'})
 
         response = self.client.get('/plugins/%s/%d/' % (plugin.slug, plugin.id))
 
@@ -160,10 +159,12 @@ class LoggedInUserAuthorizationTests(test.TestCase):
 
         self.assertEqual(response.status_code, 404)
 
+
 class AuthorAuthorizationTests(test.TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create_user('author',
+        cls.user = User.objects.create_user(
+            'author',
             **{**_BASE_USER, 'forum_external_id': '1', 'password': 'peanut'})
         cls.user.groups.add(Group.objects.get(name='forum_trust_level_1'))
 
@@ -280,7 +281,8 @@ class AuthorAuthorizationTests(test.TestCase):
 class AdminAuthorizationTests(test.TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create_user('admin',
+        cls.user = User.objects.create_user(
+            'admin',
             **{**_BASE_USER, 'forum_external_id': '1', 'password': 'peanut',
                'is_superuser': True, 'forum_is_admin': True})
 
