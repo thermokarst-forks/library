@@ -1,0 +1,26 @@
+dist: xenial
+sudo: required
+language: python
+python:
+  - 3.6
+addons:
+  # Giving up on postgress 11 for now
+  postgresql: 10
+env:
+  global:
+    - ADMINS=foo
+    - ALLOWED_HOSTS=localhost
+    - DATABASE_URL=postgres://postgres@localhost/qiime2-library
+    - DISCOURSE_SSO_SECRET=peanut
+    - DJANGO_SETTINGS_MODULE=config.settings.production
+    - GOOGLE_ANALYTICS_PROPERTY_ID=gwar
+    - SECRET_KEY=gerg
+    - SPARKPOST_API_KEY=seamonkey
+before_install:
+  - psql -c 'create database "qiime2-library";' -U postgres
+install:
+  - pip install -r requirements/travis.txt
+  - pip install -q https://github.com/qiime2/q2lint/archive/master.zip
+script:
+  - python manage.py migrate
+  - make lint

@@ -1,4 +1,3 @@
-travis.txt:
--r local.txt
+-r production.txt
 
-# NOTHING TO SEE HERE
+flake8
