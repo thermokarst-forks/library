@@ -60,7 +60,7 @@
           </thead>
           <tbody>
           {% for author_form in author_formset %}
-            <tr class="has-text-danger"><td colspan="3">{{ author_form.non_field_errors }}</td></tr>
+            <tr class="has-text-danger"><td colspan="3">{{ author_form.non_field_errors }}{{ author_formset.non_form_errors }}</td></tr>
             <tr {% if author_form.errors %}class="has-background-danger"{% endif %}>
               <td>
                 {# Tuck these here for safe-keeping #}

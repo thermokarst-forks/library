@@ -69,6 +69,23 @@ class PluginAuthorshipForm(forms.ModelForm):
         }
 
 
-PluginAuthorshipFormSet = forms.inlineformset_factory(
-        Plugin, PluginAuthorship, form=PluginAuthorshipForm, extra=1,
-        fk_name='plugin')
+class PluginAuthorshipFormSet(forms.inlineformset_factory(
+        Plugin, PluginAuthorship,
+        extra=1,
+        form=PluginAuthorshipForm,
+        fk_name='plugin')):
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super().__init__(*args, **kwargs)
+
+    # Overriding the clean() to add our custom validation.
+    def clean(self):
+        user_not_in_author_list = True
+        for form in self.forms:
+            if self.user == form.cleaned_data.get('author'):
+                user_not_in_author_list = False
+        if user_not_in_author_list:
+            raise forms.ValidationError('You must enter yourself as an author. '
+                                        'Save the plugin to add additional authors.', code='author_error1')
+        return

@@ -50,13 +50,14 @@ class PluginNew(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
     def get(self, request, *args, **kwargs):
         self.object = None
-        ctx = self.get_context_data(form=self.get_form(), author_formset=PluginAuthorshipFormSet())
+        ctx = self.get_context_data(form=self.get_form(),
+                                    author_formset=PluginAuthorshipFormSet(user=self.request.user))
         return self.render_to_response(ctx)
 
     def post(self, request, *args, **kwargs):
         self.object = None
         form = self.get_form()
-        author_formset = PluginAuthorshipFormSet(self.request.POST)
+        author_formset = PluginAuthorshipFormSet(self.request.POST, user=self.request.user)
         form_is_valid = form.is_valid()
         author_formset_is_valid = author_formset.is_valid()
         if form_is_valid and author_formset_is_valid:
@@ -99,13 +100,13 @@ class PluginEdit(LoginRequiredMixin, RedirectSlugMixin, UpdateView):
         ctx = self.get_context_data(
             form=self.get_form(),
             author_formset=PluginAuthorshipFormSet(instance=self.object,
-                                                   queryset=qs))
+                                                   queryset=qs, user=self.request.user))
         return self.render_to_response(ctx)
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
-        author_formset = PluginAuthorshipFormSet(self.request.POST, instance=self.object)
+        author_formset = PluginAuthorshipFormSet(self.request.POST, instance=self.object, user=self.request.user)
         form_is_valid = form.is_valid()
         author_formset_is_valid = author_formset.is_valid()
         if form_is_valid and author_formset_is_valid:
