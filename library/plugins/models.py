@@ -66,7 +66,7 @@ class Plugin(AuditModel):
                                      related_name='plugins')
     # For now, no reverse relationships. Also, no order on relationships.
     dependencies = models.ManyToManyField('self', symmetrical=False, db_table='plugins_plugin_dependencies',
-                                          help_text=_help_text['dependencies'])
+                                          help_text=_help_text['dependencies'], blank=True)
 
     # MANAGERS
     objects = GWARManager()
