@@ -15,7 +15,10 @@ env:
     - DJANGO_SETTINGS_MODULE=config.settings.production
     - GOOGLE_ANALYTICS_PROPERTY_ID=gwar
     - SECRET_KEY=gerg
-    - SPARKPOST_API_KEY=seamonkey
+    - AWS_ACCESS_KEY_ID='i'
+    - AWS_SECRET_ACCESS_KEY='scream'
+    - AWS_SES_REGION_NAME='for'
+    - AWS_SES_REGION_ENDPOINT='icecream'
 before_install:
   - psql -c 'create database "qiime2-library";' -U postgres
 install:
