@@ -55,7 +55,12 @@ DATABASES['default'] = env.db('DATABASE_URL')
 SECRET_KEY = env('SECRET_KEY')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 EMAIL_BACKEND = 'sparkpost.django.email_backend.SparkPostEmailBackend'
+EMAIL_BACKEND = 'django_ses.SESBackend'
 SPARKPOST_API_KEY = env('SPARKPOST_API_KEY')
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+AWS_SES_REGION_NAME = env('AWS_SES_REGION_NAME')
+AWS_SES_REGION_ENDPOINT = env('AWS_SES_REGION_ENDPOINT')
 ADMINS = env('ADMINS', cast=list_of_tuples)
 DEFAULT_FROM_EMAIL = 'no-reply@library.qiime2.org'
 SERVER_EMAIL = 'no-reply@library.qiime2.org'

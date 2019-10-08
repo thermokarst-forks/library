@@ -1,4 +1,5 @@
 -r shared.txt
 
 gunicorn
-sparkpost
+boto
+django-ses
