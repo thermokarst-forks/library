@@ -1,0 +1,20 @@
+html {
+  /* Bulma hardcodes HTML to be overflow-y scroll, this is unusual.
+   * https://github.com/jgthms/bulma/issues/1689 */
+  overflow-y: auto !important;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+section#page-content {
+  flex: 1;
+}
+
+nav.navbar {
+  box-shadow: rgb(153, 153, 153) 0px 1px 5px; 
+}
