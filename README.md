@@ -4,7 +4,7 @@
 
 ```
 conda create -n library python=3.6
-source activate library
+conda activate library
 pip install -r requirements/local.txt
 createdb qiime2-library
 python manage.py migrate
@@ -13,7 +13,7 @@ python manage.py collectstatic
 python manage.py runserver
 ```
 
-## Produdction Environment Variables
+## Production Environment Variables
 
 - `ADMINS`
 - `ALLOWED_HOSTS`

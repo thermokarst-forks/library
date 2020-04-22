@@ -1,0 +1,51 @@
+name: test
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        # Docker Hub image
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: set up python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.6
+    - name: install and set up dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements/travis.txt
+        pip install -q https://github.com/qiime2/q2lint/archive/master.zip
+        psql -c 'create database "qiime2-library";' -U postgres
+    - name: run tests
+      env:
+        ADMINS: foo
+        ALLOWED_HOSTS: localhost
+        DATABASE_URL: postgres://postgres@localhost/qiime2-library
+        DISCOURSE_SSO_SECRET: peanut
+        DJANGO_SETTINGS_MODULE: config.settings.production
+        GOOGLE_ANALYTICS_PROPERTY_ID: gwar
+        SECRET_KEY: gerg
+        AWS_ACCESS_KEY_ID: 'i'
+        AWS_SECRET_ACCESS_KEY: 'scream'
+        AWS_SES_REGION_NAME: 'for'
+        AWS_SES_REGION_ENDPOINT: 'icecream'
+      run: |
+        python manage.py migrate
+        make lint
