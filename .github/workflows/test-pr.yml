@@ -13,7 +13,7 @@ jobs:
         image: postgres
         env:
           POSTGRES_PASSWORD: spleen
-          POSTGRES_DB: qiime2-libary
+          POSTGRES_DB: qiime2-library
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
