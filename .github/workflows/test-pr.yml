@@ -12,7 +12,7 @@ jobs:
         # Docker Hub image
         image: postgres
         env:
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: spleen
           POSTGRES_DB: qiime2-libary
         options: >-
           --health-cmd pg_isready
@@ -42,10 +42,11 @@ jobs:
         DJANGO_SETTINGS_MODULE: config.settings.production
         GOOGLE_ANALYTICS_PROPERTY_ID: gwar
         SECRET_KEY: gerg
-        AWS_ACCESS_KEY_ID: 'i'
-        AWS_SECRET_ACCESS_KEY: 'scream'
-        AWS_SES_REGION_NAME: 'for'
-        AWS_SES_REGION_ENDPOINT: 'icecream'
+        AWS_ACCESS_KEY_ID: i
+        AWS_SECRET_ACCESS_KEY: scream
+        AWS_SES_REGION_NAME: for
+        AWS_SES_REGION_ENDPOINT: icecream
+        POSTGRES_PASSWORD: spleen
       run: |
         python manage.py migrate
         make lint
