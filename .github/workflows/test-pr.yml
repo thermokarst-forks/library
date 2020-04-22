@@ -46,8 +46,9 @@ jobs:
         AWS_SECRET_ACCESS_KEY: scream
         AWS_SES_REGION_NAME: for
         AWS_SES_REGION_ENDPOINT: icecream
-        PG_HOST: postgres
-        PG_PASSWORD: spleen
+        PGHOST: postgres
+        PGPASSWORD: spleen
+        PGPORT: ${{ job.services.postgres.ports[5432] }}
       run: |
         python manage.py migrate
         make lint
