@@ -46,6 +46,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: scream
         AWS_SES_REGION_NAME: for
         AWS_SES_REGION_ENDPOINT: icecream
+        PG_HOST: localhost
         PG_PASSWORD: spleen
       run: |
         python manage.py migrate
