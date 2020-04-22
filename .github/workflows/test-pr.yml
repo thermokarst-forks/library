@@ -47,7 +47,7 @@ jobs:
         AWS_SES_REGION_NAME: for
         AWS_SES_REGION_ENDPOINT: icecream
         PGHOST: postgres
-        PGPASSWORD: spleen
+        PGPASSWORD: ${{ job.services.postgres.env.POSTGRES_DB }}
         PGPORT: ${{ job.services.postgres.ports[5432] }}
       run: |
         python manage.py migrate
