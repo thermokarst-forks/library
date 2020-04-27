@@ -10,6 +10,7 @@ on: pull_request
 
 jobs:
   build:
+    name: build-and-test
     runs-on: ubuntu-latest
 
     services:
