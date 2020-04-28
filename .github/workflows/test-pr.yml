@@ -1,6 +1,11 @@
 name: test
 
-on: pull_request
+# build on every PR and commit to master
+on:
+  pull_request:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -52,3 +57,16 @@ jobs:
       run: |
         python manage.py migrate
         make lint
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'master'
+    steps:
+      - uses: actions/checkout@v2 
+      - name: deploy to dokku instance
+        uses: idoberko2/dokku-deploy-github-action@v1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          dokku-host: 'library.qiime2.org'
+          app-name: 'webapp'
