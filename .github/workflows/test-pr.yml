@@ -64,5 +64,9 @@ jobs:
     if: github.ref == 'master'
     steps:
       - uses: actions/checkout@v2 
-      - name: debug
-        run: echo ${{ github.ref }}
+      - name: deploy to dokku instance
+        uses: idoberko2/dokku-deploy-github-action@v1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          dokku-host: 'library.qiime2.org'
+          app-name: 'webapp'
