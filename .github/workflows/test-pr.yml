@@ -72,3 +72,4 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           dokku-host: 'library.qiime2.org'
           app-name: 'webapp'
+          git-push-flags: --force
