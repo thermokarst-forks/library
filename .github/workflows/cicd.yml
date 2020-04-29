@@ -1,4 +1,4 @@
-name: ci
+name: ci-cd
 
 # build on every PR and commit to master
 on:
