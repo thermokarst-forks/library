@@ -1,4 +1,4 @@
-name: test
+name: ci-cd
 
 # build on every PR and commit to master
 on:
@@ -32,7 +32,7 @@ jobs:
     - name: set up python
       uses: actions/setup-python@v1
       with:
-        python-version: 3.6
+        python-version: 3.8
     - name: install and set up dependencies
       run: |
         python -m pip install --upgrade pip
@@ -57,8 +57,6 @@ jobs:
       run: |
         python manage.py migrate
         make lint
-    - name: debug
-      run: echo ${{ github.ref }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -74,4 +72,5 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           dokku-host: 'library.qiime2.org'
           app-name: 'webapp'
-          git-push-flags: --force
+          # Keeping the following around, in case of emergencies:
+          # git-push-flags: --force
