@@ -19,4 +19,4 @@ class AboutView(TemplateView):
 
 def debug_celery_view(req):
     debug.delay(req.GET)
-    return HttpResponse('ok', content_type='text/plain')
+    return HttpResponse(str(req.GET), content_type='text/plain')
