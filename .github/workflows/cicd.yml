@@ -18,7 +18,8 @@ jobs:
         image: postgres
         env:
           POSTGRES_PASSWORD: spleen
-          POSTGRES_DB: qiime2-library
+          # Just create the testing DB
+          POSTGRES_DB: test_qiime2-library
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
