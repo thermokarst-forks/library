@@ -51,8 +51,7 @@ jobs:
       env:
         ADMINS: foo
         ALLOWED_HOSTS: localhost
-        # TODO: fix this
-        DATABASE_URL: postgres://postgres@localhost/qiime2-library
+        DATABASE_URL: postgres://postgres:spleen@postgres:5432/qiime2-library
         RABBITMQ_URL: amqp://user:spleen2@rabbitmq:5672/mq
         DISCOURSE_SSO_SECRET: peanut
         DJANGO_SETTINGS_MODULE: config.settings.production
@@ -62,9 +61,6 @@ jobs:
         AWS_SECRET_ACCESS_KEY: scream
         AWS_SES_REGION_NAME: for
         AWS_SES_REGION_ENDPOINT: icecream
-        PGHOST: postgres
-        PGPASSWORD: spleen
-        PGPORT: ${{ job.services.postgres.ports[5432] }}
       run: |
         python manage.py migrate
         make lint
