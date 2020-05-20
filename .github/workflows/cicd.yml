@@ -33,8 +33,12 @@ jobs:
           RABBITMQ_DEFAULT_USER: user
           RABBITMQ_DEFAULT_PASS: spleen2
         ports:
-          - 5672/tcp
-        options: --health-cmd "rabbitmqctl node_health_check" --health-interval 10s --health-timeout 5s --health-retries 5
+          - 5672:5672
+        options: >-
+          --health-cmd "rabbitmqctl node_health_check"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
     - uses: actions/checkout@v2
