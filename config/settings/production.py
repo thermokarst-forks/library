@@ -22,6 +22,8 @@ from .shared import (
     list_of_tuples,
     AUTH_USER_MODEL,
     LOGIN_URL,
+    RABBITMQ_URL,
+    CELERY_BROKER_URL,
 )
 
 __all__ = [
@@ -48,9 +50,12 @@ __all__ = [
     'LOGOUT_REDIRECT_URL',
     'AUTH_USER_MODEL',
     'LOGIN_URL',
+    'RABBITMQ_URL',
+    'CELERY_BROKER_URL',
 ]
 
 DEBUG = False
+DATABASES['default'] = env.db('DATABASE_URL')
 SECRET_KEY = env('SECRET_KEY')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 EMAIL_BACKEND = 'django_ses.SESBackend'
@@ -67,3 +72,6 @@ DISCOURSE_SSO_PROVIDER = 'forum.qiime2.org'
 DISCOURSE_SSO_SECRET = env('DISCOURSE_SSO_SECRET')
 GOOGLE_ANALYTICS_PROPERTY_ID = env('GOOGLE_ANALYTICS_PROPERTY_ID')
 TEMPLATES[0]['OPTIONS']['context_processors'].append('library.utils.context_processors.google_analytics')
+RABBITMQ_URL = env('RABBITMQ_URL')
+# We want to use the rmq url set by dokku
+CELERY_BROKER_URL = env('RABBITMQ_URL')

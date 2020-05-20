@@ -25,6 +25,8 @@ from .shared import (
     EMAIL_BACKEND,
     ADMINS,
     AUTH_USER_MODEL,
+    RABBITMQ_URL,
+    CELERY_BROKER_URL,
 )
 
 
@@ -56,6 +58,8 @@ __all__ = [
     'EMAIL_BACKEND',
     'ADMINS',
     'AUTH_USER_MODEL',
+    'RABBITMQ_URL',
+    'CELERY_BROKER_URL',
 ]
 
 MIDDLEWARE.extend([
