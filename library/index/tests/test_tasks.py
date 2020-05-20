@@ -1,5 +1,4 @@
 from django import test
-from django.test.utils import override_settings
 from library.index.tasks import debug
 
 
