@@ -52,7 +52,7 @@ jobs:
         ADMINS: foo
         ALLOWED_HOSTS: localhost
         DATABASE_URL: postgres://postgres:spleen@localhost:5432/qiime2-library
-        RABBITMQ_URL: amqp://user:spleen2@rabbitmq:5672/mq
+        RABBITMQ_URL: amqp://user:spleen2@localhost:5672/mq
         DISCOURSE_SSO_SECRET: peanut
         DJANGO_SETTINGS_MODULE: config.settings.production
         GOOGLE_ANALYTICS_PROPERTY_ID: gwar
