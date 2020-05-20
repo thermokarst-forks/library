@@ -22,8 +22,6 @@ from .shared import (
     list_of_tuples,
     AUTH_USER_MODEL,
     LOGIN_URL,
-    RABBITMQ_URL,
-    CELERY_BROKER_URL,
 )
 
 __all__ = [
