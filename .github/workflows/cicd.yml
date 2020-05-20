@@ -53,9 +53,10 @@ jobs:
         pip install -r requirements/production.txt
         pip install -q flake8
         pip install -q https://github.com/qiime2/q2lint/archive/master.zip
+        python manage.py collectstatic --noinput
     - name: run tests
       env:
-        ADMINS: foo
+        ADMINS: "[(foo,foo@example.com)]"
         ALLOWED_HOSTS: localhost
         DATABASE_URL: postgres://postgres:spleen@localhost:5432/qiime2-library
         RABBITMQ_URL: amqp://user:spleen2@localhost:5672/mq
