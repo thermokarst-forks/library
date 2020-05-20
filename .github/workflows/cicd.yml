@@ -28,6 +28,7 @@ jobs:
           - 5432:5432
 
       rabbitmq:
+        # Docker Hub image
         image: rabbitmq:3-management
         env:
           RABBITMQ_DEFAULT_USER: user
