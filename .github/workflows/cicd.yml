@@ -64,6 +64,7 @@ jobs:
       run: |
         python manage.py migrate
         make lint
+        python manage.py test
 
   deploy:
     runs-on: ubuntu-latest
