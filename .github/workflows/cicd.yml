@@ -63,7 +63,7 @@ jobs:
         AWS_SES_REGION_NAME: for
         AWS_SES_REGION_ENDPOINT: icecream
       run: |
-        python manage.py test
+        python manage.py test --noinput
 
   deploy:
     runs-on: ubuntu-latest
