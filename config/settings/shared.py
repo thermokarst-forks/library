@@ -58,10 +58,7 @@ TEMPLATES = [
 ]
 WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'qiime2-library',
-    }
+    'default': env.db('DATABASE_URL', default='postgres://postgres@db:5432/postgres'),
 }
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},  # noqa: E501

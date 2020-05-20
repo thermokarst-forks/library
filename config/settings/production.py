@@ -51,7 +51,6 @@ __all__ = [
 ]
 
 DEBUG = False
-DATABASES['default'] = env.db('DATABASE_URL')
 SECRET_KEY = env('SECRET_KEY')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 EMAIL_BACKEND = 'django_ses.SESBackend'

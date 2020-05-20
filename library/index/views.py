@@ -1,6 +1,8 @@
 from django.views.generic import ListView, TemplateView
+from django.http import HttpResponse
 
 from library.plugins.models import Plugin
+from library.index.tasks import debug_request
 
 
 class IndexView(ListView):
@@ -13,3 +15,8 @@ class IndexView(ListView):
 
 class AboutView(TemplateView):
     template_name = 'about.html'
+
+
+def debug_celery_view(req):
+    debug_request.delay('hello')
+    return HttpResponse('ok', content_type='text/plain')

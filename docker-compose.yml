@@ -7,9 +7,11 @@ services:
     image: rabbitmq
   worker:
     build: .
-    command: celery worker -A celerytest -b pyamqp://guest@mq/ --loglevel=info
+    command: celery worker -A config.celery -b pyamqp://guest@mq/ --loglevel=info
     depends_on:
       - mq
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.local
   web:
     build: .
     command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
