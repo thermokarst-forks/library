@@ -27,6 +27,15 @@ jobs:
         ports:
           - 5432:5432
 
+      rabbitmq:
+        image: rabbitmq:3-management
+        env:
+          RABBITMQ_DEFAULT_USER: user
+          RABBITMQ_DEFAULT_PASS: spleen2
+        ports:
+          - 5672/tcp
+        options: --health-cmd "rabbitmqctl node_health_check" --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
     - uses: actions/checkout@v2
     - name: set up python
@@ -42,7 +51,9 @@ jobs:
       env:
         ADMINS: foo
         ALLOWED_HOSTS: localhost
+        # TODO: fix this
         DATABASE_URL: postgres://postgres@localhost/qiime2-library
+        RABBITMQ_URL: amqp://user:spleen2@rabbitmq:5672/mq
         DISCOURSE_SSO_SECRET: peanut
         DJANGO_SETTINGS_MODULE: config.settings.production
         GOOGLE_ANALYTICS_PROPERTY_ID: gwar
