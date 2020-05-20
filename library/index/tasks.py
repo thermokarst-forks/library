@@ -8,3 +8,4 @@ logger = get_task_logger(__name__)
 @task(name='debug')
 def debug(payload):
     logger.info('Debug: %r' % (payload, ))
+    return payload
