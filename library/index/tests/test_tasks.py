@@ -9,5 +9,5 @@ class DebugTestCase(test.TestCase):
                        CELERY_ALWAYS_EAGER=True)
     def test_debug_task(self):
         result = debug.delay({'hello': 'world'})
-        self.assertTrue(True)
-        # self.assertTrue(result.successful())
+        print(result)
+        self.assertTrue(result.successful())
