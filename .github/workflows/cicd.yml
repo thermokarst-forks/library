@@ -37,7 +37,6 @@ jobs:
         ports:
           - 5672:5672
         options: >-
-          --hostname mq
           --health-cmd "rabbitmqctl node_health_check"
           --health-interval 10s
           --health-timeout 5s
@@ -60,7 +59,7 @@ jobs:
         ADMINS: "[(foo,foo@example.com)]"
         ALLOWED_HOSTS: localhost
         DATABASE_URL: postgres://postgres:spleen@localhost:5432/qiime2-library
-        RABBITMQ_URL: amqp://user:spleen2@localhost:5672/mq
+        RABBITMQ_URL: amqp://user:spleen2@localhost:5672
         DISCOURSE_SSO_SECRET: peanut
         DJANGO_SETTINGS_MODULE: config.settings.production
         GOOGLE_ANALYTICS_PROPERTY_ID: gwar
