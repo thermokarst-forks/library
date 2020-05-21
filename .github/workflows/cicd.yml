@@ -70,6 +70,7 @@ jobs:
       run: |
         python manage.py collectstatic --noinput
         celery worker -A config.celery -b amqp://user:spleen2@localhost:5672 --loglevel=info &
+        sleep 15
         python manage.py test --noinput -v 3 --failfast
 
   deploy:
