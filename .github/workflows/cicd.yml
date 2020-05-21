@@ -69,9 +69,9 @@ jobs:
         AWS_SES_REGION_ENDPOINT: icecream
       run: |
         python manage.py collectstatic --noinput
-        celery worker -A config.celery -b amqp://user:spleen2@localhost:5672 --loglevel=info &
+        celery worker -A config.celery -b pyamqp://user:spleen2@localhost:5672 &
         sleep 15
-        python manage.py test --noinput -v 3 --failfast
+        python manage.py test --noinput
 
   deploy:
     runs-on: ubuntu-latest
