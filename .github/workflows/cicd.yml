@@ -82,7 +82,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: scream
         AWS_SES_REGION_NAME: for
         AWS_SES_REGION_ENDPOINT: icecream
-      run: python manage.py test --noinput
+      run: python manage.py test --noinput -v 3 --failfast
 
   deploy:
     runs-on: ubuntu-latest
