@@ -27,6 +27,7 @@ from .shared import (
     AUTH_USER_MODEL,
     RABBITMQ_URL,
     CELERY_BROKER_URL,
+    CELERY_RESULT_BACKEND,
 )
 
 
@@ -60,6 +61,7 @@ __all__ = [
     'AUTH_USER_MODEL',
     'RABBITMQ_URL',
     'CELERY_BROKER_URL',
+    'CELERY_RESULT_BACKEND',
 ]
 
 MIDDLEWARE.extend([

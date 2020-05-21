@@ -82,6 +82,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ADMINS = env('ADMINS', default=list_of_tuples('x,x@x.com;y,y@y.com'),
              cast=list_of_tuples)
 AUTH_USER_MODEL = 'users.User'
-RABBITMQ_URL = env('RABBITMQ_URL', default='pyamqp://guest@mq//')
+RABBITMQ_URL = env('RABBITMQ_URL', default='pyamqp://guest@mq')
 # We want to use the rmq url set by dokku, emulating in dev
-CELERY_BROKER_URL = env('RABBITMQ_URL', default='pyamqp://guest@mq//')
+CELERY_BROKER_URL = env('RABBITMQ_URL', default='pyamqp://guest@mq')
+CELERY_RESULT_BACKEND = 'rpc'

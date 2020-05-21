@@ -22,6 +22,7 @@ from .shared import (
     list_of_tuples,
     AUTH_USER_MODEL,
     LOGIN_URL,
+    CELERY_RESULT_BACKEND,
 )
 
 __all__ = [
@@ -50,6 +51,7 @@ __all__ = [
     'LOGIN_URL',
     'RABBITMQ_URL',
     'CELERY_BROKER_URL',
+    'CELERY_RESULT_BACKEND',
 ]
 
 DEBUG = False
