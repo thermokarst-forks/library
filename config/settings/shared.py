@@ -86,3 +86,4 @@ RABBITMQ_URL = env('RABBITMQ_URL', default='pyamqp://guest@mq')
 # We want to use the rmq url set by dokku, emulating in dev
 CELERY_BROKER_URL = env('RABBITMQ_URL', default='pyamqp://guest@mq')
 CELERY_RESULT_BACKEND = 'rpc'
+CELERY_RESULT_SERIALIZER = 'json'

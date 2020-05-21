@@ -23,6 +23,7 @@ from .shared import (
     AUTH_USER_MODEL,
     LOGIN_URL,
     CELERY_RESULT_BACKEND,
+    CELERY_RESULT_SERIALIZER,
 )
 
 __all__ = [
@@ -52,6 +53,7 @@ __all__ = [
     'RABBITMQ_URL',
     'CELERY_BROKER_URL',
     'CELERY_RESULT_BACKEND',
+    'CELERY_RESULT_SERIALIZER',
 ]
 
 DEBUG = False

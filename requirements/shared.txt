@@ -3,4 +3,6 @@ psycopg2-binary>=2.8,<2.9a0
 django-environ>=0.4
 whitenoise
 Celery
-librabbitmq
+# I _cannot_ get librabbitmq to work (MRD)
+# librabbitmq
+pyamqp
