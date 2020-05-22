@@ -58,10 +58,7 @@ TEMPLATES = [
 ]
 WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'qiime2-library',
-    }
+    'default': env.db('DATABASE_URL', default='postgres://postgres@db:5432/postgres'),
 }
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},  # noqa: E501
@@ -85,3 +82,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ADMINS = env('ADMINS', default=list_of_tuples('x,x@x.com;y,y@y.com'),
              cast=list_of_tuples)
 AUTH_USER_MODEL = 'users.User'
+RABBITMQ_URL = env('RABBITMQ_URL', default='amqp://guest@mq')
+# We want to use the rmq url set by dokku, emulating in dev
+CELERY_BROKER_URL = env('RABBITMQ_URL', default='amqp://guest@mq')
+CELERY_RESULT_BACKEND = 'rpc'
+CELERY_RESULT_SERIALIZER = 'json'
