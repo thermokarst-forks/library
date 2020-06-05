@@ -12,6 +12,7 @@ urlpatterns = [
     path('_debug', index_views.debug_celery_view),
     path('about/', index_views.AboutView.as_view(), name='about'),
     path('plugins/', include(('library.plugins.urls', 'plugins'))),
+    path('api/v1/', include('library.api.urls', 'api')),
     path('admin/', admin.site.urls),
 ]
 

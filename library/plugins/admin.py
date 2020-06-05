@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import LegacyPlugin, LegacyPluginAuthorship
+from .models import Plugin, LegacyPlugin, LegacyPluginAuthorship
 
 
 class LegacyAuthorInline(admin.TabularInline):
@@ -18,5 +18,11 @@ class LegacyPluginAuthorshipAdmin(admin.ModelAdmin):
     list_display = ('plugin', 'author', 'list_position')
 
 
+class PluginAdmin(admin.ModelAdmin):
+    list_display = ('name', 'token')
+    readonly_fields = ('token', )
+
+
 admin.site.register(LegacyPlugin, LegacyPluginAdmin)
 admin.site.register(LegacyPluginAuthorship, LegacyPluginAuthorshipAdmin)
+admin.site.register(Plugin, PluginAdmin)

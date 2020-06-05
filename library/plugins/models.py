@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -47,6 +49,23 @@ _help_text = {
     'version': 'The current version of the plugin.',
     'dependencies': 'Other plugins that this plugin depends on.',
 }
+
+
+class Plugin(AuditModel):
+    name = models.CharField(max_length=500, unique=True)
+    token = models.UUIDField(default=uuid.uuid4, editable=False)
+
+    # MANAGERS
+    objects = GWARManager()
+    unsafe = models.Manager()
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['-updated_at']
+        # This is so that the `admin` app still works as expected
+        default_manager_name = 'unsafe'
 
 
 class LegacyPlugin(AuditModel):
