@@ -2,8 +2,8 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponseRedirect
 
-from .models import Plugin, PluginAuthorship
-from .forms import PluginForm, PluginAuthorshipFormSet
+from .models import LegacyPlugin, LegacyPluginAuthorship
+from .forms import LegacyPluginForm, LegacyPluginAuthorshipFormSet
 
 
 class RedirectSlugMixin:
@@ -16,18 +16,18 @@ class RedirectSlugMixin:
         return resp
 
 
-class PluginList(ListView):
+class LegacyPluginList(ListView):
     context_object_name = 'plugins'
 
     def get_queryset(self):
-        return Plugin.objects.sorted_authors(self.request.user).order_by('title')
+        return LegacyPlugin.objects.sorted_authors(self.request.user).order_by('title')
 
 
-class PluginDetail(RedirectSlugMixin, DetailView):
+class LegacyPluginDetail(RedirectSlugMixin, DetailView):
     context_object_name = 'plugin'
 
     def get_queryset(self):
-        return Plugin.objects.sorted_authors(self.request.user)
+        return LegacyPlugin.objects.sorted_authors(self.request.user)
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -37,11 +37,11 @@ class PluginDetail(RedirectSlugMixin, DetailView):
         return ctx
 
 
-class PluginNew(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class LegacyPluginNew(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     context_object_name = 'plugin'
     permission_required = 'plugins.add_plugin'
-    model = Plugin
-    form_class = PluginForm
+    model = LegacyPlugin
+    form_class = LegacyPluginForm
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -50,14 +50,16 @@ class PluginNew(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
     def get(self, request, *args, **kwargs):
         self.object = None
-        ctx = self.get_context_data(form=self.get_form(),
-                                    author_formset=PluginAuthorshipFormSet(user=self.request.user))
+        ctx = self.get_context_data(
+            form=self.get_form(),
+            author_formset=LegacyPluginAuthorshipFormSet(user=self.request.user))
         return self.render_to_response(ctx)
 
     def post(self, request, *args, **kwargs):
         self.object = None
         form = self.get_form()
-        author_formset = PluginAuthorshipFormSet(self.request.POST, user=self.request.user)
+        author_formset = LegacyPluginAuthorshipFormSet(self.request.POST,
+                                                       user=self.request.user)
         form_is_valid = form.is_valid()
         author_formset_is_valid = author_formset.is_valid()
         if form_is_valid and author_formset_is_valid:
@@ -78,13 +80,13 @@ class PluginNew(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         return self.render_to_response(ctx)
 
 
-class PluginEdit(LoginRequiredMixin, RedirectSlugMixin, UpdateView):
+class LegacyPluginEdit(LoginRequiredMixin, RedirectSlugMixin, UpdateView):
     context_object_name = 'plugin'
-    form_class = PluginForm
+    form_class = LegacyPluginForm
 
     def get_queryset(self):
         user = self.request.user
-        qs = Plugin.objects.all(user)
+        qs = LegacyPlugin.objects.all(user)
         if user.is_superuser:
             return qs
         return qs.filter(authors__in=[user])
@@ -96,17 +98,18 @@ class PluginEdit(LoginRequiredMixin, RedirectSlugMixin, UpdateView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        qs = PluginAuthorship.objects.all().order_by('list_position')
+        qs = LegacyPluginAuthorship.objects.all().order_by('list_position')
         ctx = self.get_context_data(
             form=self.get_form(),
-            author_formset=PluginAuthorshipFormSet(instance=self.object,
-                                                   queryset=qs, user=self.request.user))
+            author_formset=LegacyPluginAuthorshipFormSet(
+                instance=self.object, queryset=qs, user=self.request.user))
         return self.render_to_response(ctx)
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
-        author_formset = PluginAuthorshipFormSet(self.request.POST, instance=self.object, user=self.request.user)
+        author_formset = LegacyPluginAuthorshipFormSet(
+            self.request.POST, instance=self.object, user=self.request.user)
         form_is_valid = form.is_valid()
         author_formset_is_valid = author_formset.is_valid()
         if form_is_valid and author_formset_is_valid:

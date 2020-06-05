@@ -1,7 +1,5 @@
 from django import test
 
-from django.test.utils import override_settings
-
 
 class ViewTests(test.TestCase):
     def setUp(self):

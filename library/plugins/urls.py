@@ -1,16 +1,16 @@
 from django.urls import path, include
 
-from .views import PluginList, PluginNew, PluginDetail, PluginEdit
+from .views import LegacyPluginList, LegacyPluginNew, LegacyPluginDetail, LegacyPluginEdit
 
 
 urlpatterns = [
-    path('', PluginList.as_view(), name='list'),
-    path('new/', PluginNew.as_view(), name='new'),
+    path('', LegacyPluginList.as_view(), name='list'),
+    path('new/', LegacyPluginNew.as_view(), name='new'),
     path('<slug:slug>/', include([
-        path('', PluginDetail.as_view(), name='detail_slug'),
+        path('', LegacyPluginDetail.as_view(), name='detail_slug'),
         path('<int:pk>/', include([
-            path('', PluginDetail.as_view(), name='detail_pk'),
-            path('edit/', PluginEdit.as_view(), name='edit')
+            path('', LegacyPluginDetail.as_view(), name='detail_pk'),
+            path('edit/', LegacyPluginEdit.as_view(), name='edit')
         ]))
     ]))
 ]

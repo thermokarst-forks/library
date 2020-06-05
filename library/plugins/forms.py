@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Plugin, PluginAuthorship
+from .models import LegacyPlugin, LegacyPluginAuthorship
 
 
 _description_initial = '''# New Plugin Description
@@ -22,13 +22,13 @@ conda install -c my_conda_channel q2-my-plugin
 '''
 
 
-class PluginForm(forms.ModelForm):
+class LegacyPluginForm(forms.ModelForm):
     description = forms.CharField(widget=forms.Textarea(attrs={'id': 'description', 'class': 'textarea'}),
                                   initial=_description_initial,
-                                  help_text=Plugin._meta.get_field('description').help_text)
+                                  help_text=LegacyPlugin._meta.get_field('description').help_text)
     install_guide = forms.CharField(widget=forms.Textarea(attrs={'id': 'install-guide', 'class': 'textarea'}),
                                     initial=_install_initial,
-                                    help_text=Plugin._meta.get_field('install_guide').help_text)
+                                    help_text=LegacyPlugin._meta.get_field('install_guide').help_text)
 
     def __init__(self, *args, **kwargs):
         current_user = kwargs.pop('user')
@@ -36,8 +36,8 @@ class PluginForm(forms.ModelForm):
 
         self.fields['dependencies'] = forms.ModelMultipleChoiceField(
             required=False,
-            queryset=Plugin.objects.all(current_user),
-            help_text=Plugin._meta.get_field('dependencies').help_text)
+            queryset=LegacyPlugin.objects.all(current_user),
+            help_text=LegacyPlugin._meta.get_field('dependencies').help_text)
 
     def is_valid(self):
         is_valid = super().is_valid()
@@ -48,7 +48,7 @@ class PluginForm(forms.ModelForm):
         return is_valid
 
     class Meta:
-        model = Plugin
+        model = LegacyPlugin
         fields = ['title', 'version', 'source_url', 'published', 'short_summary', 'description',
                   'install_guide', 'dependencies']
         widgets = {
@@ -60,19 +60,19 @@ class PluginForm(forms.ModelForm):
         }
 
 
-class PluginAuthorshipForm(forms.ModelForm):
+class LegacyPluginAuthorshipForm(forms.ModelForm):
     class Meta:
-        model = PluginAuthorship
+        model = LegacyPluginAuthorship
         fields = ['plugin', 'author', 'list_position']
         widgets = {
             'list_position': forms.NumberInput(attrs={'class': 'input'}),
         }
 
 
-class PluginAuthorshipFormSet(forms.inlineformset_factory(
-        Plugin, PluginAuthorship,
+class LegacyPluginAuthorshipFormSet(forms.inlineformset_factory(
+        LegacyPlugin, LegacyPluginAuthorship,
         extra=1,
-        form=PluginAuthorshipForm,
+        form=LegacyPluginAuthorshipForm,
         fk_name='plugin')):
 
     def __init__(self, *args, **kwargs):

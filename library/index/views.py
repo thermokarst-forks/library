@@ -1,7 +1,7 @@
 from django.views.generic import ListView, TemplateView
 from django.http import HttpResponse
 
-from library.plugins.models import Plugin
+from library.plugins.models import LegacyPlugin
 from library.index.tasks import debug
 
 
@@ -10,7 +10,7 @@ class IndexView(ListView):
     context_object_name = 'plugins'
 
     def get_queryset(self):
-        return Plugin.objects.sorted_authors(self.request.user).order_by('-created_at')[:6]
+        return LegacyPlugin.objects.sorted_authors(self.request.user).order_by('-created_at')[:6]
 
 
 class AboutView(TemplateView):

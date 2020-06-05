@@ -68,6 +68,7 @@ jobs:
         AWS_SES_REGION_NAME: for
         AWS_SES_REGION_ENDPOINT: icecream
       run: |
+        flake8
         python manage.py collectstatic --noinput
         celery worker -A config.celery -b pyamqp://user:spleen2@localhost:5672 &
         sleep 15

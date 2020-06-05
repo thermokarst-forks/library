@@ -49,7 +49,7 @@ _help_text = {
 }
 
 
-class Plugin(AuditModel):
+class LegacyPlugin(AuditModel):
     title = models.CharField(max_length=500, unique=True, help_text=_help_text['title'])
     slug = models.SlugField(max_length=500, unique=True)
     short_summary = models.CharField(max_length=500, help_text=_help_text['short_summary'])
@@ -62,7 +62,7 @@ class Plugin(AuditModel):
     # RELATIONSHIPS
     authors = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                      # use a bridge table with ordering info
-                                     through='PluginAuthorship',
+                                     through='LegacyPluginAuthorship',
                                      related_name='plugins')
     # For now, no reverse relationships. Also, no order on relationships.
     dependencies = models.ManyToManyField('self', symmetrical=False, db_table='plugins_plugin_dependencies',
@@ -85,8 +85,8 @@ class Plugin(AuditModel):
         default_manager_name = 'unsafe'
 
 
-class PluginAuthorship(AuditModel):
-    plugin = models.ForeignKey(Plugin, on_delete=models.CASCADE,
+class LegacyPluginAuthorship(AuditModel):
+    plugin = models.ForeignKey(LegacyPlugin, on_delete=models.CASCADE,
                                related_name='plugin_author_list')
     author = models.ForeignKey(settings.AUTH_USER_MODEL,
                                on_delete=models.CASCADE,
@@ -99,6 +99,6 @@ class PluginAuthorship(AuditModel):
         return '%s - %s (%d)' % (self.plugin, self.author, self.list_position)
 
     class Meta:
-        verbose_name_plural = 'plugin authorship'
+        verbose_name_plural = 'legacy plugin authorship'
         # Can't be listed as an author more than once for any given plugin
         unique_together = (('plugin', 'author'), )

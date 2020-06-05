@@ -6,3 +6,5 @@ Celery
 # I _cannot_ get librabbitmq to work (MRD)
 # librabbitmq
 pyamqp
+# https://github.com/celery/celery/issues/6153
+future
