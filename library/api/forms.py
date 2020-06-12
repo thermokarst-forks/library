@@ -6,4 +6,3 @@ class PackageIntegrationForm(forms.Form):
     repository = forms.CharField(required=True)
     run_id = forms.CharField(required=True)
     artifact_names = forms.MultipleChoiceField(required=True)
-

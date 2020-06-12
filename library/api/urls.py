@@ -1,10 +1,13 @@
 from django.urls import path, include
 
-from .views import prepare_package_for_integration
+from . import views
+
+
+app_name = 'api'
 
 
 urlpatterns = [
     path('packages/', include([
-        path('integrate/', prepare_package_for_integration, name='package-integrate')
+        path('integrate/', views.prepare_packages_for_integration, name='package-integrate')
     ]))
 ]
