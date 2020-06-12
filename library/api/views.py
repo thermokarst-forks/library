@@ -3,6 +3,7 @@ from django.views.decorators import csrf
 
 from . import forms
 from . import tasks
+from ..plugins.models import Plugin
 
 
 @csrf.csrf_exempt
@@ -20,7 +21,7 @@ def prepare_packages_for_integration(request):
 
     # Look up UUID, make sure its valid before submitting to celery
     try:
-        Plugin.objects.get(uuid=form.cleaned_data.uuid)
+        Plugin.unsafe.get(token=form.cleaned_data['token'])
     except Plugin.DoesNotExist:
         payload = {'status': 'error', 'errors': {'uuid': 'plugin does not exist'}}
         return http.JsonResponse(payload, status=400)
