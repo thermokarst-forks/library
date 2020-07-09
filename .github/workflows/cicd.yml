@@ -128,7 +128,7 @@ jobs:
         # TODO: uncomment before merging
         # if: github.ref == 'refs/heads/master'
         env:
-          SSH_PRIVATE_KEY: "${{ secrets.SSH_PRIVATE_KEY }}"
+          SSH_PRIVATE_KEY: "${{ secrets.SSH_PRIVATE_KEY_WORKER }}"
         run: |
           echo "$SSH_PRIVATE_KEY" > key.pem
           chmod 600 key.pem
