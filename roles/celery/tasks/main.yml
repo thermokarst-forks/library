@@ -1,8 +1,10 @@
-- name: copy celery docker compose template
+- name: copy celery docker compose template and Dockerfile
   template:
-    src: docker-compose.yml
-    # TODO: figure out where to put this stuff
+    src: "{{ item }}"
     dest: "$HOME"
+  with_items:
+    - docker-compose.yml
+    - Dockerfile
 
 - name: start atc and pg containers
   become: True
