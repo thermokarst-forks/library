@@ -1,0 +1,6 @@
+---
+
+- name: provision celery worker
+  hosts: all
+  roles:
+    - celery

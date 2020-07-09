@@ -1,0 +1,12 @@
+- name: copy celery docker compose template
+  template:
+    src: docker-compose.yml
+    # TODO: figure out where to put this stuff
+    dest: "{{ base_dir }}"
+
+- name: start atc and pg containers
+  become: True
+  command: docker-compose -f {{ base_dir }}/docker-compose.yml up -d
+  register: dc
+  # TODO: update
+  changed_when: '"Creating concourse_db_1" in dc.stderr and "Creating concourse_web_1" in dc.stderr'

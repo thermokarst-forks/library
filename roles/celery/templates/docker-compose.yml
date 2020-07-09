@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+
+  mq:
+    image: rabbitmq
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery worker -A config.celery -b amqp://guest@mq/ --loglevel=info
+    depends_on: [ mq ]
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.local
