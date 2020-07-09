@@ -128,9 +128,9 @@ jobs:
         # TODO: uncomment before merging
         # if: github.ref == 'refs/heads/master'
         env:
-          SSH_PRIVATE_KEY: "${{ secrets.SSH_PRIVATE_KEY_WORKER }}"
+          SSH_PRIVATE_KEY_WORKER: "${{ secrets.SSH_PRIVATE_KEY_WORKER }}"
         run: |
-          echo "$SSH_PRIVATE_KEY" > key.pem
+          echo "$SSH_PRIVATE_KEY_WORKER" > key.pem
           chmod 600 key.pem
 
       - name: deploy to infrastructure.qiime2.org
