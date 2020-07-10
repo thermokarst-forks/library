@@ -43,16 +43,19 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: set up python
       uses: actions/setup-python@v1
       with:
         python-version: 3.8
+
     - name: install and set up dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements/production.txt
         pip install -q flake8
         pip install -q https://github.com/qiime2/q2lint/archive/master.zip
+
     - name: run tests
       env:
         ADMINS: "[(foo,foo@example.com)]"
@@ -74,14 +77,15 @@ jobs:
         sleep 15
         python manage.py test --noinput
 
-  deploy:
+  deploy-web:
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/master'
     steps:
-      - uses: actions/checkout@v2 
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+
       - name: deploy to dokku instance
         uses: idoberko2/dokku-deploy-github-action@v1
         with:
@@ -90,3 +94,45 @@ jobs:
           app-name: 'webapp'
           # Keeping the following around, in case of emergencies:
           # git-push-flags: --force
+
+  deploy-worker:
+    runs-on: ubuntu-latest
+    needs: deploy-web
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: install system dependencies
+        run: |
+          sudo apt update
+          sudo apt install software-properties-common
+          sudo apt-add-repository --yes --update ppa:ansible/ansible
+          sudo apt install ansible
+
+      - name: set up python 3.6
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+
+      - name: install python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible-lint
+
+      - name: ansible-lint
+        run: ansible-lint provision.yml
+
+      - name: prepare ssh key
+        if: github.ref == 'refs/heads/master'
+        env:
+          SSH_PRIVATE_KEY_WORKER: "${{ secrets.SSH_PRIVATE_KEY_WORKER }}"
+        run: |
+          echo "$SSH_PRIVATE_KEY_WORKER" > key.pem
+          chmod 600 key.pem
+
+      - name: deploy to infrastructure.qiime2.org
+        if: github.ref == 'refs/heads/master'
+        env:
+          RABBITMQ_URL: "${{ secrets.RABBITMQ_URL }}"
+        run: ansible-playbook -i inventory.yml --private-key=key.pem -u ubuntu --become -e RABBITMQ_URL=$RABBITMQ_URL provision.yml
