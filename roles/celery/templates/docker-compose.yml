@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery worker -A config.celery -b {{ RABBITMQ_URL }} --loglevel=info
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.local
