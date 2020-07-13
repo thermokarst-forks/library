@@ -73,7 +73,7 @@ jobs:
       run: |
         flake8
         python manage.py collectstatic --noinput
-        celery worker -A config.celery -b pyamqp://user:spleen2@localhost:5672 &
+        celery worker -A config.celery -b pyamqp://user:spleen2@localhost:5672 -Q packages,default &
         sleep 15
         python manage.py test --noinput
 

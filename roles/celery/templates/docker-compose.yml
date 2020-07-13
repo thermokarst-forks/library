@@ -5,6 +5,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: celery worker -A config.celery -b {{ RABBITMQ_URL }} --loglevel=info
+    command: celery worker -A config.celery -b {{ RABBITMQ_URL }} --loglevel=info -Q packages --hostname=packages01@%h
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings.local
