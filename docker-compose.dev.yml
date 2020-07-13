@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+  mq:
+    image: rabbitmq
+  worker:
+    build:
+      context: . 
+      dockerfile: roles/celery/templates/Dockerfile
+    command: celery worker -A config.celery -b amqp://guest@mq/ --loglevel=info -Q packages,default
+    depends_on:
+      - mq
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.local
+  web:
+    build:
+      context: .
+      dockerfile: roles/celery/templates/Dockerfile
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.local
+    volumes:
+      - .:/code
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+      - mq

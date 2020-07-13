@@ -2,25 +2,10 @@
 
 ## Development Quickstart
 
-You will need a pg database (set the connection info in `DATABASE_URL`), and
-a rabbitmq message-broker (set the connection info in `RABBITMQ_URL`). The
-`DJANGO_SETTINGS_MODULE` needs to be set to `config.settings.local`.
-
-```bash
-conda create -n library python=3.8
-conda activate library
-pip install -r requirements/local.txt
-createdb qiime2-library
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py collectstatic
-python manage.py runserver
-```
-
 A simple docker-compose recipe is available for development:
 
 ```bash
-docker-compose up --build
+docker-compose -f docker-compose.dev.yml up --remove-orphans --build
 ```
 
 ## Production Environment Variables
