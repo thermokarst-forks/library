@@ -24,6 +24,7 @@ from .shared import (
     LOGIN_URL,
     CELERY_RESULT_BACKEND,
     CELERY_RESULT_SERIALIZER,
+    CELERY_TASK_ROUTES,
 )
 
 __all__ = [
@@ -54,6 +55,7 @@ __all__ = [
     'CELERY_BROKER_URL',
     'CELERY_RESULT_BACKEND',
     'CELERY_RESULT_SERIALIZER',
+    'CELERY_TASK_ROUTES',
 ]
 
 DEBUG = False
