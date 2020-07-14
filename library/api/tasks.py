@@ -9,9 +9,7 @@ from .utils import GitHubArtifactManager
 logger = get_task_logger(__name__)
 
 
-# TODO: circle back on running on a specific worker
-# TODO: github workflow to provision q2hq worker?
-@task(name='fetch_package_from_github')
+@task(name='packages.fetch_package_from_github')
 def fetch_package_from_github(payload):
     logger.info('Debug: %r' % (payload, ))
 
@@ -25,13 +23,13 @@ def fetch_package_from_github(payload):
     return tmp_filepaths
 
 
-@task(name='reindex_conda_server')
+@task(name='packages.reindex_conda_server')
 def reindex_conda_server():
     # TODO: run `conda index` on q2hq worker
     pass
 
 
-@task(name='integrate_new_package')
+@task(name='packages.integrate_new_package')
 def integrate_new_package():
     # TODO: probably needs to run on a GitHub workflow, for sandboxing
     pass

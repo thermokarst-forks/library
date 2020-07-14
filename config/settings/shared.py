@@ -89,4 +89,5 @@ CELERY_RESULT_BACKEND = 'rpc'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_ROUTES = {
     'index.*': {'queue': 'default'},
+    'packages.*': {'queue': 'packages'},
 }
