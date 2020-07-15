@@ -1,4 +1,6 @@
 import json
+import os
+import shutil
 import urllib.request
 
 
@@ -10,37 +12,33 @@ class GitHubArtifactManager:
         self.run_id = run_id
         self.base_url = 'https://api.github.com'
         self.root_path = './data'
-        
-    def fetch_url(self, url, headers=None):
+
+    def build_request(self, url, headers=None):
         request = urllib.request.Request(url)
-        #request.add_header('authorization',
-        #                   'Bearer %s' % (self.github_token, ))
+        request.add_header('authorization',
+                           'Bearer %s' % (self.github_token, ))
         if headers is not None:
             for k, v in headers.items():
                 request.add_header(k, v)
-        response = urllib.request.urlopen(request)
-        # TODO: check response status code
-        return response
+        return request
 
     def fetch_json_data(self, url):
         headers = {'content-type': 'application/json'}
-        response = self.fetch_url(url, headers)
+        request = self.build_request(url, headers)
+        response = urllib.request.urlopen(request)
         data = response.read()
         decoded = data.decode('utf-8')
         return json.loads(decoded)
 
+    def fetch_binary_file(self, url, download_path):
+        request = self.build_request(url)
+        with urllib.request.urlopen(request) as resp, \
+                open(download_path, 'wb') as save_fh:
+            shutil.copyfileobj(resp, save_fh)
+
     def fetch_artifact(self, record):
-        print(record['archive_download_url'])
-        response = self.fetch_url(record['archive_download_url'])
-        print(response.getheaders())
-        print(response.status)
-        download_url = response.getheader('Location')
-        print(download_url)
-        if download_url is None:
-            raise Exception('todo')
         download_path = os.path.join(self.root_path, record['name'])
-        print(download_path)
-        urllib.request.urlretrieve(download_url, download_path)
+        self.fetch_binary_file(record['archive_download_url'], download_path)
         return download_path
 
     def fetch_artifact_records(self):
@@ -53,7 +51,7 @@ class GitHubArtifactManager:
         # TODO: check file size
         # TODO: check for linux and darwin packages
         return records
-    
+
     def download_artifacts(self, records):
         for record in records:
             filepath = self.fetch_artifact(record)
@@ -61,7 +59,7 @@ class GitHubArtifactManager:
 
     def validate_local_filepaths(self, filepaths):
         return filepaths
-            
+
     def sync(self):
         records = self.fetch_artifact_records()
         filtered_records = self.filter_and_validate_artifact_records(records)
