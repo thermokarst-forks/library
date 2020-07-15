@@ -5,13 +5,39 @@ import urllib.request
 
 
 class GitHubArtifactManager:
-    def __init__(self, github_token, github_repository, run_id):
-        # TODO: validate inputs
+    def __init__(self, github_token, github_repository, run_id, root_path):
         self.github_token = github_token
         self.github_repository = github_repository
         self.run_id = run_id
+        self.root_path = root_path
+
         self.base_url = 'https://api.github.com'
-        self.root_path = './data'
+        self.valid_names = {'linux-64', 'osx-64'}
+        
+        self.validate_config()
+
+    def validate_config(self):
+        if self.github_token == '':
+            raise Exception('TODO1')
+
+        if self.github_repository == '':
+            raise Exception('TODO2')
+        parts = self.github_repository.split('/')
+        if len(parts) != 2:
+            raise Exception('TODO3')
+        org, repo = parts
+        if org == '':
+            raise Exception('TODO4')
+        if repo == '':
+            raise Exception('TODO5')
+
+        if self.run_id == '':
+            raise Exception('TODO6')
+
+        if self.root_path == '':
+            raise Exception('TODO7')
+        if not os.path.exists(self.root_path):
+            raise Exception('TODO8')
 
     def build_request(self, url, headers=None):
         request = urllib.request.Request(url)
@@ -31,6 +57,9 @@ class GitHubArtifactManager:
         return json.loads(decoded)
 
     def fetch_binary_file(self, url, download_path):
+        if os.path.exists(download_path):
+            raise Exception('TODO9')
+
         request = self.build_request(url)
         with urllib.request.urlopen(request) as resp, \
                 open(download_path, 'wb') as save_fh:
@@ -48,16 +77,24 @@ class GitHubArtifactManager:
         return records
 
     def filter_and_validate_artifact_records(self, records):
-        # TODO: check file size
-        # TODO: check for linux and darwin packages
-        return records
+        filtered_records, names = list(), set()
+        for record in records['artifacts']:
+            names.add(record['name'])
+            if record['name'] in self.valid_names:
+                if record['size_in_bytes'] <= 100000000:
+                    filtered_records.append(record)
+                else:
+                    raise Exception('TODO10')
+        if not names >= self.valid_names:
+            raise Exception('TODO11')
+
+        return filtered_records
 
     def download_artifacts(self, records):
-        for record in records:
-            filepath = self.fetch_artifact(record)
-            yield filepath
+        return [self.fetch_artifact(record) for record in records]
 
     def validate_local_filepaths(self, filepaths):
+        # TODO: implement this
         return filepaths
 
     def sync(self):

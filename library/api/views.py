@@ -27,7 +27,7 @@ def prepare_packages_for_integration(request):
         return http.JsonResponse(payload, status=400)
 
     # Okay, if we made it this far, then we are ready to start the real work
-    tasks.fetch_package_from_github.delay(form.cleaned_data)
+    tasks.handle_new_builds.delay(form.cleaned_data)
 
     payload = {'status': 'ok'}
     return http.JsonResponse(payload, status=200)

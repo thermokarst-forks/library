@@ -1,28 +1,23 @@
 from celery.decorators import task
-from celery.utils.log import get_task_logger
 from django.conf import settings
-
 
 from .utils import GitHubArtifactManager
 
 
-logger = get_task_logger(__name__)
-
-
 @task(name='packages.fetch_package_from_github')
 def fetch_package_from_github(payload):
-    logger.info('Debug: %r' % (payload, ))
-
-    github_token = settings.GITHUB_TOKEN
-    github_repository = payload['repository']
-    run_id = payload['run_id']
-
-    mgr = GitHubArtifactManager(github_token, github_repository, run_id)
+    mgr = GitHubArtifactManager(
+        settings.GITHUB_TOKEN,
+        payload['repository'],
+        payload['run_id'],
+        settings.CONDA_ASSET_PATH,
+    )
     tmp_filepaths = mgr.sync()
     return tmp_filepaths
 
 @task(name='packages.reindex_conda_server')
 def reindex_conda_server():
+    # TODO: unzip packages
     # TODO: run `conda index` on q2hq worker
     pass
 
@@ -33,4 +28,8 @@ def integrate_new_package():
     pass
 
 
-# TODO: add some kind of celery workflow to stitch the tasks above together
+def handle_new_builds(payload):
+    chain = fetch_package_from_github.s(payload) \
+        | reindex_conda_server.s() \
+        | integrate_new_package.s()
+    return chain()
