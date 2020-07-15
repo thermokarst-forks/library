@@ -30,6 +30,7 @@ from .shared import (
     CELERY_RESULT_BACKEND,
     CELERY_RESULT_SERIALIZER,
     CELERY_TASK_ROUTES,
+    GITHUB_TOKEN,
 )
 
 
@@ -66,6 +67,7 @@ __all__ = [
     'CELERY_RESULT_BACKEND',
     'CELERY_RESULT_SERIALIZER',
     'CELERY_TASK_ROUTES',
+    'GITHUB_TOKEN',
 ]
 
 MIDDLEWARE.extend([

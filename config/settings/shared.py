@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'library.utils.apps.UtilsConfig',
     'library.plugins.apps.PluginsConfig',
     'library.users.apps.UsersConfig',
+    'library.api.apps.APIConfig',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -91,3 +92,4 @@ CELERY_TASK_ROUTES = {
     'index.*': {'queue': 'default'},
     'packages.*': {'queue': 'packages'},
 }
+GITHUB_TOKEN = env('GITHUB_TOKEN', default='nope')

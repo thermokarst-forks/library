@@ -21,7 +21,7 @@ def prepare_packages_for_integration(request):
 
     # Look up UUID, make sure its valid before submitting to celery
     try:
-        Plugin.unsafe.get(token=form.cleaned_data['token'])
+        Plugin.unsafe.get(token=form.cleaned_data['qiime2_plugin_token'])
     except Plugin.DoesNotExist:
         payload = {'status': 'error', 'errors': {'uuid': 'plugin does not exist'}}
         return http.JsonResponse(payload, status=400)
