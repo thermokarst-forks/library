@@ -1,31 +1,40 @@
+import os
+import pathlib
+import shutil
+import tempfile
+
 from celery.decorators import task
 from django.conf import settings
 
-from .utils import GitHubArtifactManager
+from . import utils
 
 
 @task(name='packages.fetch_package_from_github')
-def fetch_package_from_github(payload):
-    mgr = GitHubArtifactManager(
-        settings.GITHUB_TOKEN,
-        payload['repository'],
-        payload['run_id'],
-        settings.CONDA_ASSET_PATH,
-    )
-    tmp_filepaths = mgr.sync()
-    return tmp_filepaths
+def fetch_package_from_github(config):
+    with tempfile.TemporaryDirectory() as tmpdir:
+        mgr = utils.GitHubArtifactManager(config, tmpdir)
+        tmp_filepaths = mgr.sync()
+
+        for filepath in tmp_filepaths:
+            utils.unzip(filepath)
+
+        tmp_pathlib = pathlib.Path(tmpdir)
+        filematcher = '**/*%s*.tar.bz2' % (config['plugin_name'])
+        for package in tmp_pathlib.glob(filematcher):
+            shutil.copy(package, pathlib.Path('/data') / package.name)
+    return config
+
 
 @task(name='packages.reindex_conda_server')
-def reindex_conda_server():
-    # TODO: unzip packages
+def reindex_conda_server(config):
     # TODO: run `conda index` on q2hq worker
-    pass
+    return config
 
 
 @task(name='packages.integrate_new_package')
-def integrate_new_package():
+def integrate_new_package(config):
     # TODO: probably needs to run on a GitHub workflow, for sandboxing
-    pass
+    return config
 
 
 def handle_new_builds(payload):

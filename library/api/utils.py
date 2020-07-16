@@ -1,16 +1,18 @@
 import json
 import os
 import shutil
+import tempfile
 import urllib.request
+import zipfile
 
 
 class GitHubArtifactManager:
-    def __init__(self, github_token, github_repository, run_id, root_path):
-        self.github_token = github_token
-        self.github_repository = github_repository
-        self.run_id = run_id
-        self.root_path = root_path
+    def __init__(self, config, tmpdir):
+        self.github_token = config['github_token']
+        self.github_repository = config['repository']
+        self.run_id = config['run_id']
 
+        self.root_path = tmpdir
         self.base_url = 'https://api.github.com'
         self.valid_names = {'linux-64', 'osx-64'}
         
@@ -33,11 +35,6 @@ class GitHubArtifactManager:
 
         if self.run_id == '':
             raise Exception('TODO6')
-
-        if self.root_path == '':
-            raise Exception('TODO7')
-        if not os.path.exists(self.root_path):
-            raise Exception('TODO8')
 
     def build_request(self, url, headers=None):
         request = urllib.request.Request(url)
@@ -103,3 +100,12 @@ class GitHubArtifactManager:
         local_filepaths = self.download_artifacts(filtered_records)
         validated_filepaths = self.validate_local_filepaths(local_filepaths)
         return validated_filepaths
+
+
+def unzip(fp):
+    dirname = os.path.dirname(fp)
+    basename = os.path.basename(fp)
+    outpath = os.path.join(dirname, '%s_unzipped' % basename)
+
+    with zipfile.ZipFile(fp, 'r') as zip_fh:
+        zip_fh.extractall(outpath)
