@@ -109,3 +109,8 @@ def unzip(fp):
 
     with zipfile.ZipFile(fp, 'r') as zip_fh:
         zip_fh.extractall(outpath)
+
+
+def bootstrap_pkgs_dir(fp_pathlib):
+    for arch in ('linux-64', 'osx-64'):
+        (fp_pathlib / arch).mkdir(parents=True, exist_ok=True)

@@ -33,7 +33,6 @@ def prepare_packages_for_integration(request):
         'repository': form.cleaned_data['repository'],
         'run_id': form.cleaned_data['run_id'],
         'github_token': conf.settings.GITHUB_TOKEN,
-        'conda_asset_path': conf.settings.CONDA_ASSET_PATH,
     })
 
     payload = {'status': 'ok'}
