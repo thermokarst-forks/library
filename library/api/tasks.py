@@ -10,13 +10,15 @@ from django.conf import settings
 from . import utils
 
 
-UNVERIFIED_PKGS_FP = pathlib.Path('/data/unverified')
+UNVERIFIED_PKGS_FP = pathlib.Path('/data/qiime2-unverified')
 
 
 @task(name='packages.fetch_package_from_github')
 def fetch_package_from_github(config):
     with tempfile.TemporaryDirectory() as tmpdir:
-        mgr = utils.GitHubArtifactManager(config, tmpdir)
+        tmp_pathlib = pathlib.Path(tmpdir)
+
+        mgr = utils.GitHubArtifactManager(config, tmp_pathlib)
         tmp_filepaths = mgr.sync()
 
         for filepath in tmp_filepaths:
@@ -24,17 +26,20 @@ def fetch_package_from_github(config):
 
         utils.bootstrap_pkgs_dir(UNVERIFIED_PKGS_FP)
 
-        tmp_pathlib = pathlib.Path(tmpdir)
         filematcher = '**/*%s*.tar.bz2' % (config['plugin_name'])
-        for package in tmp_pathlib.glob(filematcher):
-            shutil.copy(package, UNVERIFIED_PKGS_FP / package.parent.name / package.name)
+        for from_path in tmp_pathlib.glob(filematcher):
+            to_path = UNVERIFIED_PKGS_FP / from_path.parent.name / from_path.name
+            shutil.copy(from_path, to_path)
+
+    config['channel'] = str(UNVERIFIED_PKGS_FP)
     return config
 
 
 @task(name='packages.reindex_conda_server')
 def reindex_conda_server(config):
-    cfg = conda_build.api.Config(verbose=False)
-    conda_build.api.update_index(str(UNVERIFIED_PKGS_FP), config=cfg, threads=1)
+    conda_config = conda_build.api.Config(verbose=False)
+    conda_build.api.update_index(
+        config['channel'], config=conda_config, threads=1)
     return config
 
 

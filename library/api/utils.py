@@ -1,7 +1,5 @@
 import json
-import os
 import shutil
-import tempfile
 import urllib.request
 import zipfile
 
@@ -12,7 +10,7 @@ class GitHubArtifactManager:
         self.github_repository = config['repository']
         self.run_id = config['run_id']
 
-        self.root_path = tmpdir
+        self.root_pathlib = tmpdir
         self.base_url = 'https://api.github.com'
         self.valid_names = {'linux-64', 'osx-64'}
         
@@ -53,17 +51,17 @@ class GitHubArtifactManager:
         decoded = data.decode('utf-8')
         return json.loads(decoded)
 
-    def fetch_binary_file(self, url, download_path):
-        if os.path.exists(download_path):
+    def fetch_binary_file(self, url, download_pathlib):
+        if download_pathlib.exists():
             raise Exception('TODO9')
 
         request = self.build_request(url)
         with urllib.request.urlopen(request) as resp, \
-                open(download_path, 'wb') as save_fh:
+                download_pathlib.open('wb') as save_fh:
             shutil.copyfileobj(resp, save_fh)
 
     def fetch_artifact(self, record):
-        download_path = os.path.join(self.root_path, record['name'])
+        download_path = self.root_pathlib / record['name']
         self.fetch_binary_file(record['archive_download_url'], download_path)
         return download_path
 
@@ -102,13 +100,10 @@ class GitHubArtifactManager:
         return validated_filepaths
 
 
-def unzip(fp):
-    dirname = os.path.dirname(fp)
-    basename = os.path.basename(fp)
-    outpath = os.path.join(dirname, '%s_unzipped' % basename)
-
-    with zipfile.ZipFile(fp, 'r') as zip_fh:
-        zip_fh.extractall(outpath)
+def unzip(fp_pathlib):
+    new_name = '%s_unzipped' % fp_pathlib.name
+    with zipfile.ZipFile(fp_pathlib, 'r') as zip_fh:
+        zip_fh.extractall(str(fp_pathlib.parent / new_name))
 
 
 def bootstrap_pkgs_dir(fp_pathlib):
