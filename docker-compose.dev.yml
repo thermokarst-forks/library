@@ -3,6 +3,8 @@ version: '3'
 services:
   db:
     image: postgres
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
 
   mq:
     image: rabbitmq
@@ -32,7 +34,7 @@ services:
       - DJANGO_SETTINGS_MODULE=config.settings.local
     ports:
       - 5555:5555
- 
+
   web:
     build:
       context: .

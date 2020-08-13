@@ -3,7 +3,7 @@ FROM continuumio/miniconda3
 # TODO: python 3.8
 
 RUN conda update conda -y
-RUN conda install conda-build -y
+RUN conda install conda-build pip -y
 RUN mkdir /code
 RUN mkdir /data
 
