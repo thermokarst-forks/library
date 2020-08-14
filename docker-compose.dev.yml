@@ -7,9 +7,9 @@ services:
     image: rabbitmq
   worker:
     build:
-      context: . 
+      context: .
       dockerfile: roles/celery/templates/Dockerfile
-    command: celery worker -A config.celery -b amqp://guest@mq/ --loglevel=info -Q packages,default
+    command: bash -c "python manage.py celery_worker amqp://guest@mq/ info packages,default"
     depends_on:
       - mq
     environment:
