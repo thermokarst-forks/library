@@ -13,7 +13,7 @@ class GitHubArtifactManager:
         self.root_pathlib = tmpdir
         self.base_url = 'https://api.github.com'
         self.valid_names = {'linux-64', 'osx-64'}
-        
+
         self.validate_config()
 
     def validate_config(self):

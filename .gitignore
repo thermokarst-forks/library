@@ -160,3 +160,5 @@ collected_static/
 
 # OSX Users
 .DS_Store
+
+data/
