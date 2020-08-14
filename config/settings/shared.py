@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'library.utils.apps.UtilsConfig',
     'library.plugins.apps.PluginsConfig',
     'library.users.apps.UsersConfig',
+    'library.api.apps.APIConfig',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
