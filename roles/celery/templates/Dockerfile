@@ -5,6 +5,7 @@ FROM continuumio/miniconda3
 RUN conda update conda -y
 RUN conda install conda-build pip -y
 RUN mkdir /code
+RUN mkdir /data
 
 WORKDIR /code
 COPY . /code/

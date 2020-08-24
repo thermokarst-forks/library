@@ -44,17 +44,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: set up python
-      uses: actions/setup-python@v1
+    - name: set up conda
+      uses: goanpeca/setup-miniconda@v1
       with:
+        auto-update-conda: true
         python-version: 3.8
 
     - name: install and set up dependencies
+      shell: bash -l {0}
       run: |
-        python -m pip install --upgrade pip
         pip install -r requirements/production.txt
-        pip install -q flake8
         pip install -q https://github.com/qiime2/q2lint/archive/master.zip
+        conda install flake8 conda-build
 
     - name: run tests
       env:
@@ -70,6 +71,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: scream
         AWS_SES_REGION_NAME: for
         AWS_SES_REGION_ENDPOINT: icecream
+      shell: bash -l {0}
       run: |
         flake8
         python manage.py collectstatic --noinput
@@ -92,7 +94,7 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           dokku-host: 'library.qiime2.org'
           app-name: 'webapp'
-          # Keeping the following around, in case of emergencies:
+          # break in case of emergencies:
           # git-push-flags: --force
 
   deploy-worker:

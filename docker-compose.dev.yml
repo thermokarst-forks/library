@@ -18,6 +18,10 @@ services:
       - mq
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings.local
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    volumes:
+      - .:/code
+      - ./data:/data
 
   web:
     build:
@@ -26,6 +30,7 @@ services:
     command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings.local
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
     volumes:
       - .:/code
     ports:
@@ -33,6 +38,14 @@ services:
     depends_on:
       - db
       - mq
+
+  packages:
+    image: python
+    command: bash -c "cd ./data && python -m http.server 8001"
+    volumes:
+      - ./data:/data
+    ports:
+      - 8001:8001
 
   flower:
     build:
@@ -45,3 +58,5 @@ services:
       - DJANGO_SETTINGS_MODULE=config.settings.local
     ports:
       - 5555:5555
+    volumes:
+      - .:/code

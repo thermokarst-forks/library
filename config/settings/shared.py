@@ -89,5 +89,8 @@ CELERY_BROKER_URL = env('RABBITMQ_URL', default='amqp://guest@mq')
 CELERY_RESULT_BACKEND = 'rpc'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_ROUTES = {
-    'index.*': {'queue': 'packages'},
+    'index.*': {'queue': 'default'},
+    'packages.*': {'queue': 'packages'},
 }
+GITHUB_TOKEN = env('GITHUB_TOKEN', default='nope')
+CONDA_ASSET_PATH = 'data/'
