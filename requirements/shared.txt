@@ -3,10 +3,10 @@ psycopg2-binary>=2.8,<2.9a0
 django-environ>=0.4
 whitenoise
 Celery
-flower
 # I _cannot_ get librabbitmq to work (MRD)
 # librabbitmq
 pyamqp
 # https://github.com/celery/celery/issues/6153
 future
 django-celery-results
+flower

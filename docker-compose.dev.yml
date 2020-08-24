@@ -23,18 +23,6 @@ services:
       - .:/code
       - ./data:/data
 
-  flower:
-    build:
-      context: .
-      dockerfile: roles/celery/templates/Dockerfile
-    command: bash -c "python manage.py celery_flower"
-    depends_on:
-      - web
-    environment:
-      - DJANGO_SETTINGS_MODULE=config.settings.local
-    ports:
-      - 5555:5555
-
   web:
     build:
       context: .
@@ -58,3 +46,15 @@ services:
       - ./data:/data
     ports:
       - 8001:8001
+
+  flower:
+    build:
+      context: .
+      dockerfile: roles/celery/templates/Dockerfile
+    command: bash -c "python manage.py celery_flower"
+    depends_on:
+      - web
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.local
+    ports:
+      - 5555:5555
