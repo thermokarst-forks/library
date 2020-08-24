@@ -1,4 +1,3 @@
-import os
 import pathlib
 import shutil
 import tempfile
@@ -10,7 +9,7 @@ from django.conf import settings
 from . import utils
 
 
-UNVERIFIED_PKGS_FP = pathlib.Path('/data/qiime2-unverified')
+UNVERIFIED_PKGS_FP = pathlib.Path(settings.CONDA_ASSET_PATH) / 'qiime2-unverified'
 
 
 @task(name='packages.fetch_package_from_github')
@@ -26,7 +25,7 @@ def fetch_package_from_github(config):
 
         utils.bootstrap_pkgs_dir(UNVERIFIED_PKGS_FP)
 
-        filematcher = '**/*%s*.tar.bz2' % (config['plugin_name'])
+        filematcher = '**/*%s*.tar.bz2' % (config['package_name'])
         for from_path in tmp_pathlib.glob(filematcher):
             to_path = UNVERIFIED_PKGS_FP / from_path.parent.name / from_path.name
             shutil.copy(from_path, to_path)

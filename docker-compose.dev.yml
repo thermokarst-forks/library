@@ -58,3 +58,5 @@ services:
       - DJANGO_SETTINGS_MODULE=config.settings.local
     ports:
       - 5555:5555
+    volumes:
+      - .:/code
