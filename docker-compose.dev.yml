@@ -28,3 +28,14 @@ services:
     depends_on:
       - db
       - mq
+  flower:
+    build:
+      context: .
+      dockerfile: roles/celery/templates/Dockerfile
+    command: bash -c "python manage.py celery_flower"
+    depends_on:
+      - web
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.local
+    ports:
+      - 5555:5555

@@ -8,3 +8,4 @@ Celery
 pyamqp
 # https://github.com/celery/celery/issues/6153
 future
+flower
