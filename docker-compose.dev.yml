@@ -3,8 +3,12 @@ version: '3'
 services:
   db:
     image: postgres
+    ports:
+      - 5432:5432
+
   mq:
     image: rabbitmq
+
   worker:
     build:
       context: .
@@ -14,6 +18,7 @@ services:
       - mq
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings.local
+
   web:
     build:
       context: .
@@ -28,6 +33,7 @@ services:
     depends_on:
       - db
       - mq
+
   flower:
     build:
       context: .
