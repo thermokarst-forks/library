@@ -9,4 +9,4 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings.local
     volumes:
-            - /usr/share/nginx/html/packages.qiime2.org/:/data
+      - /usr/share/nginx/html/packages.qiime2.org/:/data
