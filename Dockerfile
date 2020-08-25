@@ -1,5 +1,7 @@
 FROM continuumio/miniconda3
 
+ARG RUNENV=production
+
 RUN apt-get update -y
 RUN apt-get install procps -y
 RUN conda update conda -y
@@ -11,8 +13,7 @@ RUN mkdir /data
 WORKDIR /code
 COPY . /code/
 
-RUN if [ "$DJANGO_SETTINGS_MODULE" = "config.settings.production" ] ; \
-    then pip install -r requirements/production.txt ; \
-    else pip install -r requirements/local.txt ; fi
+ENV DJANGO_SETTINGS_MODULE "config.settings.${RUNENV}"
+RUN pip install -r "requirements/${RUNENV}.txt"
 
 EXPOSE 8000
