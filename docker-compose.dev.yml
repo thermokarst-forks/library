@@ -12,11 +12,12 @@ services:
   worker:
     build:
       context: .
+      args:
+        RUNENV: local
     command: bash -c "python manage.py celery_worker amqp://guest@mq/ info packages,default"
     depends_on:
       - mq
     environment:
-      - DJANGO_SETTINGS_MODULE=config.settings.local
       - GITHUB_TOKEN=${GITHUB_TOKEN}
     volumes:
       - .:/code
@@ -25,12 +26,13 @@ services:
   web:
     build:
       context: .
+      args:
+        RUNENV: local
     command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     depends_on:
       - db
       - mq
     environment:
-      - DJANGO_SETTINGS_MODULE=config.settings.local
       - GITHUB_TOKEN=${GITHUB_TOKEN}
     ports:
       - 8000:8000
@@ -48,11 +50,11 @@ services:
   flower:
     build:
       context: .
+      args:
+        RUNENV: local
     command: bash -c "python manage.py celery_flower"
     depends_on:
       - web
-    environment:
-      - DJANGO_SETTINGS_MODULE=config.settings.local
     ports:
       - 5555:5555
     volumes:
