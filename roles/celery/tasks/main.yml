@@ -13,7 +13,7 @@
     dest: "/home/ubuntu/library-src/{{ item }}"
   with_items:
     - docker-compose.yml
-    - Dockerfile
+    - ../../Dockerfile
 
 - name: start containers
   become: True
