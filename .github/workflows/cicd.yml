@@ -95,7 +95,7 @@ jobs:
           dokku-host: 'library.qiime2.org'
           app-name: 'webapp'
           # break in case of emergencies:
-          # git-push-flags: --force
+          git-push-flags: --force
 
   deploy-worker:
     runs-on: ubuntu-latest
