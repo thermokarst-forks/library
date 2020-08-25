@@ -13,11 +13,10 @@
     dest: "/home/ubuntu/library-src/{{ item }}"
   with_items:
     - docker-compose.yml
-    - ../../../Dockerfile
 
 - name: start containers
   become: True
   no_log: True
-  command: docker-compose -f /home/ubuntu/library-src/docker-compose.yml up -d --remove-orphans
+  command: docker-compose -f /home/ubuntu/library-src/docker-compose.yml up -d --build --remove-orphans
   register: dc
   changed_when: '"Creating library-worker_1" in dc.stderr'
