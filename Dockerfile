@@ -1,4 +1,3 @@
-# This Dockerfile is for deployment purposes
 FROM continuumio/miniconda3
 
 RUN apt-get update -y
