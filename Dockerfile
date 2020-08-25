@@ -17,3 +17,4 @@ ENV DJANGO_SETTINGS_MODULE "config.settings.${RUNENV}"
 RUN pip install -r "requirements/${RUNENV}.txt"
 
 EXPOSE 8000
+EXPOSE 5555
