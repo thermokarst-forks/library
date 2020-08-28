@@ -6,14 +6,12 @@ services:
       context: .
       args:
         RUNENV: local
-    command: |
-      celery worker \
+    command: >
+      sh -c "celery worker \
         -A config.celery \
         -b {{ RABBITMQ_URL }} \
         --loglevel=info \
         -Q packages \
-        --hostname=packages01@%h
+        --hostname=packages01@%h"
     volumes:
       - /usr/share/nginx/html/packages.qiime2.org/:/data
-    environment:
-      - GITHUB_TOKEN={{ GITHUB_TOKEN }}

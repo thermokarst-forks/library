@@ -3,17 +3,20 @@ import shutil
 import tempfile
 
 from celery.decorators import task
+from celery.utils.log import get_task_logger
 import conda_build.api
 from django.conf import settings
 
 from . import utils
 
 
+logger = get_task_logger(__name__)
 UNVERIFIED_PKGS_FP = pathlib.Path(settings.CONDA_ASSET_PATH) / 'qiime2-unverified'
 
 
 @task(name='packages.fetch_package_from_github')
 def fetch_package_from_github(config):
+    logger.info(config)
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp_pathlib = pathlib.Path(tmpdir)
 
