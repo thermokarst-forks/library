@@ -7,6 +7,6 @@ services:
       dockerfile: Dockerfile
       args:
         RUNENV: local
-    command: celery worker -A config.celery -b {{ RABBITMQ_URL }} --loglevel=info -Q packages --hostname=packages01@%h
+    command: celery worker -A config.celery -b {{ RABBITMQ_URL }} --loglevel=debug -Q packages --hostname=packages01@%h
     volumes:
       - /usr/share/nginx/html/packages.qiime2.org/:/data
