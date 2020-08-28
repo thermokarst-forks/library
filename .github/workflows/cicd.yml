@@ -137,4 +137,13 @@ jobs:
         if: github.ref == 'refs/heads/master'
         env:
           RABBITMQ_URL: "${{ secrets.RABBITMQ_URL }}"
-        run: ansible-playbook -i inventory.yml --private-key=key.pem -u ubuntu --become -e RABBITMQ_URL=$RABBITMQ_URL provision.yml
+          GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}"
+        run: |
+          ansible-playbook \
+            -i inventory.yml \
+            --private-key=key.pem \
+            -u ubuntu \
+            --become \
+            -e RABBITMQ_URL=$RABBITMQ_URL \
+            -e GITHUB_TOKEN=$GITHUB_TOKEN \
+            provision.yml
