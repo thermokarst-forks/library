@@ -1,3 +1,4 @@
+import os
 import pathlib
 import shutil
 import tempfile
@@ -11,7 +12,9 @@ from . import utils
 
 
 logger = get_task_logger(__name__)
-UNVERIFIED_PKGS_FP = pathlib.Path(settings.CONDA_ASSET_PATH) / 'qiime2-unverified'
+
+
+UNVERIFIED_PKGS_FP = os.path.join(settings.CONDA_ASSET_PATH, 'qiime2', 'unverified')
 
 
 @task(name='packages.fetch_package_from_github')
@@ -26,14 +29,16 @@ def fetch_package_from_github(config):
         for filepath in tmp_filepaths:
             utils.unzip(filepath)
 
-        utils.bootstrap_pkgs_dir(UNVERIFIED_PKGS_FP)
+        unverified_pkgs_fp = pathlib.Path(config['unverified_pkgs_fp'])
+        utils.bootstrap_pkgs_dir(unverified_pkgs_fp)
 
         filematcher = '**/*%s*.tar.bz2' % (config['package_name'])
         for from_path in tmp_pathlib.glob(filematcher):
-            to_path = UNVERIFIED_PKGS_FP / from_path.parent.name / from_path.name
+            to_path = unverified_pkgs_fp / from_path.parent.name / from_path.name
             shutil.copy(from_path, to_path)
 
-    config['channel'] = str(UNVERIFIED_PKGS_FP)
+    config['channel'] = config.pop('unverified_pkgs_fp')
+
     return config
 
 

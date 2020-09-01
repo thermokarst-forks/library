@@ -26,7 +26,6 @@ from .shared import (
     CELERY_RESULT_SERIALIZER,
     CELERY_TASK_ROUTES,
     GITHUB_TOKEN,
-    CONDA_ASSET_PATH,
 )
 
 __all__ = [
@@ -83,3 +82,4 @@ TEMPLATES[0]['OPTIONS']['context_processors'].append('library.utils.context_proc
 RABBITMQ_URL = env('RABBITMQ_URL')
 # We want to use the rmq url set by dokku
 CELERY_BROKER_URL = env('RABBITMQ_URL')
+CONDA_ASSET_PATH = '/data/'

@@ -26,6 +26,7 @@ def prepare_packages_for_integration(request):
         'repository': form.cleaned_data['repository'],
         'run_id': form.cleaned_data['run_id'],
         'github_token': conf.settings.GITHUB_TOKEN,
+        'unverified_pkgs_fp': tasks.UNVERIFIED_PKGS_FP,
     })
 
     payload = {'status': 'ok'}
