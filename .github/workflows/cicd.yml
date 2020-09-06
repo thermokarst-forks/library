@@ -75,7 +75,8 @@ jobs:
       run: |
         flake8
         python manage.py collectstatic --noinput
-        celery worker -A config.celery -b pyamqp://user:spleen2@localhost:5672 -Q packages,default &
+        python manage.py migrate --noinput
+        celery worker -A config.celery &
         sleep 15
         python manage.py test --noinput
 
@@ -95,7 +96,7 @@ jobs:
           dokku-host: 'library.qiime2.org'
           app-name: 'webapp'
           # break in case of emergencies:
-          git-push-flags: --force
+          # git-push-flags: --force
 
   deploy-worker:
     runs-on: ubuntu-latest

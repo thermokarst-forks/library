@@ -5,11 +5,10 @@ import zipfile
 
 
 class GitHubArtifactManager:
-    def __init__(self, config, tmpdir):
-        self.github_token = config['github_token']
-        self.github_repository = config['repository']
-        self.run_id = config['run_id']
-
+    def __init__(self, github_token, repository, run_id, tmpdir):
+        self.github_token = github_token
+        self.github_repository = repository
+        self.run_id = run_id
         self.root_pathlib = tmpdir
         self.base_url = 'https://api.github.com'
         self.valid_names = {'linux-64', 'osx-64'}

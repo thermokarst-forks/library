@@ -24,12 +24,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_celery_results',
+
     # utils needs to be registered for template tags, and needs to come first
     # because other apps use it
     'library.utils.apps.UtilsConfig',
     'library.plugins.apps.PluginsConfig',
     'library.users.apps.UsersConfig',
     'library.api.apps.APIConfig',
+    'library.packages.apps.PackagesConfig',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -86,10 +89,11 @@ AUTH_USER_MODEL = 'users.User'
 RABBITMQ_URL = env('RABBITMQ_URL', default='amqp://guest@mq')
 # We want to use the rmq url set by dokku, emulating in dev
 CELERY_BROKER_URL = env('RABBITMQ_URL', default='amqp://guest@mq')
-CELERY_RESULT_BACKEND = 'rpc'
+CELERY_RESULT_BACKEND = 'django-db'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_ROUTES = {
     'index.*': {'queue': 'default'},
+    'db.*': {'queue': 'db'},
     'packages.*': {'queue': 'packages'},
 }
 GITHUB_TOKEN = env('GITHUB_TOKEN', default='')

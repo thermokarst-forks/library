@@ -14,7 +14,7 @@ services:
       context: .
       args:
         RUNENV: local
-    command: bash -c "python manage.py celery_worker amqp://guest@mq/ info packages,default"
+    command: bash -c "python manage.py celery_worker amqp://guest@mq/ info packages,db,default"
     depends_on:
       - mq
     environment:
