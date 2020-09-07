@@ -6,11 +6,10 @@ services:
       context: .
       args:
         RUNENV: local
+        DATABASE_URL: {{ DATABASE_URL }}
     command: >
       sh -c "celery worker \
         -A config.celery \
-        -b {{ RABBITMQ_URL }} \
-        --loglevel=info \
         -Q packages \
         --hostname=packages01@%h"
     volumes:

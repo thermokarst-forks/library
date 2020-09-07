@@ -138,6 +138,7 @@ jobs:
         if: github.ref == 'refs/heads/master'
         env:
           RABBITMQ_URL: "${{ secrets.RABBITMQ_URL }}"
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
         run: |
           ansible-playbook \
             -i inventory.yml \
@@ -145,4 +146,5 @@ jobs:
             -u ubuntu \
             --become \
             -e RABBITMQ_URL=$RABBITMQ_URL \
+            -e DATABASE_URL=$DATABASE_URL \
             provision.yml
