@@ -6,7 +6,8 @@ services:
       context: .
       args:
         RUNENV: local
-        DATABASE_URL: {{ DATABASE_URL }}
+    environment:
+      DATABASE_URL: {{ DATABASE_URL }}
     command: >
       sh -c "celery worker \
         -A config.celery \
