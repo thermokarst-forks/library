@@ -10,6 +10,7 @@ services:
     command: >
       sh -c "celery worker \
         -A config.celery \
+        -b {{ RABBITMQ_URL }} \
         -Q packages \
         --hostname=packages01@%h"
     volumes:
