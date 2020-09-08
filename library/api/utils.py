@@ -87,7 +87,7 @@ class GitHubArtifactManager:
                     raise Exception('TODO10')
 
         if len(filtered_records) != 1:
-            raise Exception('TODO11')
+            raise Exception('TODO11: %r' % (filtered_records, ))
 
         return filtered_records
 

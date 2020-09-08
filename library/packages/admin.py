@@ -5,7 +5,7 @@ from .models import Package, PackageBuild
 
 class PackageBuildInline(admin.TabularInline):
     model = PackageBuild
-    readonly_fields = ('package', 'github_run_id', 'version')
+    readonly_fields = ('package', 'github_run_id', 'version', 'artifact_name')
     extra = 0
     can_delete = False
 
@@ -16,7 +16,7 @@ class PackageAdmin(admin.ModelAdmin):
 
 
 class PackageBuildAdmin(admin.ModelAdmin):
-    readonly_fields = ('package', 'github_run_id', 'version')
+    readonly_fields = ('package', 'github_run_id', 'version', 'artifact_name')
 
 
 admin.site.register(Package, PackageAdmin)
