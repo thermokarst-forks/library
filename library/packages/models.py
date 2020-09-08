@@ -20,6 +20,7 @@ class PackageBuild(models.Model):
     package = models.ForeignKey('Package', on_delete=models.CASCADE, related_name='package_builds')
     github_run_id = models.CharField(max_length=100)
     version = models.CharField(max_length=255)
+    artifact_name = models.CharField(max_length=100)
 
     def __str__(self):
         return 'PackageBuild<github_run_id=%s, version=%s>' % (self.github_run_id, self.version)

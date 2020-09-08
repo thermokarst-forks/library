@@ -11,6 +11,7 @@ class PackageIntegrationForm(forms.Form):
     version = forms.CharField(required=True)
     package_name = forms.CharField(required=True)
     repository = forms.CharField(required=True)
+    artifact_name = forms.CharField(required=True)
 
     def is_known(self):
         try:
@@ -22,6 +23,7 @@ class PackageIntegrationForm(forms.Form):
                 'version': self.cleaned_data['version'],
                 'package_name': self.cleaned_data['package_name'],
                 'repository': self.cleaned_data['repository'],
+                'artifact_name': self.cleaned_data['artifact_name'],
                 'github_token': conf.settings.GITHUB_TOKEN,
                 'channel': os.path.join(conf.settings.CONDA_ASSET_PATH, 'qiime2', 'unverified'),
                 'channel_name': 'qiime2/unverified',

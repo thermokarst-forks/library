@@ -20,17 +20,18 @@ def handle_new_builds(ctx):
     version = ctx.pop('version')
     package_name = ctx.pop('package_name')
     repository = ctx.pop('repository')
+    artifact_name = ctx.pop('artifact_name')
     github_token = ctx.pop('github_token')
     channel = ctx.pop('channel')
     channel_name = ctx.pop('channel_name')
 
     return chain(
        create_package_build_record_and_update_package.s(
-           ctx, package_id, run_id, version, package_name, repository
+           ctx, package_id, run_id, version, package_name, repository, artifact_name,
        ),
 
        fetch_package_from_github.s(
-           github_token, repository, run_id, channel, package_name,
+           github_token, repository, run_id, channel, package_name, artifact_name,
        ),
 
        reindex_conda_server.s(
@@ -38,18 +39,17 @@ def handle_new_builds(ctx):
        ),
 
        package_build_record_unverified_channel_finished.s(),
-
-       integrate_new_package.s(),
     ).delay()
 
 
 @task(name='db.create_package_build_record_and_update_package')
 def create_package_build_record_and_update_package(
-        ctx, package_id, run_id, version, package_name, repository):
+        ctx, package_id, run_id, version, package_name, repository, artifact_name):
     package_build_record = PackageBuild.objects.create(
         package_id=package_id,
         github_run_id=run_id,
         version=version,
+        artifact_name=artifact_name,
     )
 
     package = Package.objects.get(pk=package_id)
@@ -63,11 +63,11 @@ def create_package_build_record_and_update_package(
 
 
 @task(name='packages.fetch_package_from_github')
-def fetch_package_from_github(ctx, github_token, repository, run_id, channel, package_name):
+def fetch_package_from_github(ctx, github_token, repository, run_id, channel, package_name, artifact_name):
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp_pathlib = pathlib.Path(tmpdir)
 
-        mgr = utils.GitHubArtifactManager(github_token, repository, run_id, tmp_pathlib)
+        mgr = utils.GitHubArtifactManager(github_token, repository, run_id, artifact_name, tmp_pathlib)
         tmp_filepaths = mgr.sync()
 
         for filepath in tmp_filepaths:
@@ -105,10 +105,4 @@ def package_build_record_unverified_channel_finished(ctx):
     package_build_record.unverified = True
     package_build_record.save()
 
-    return ctx
-
-
-@task(name='packages.integrate_new_package')
-def integrate_new_package(ctx):
-    # TODO: probably needs to run on a GitHub workflow, for sandboxing
     return ctx

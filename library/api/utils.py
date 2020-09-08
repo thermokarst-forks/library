@@ -5,10 +5,11 @@ import zipfile
 
 
 class GitHubArtifactManager:
-    def __init__(self, github_token, repository, run_id, tmpdir):
+    def __init__(self, github_token, repository, run_id, artifact_name, tmpdir):
         self.github_token = github_token
         self.github_repository = repository
         self.run_id = run_id
+        self.artifact_name = artifact_name
         self.root_pathlib = tmpdir
         self.base_url = 'https://api.github.com'
         self.valid_names = {'linux-64', 'osx-64'}
@@ -32,6 +33,12 @@ class GitHubArtifactManager:
 
         if self.run_id == '':
             raise Exception('TODO6')
+
+        if self.artifact_name == '':
+            raise Exception('TODO7')
+
+        if self.artifact_name not in self.valid_names:
+            raise Exception('TODO8')
 
     def build_request(self, url, headers=None):
         request = urllib.request.Request(url)
@@ -71,15 +78,15 @@ class GitHubArtifactManager:
         return records
 
     def filter_and_validate_artifact_records(self, records):
-        filtered_records, names = list(), set()
+        filtered_records = list()
         for record in records['artifacts']:
-            names.add(record['name'])
-            if record['name'] in self.valid_names:
+            if record['name'] == self.artifact_name:
                 if record['size_in_bytes'] <= 100000000:
                     filtered_records.append(record)
                 else:
                     raise Exception('TODO10')
-        if not names >= self.valid_names:
+
+        if len(filtered_records) != 1:
             raise Exception('TODO11')
 
         return filtered_records
