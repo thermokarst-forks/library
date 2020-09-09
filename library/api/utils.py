@@ -4,6 +4,10 @@ import urllib.request
 import zipfile
 
 
+class GitHubNotReadyException(Exception):
+    pass
+
+
 class GitHubArtifactManager:
     def __init__(self, github_token, repository, run_id, artifact_name, tmpdir):
         self.github_token = github_token
@@ -87,7 +91,7 @@ class GitHubArtifactManager:
                     raise Exception('TODO10')
 
         if len(filtered_records) != 1:
-            raise Exception('TODO11: %r' % (filtered_records, ))
+            raise GitHubNotReadyException('TODO11: %r' % (filtered_records, ))
 
         return filtered_records
 
