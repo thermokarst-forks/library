@@ -3,5 +3,4 @@
 - name: provision celery worker
   hosts: all
   roles:
-    - docker
     - celery
