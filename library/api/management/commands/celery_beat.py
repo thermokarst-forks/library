@@ -10,22 +10,11 @@ def run_cmd(cmd):
     subprocess.run(split_cmd)
 
 
+def restart_celery_beat():
+    run_cmd('pkill -f "celery worker"')
+    run_cmd('celery beat -A config.celery')
+
+
 class Command(BaseCommand):
-    # def add_arguments(self, parser):
-    #     parser.add_argument('broker_url', type=str)
-    #     parser.add_argument('log_level', type=str)
-    #     parser.add_argument('queues', type=str)
-
     def handle(self, *args, **options):
-        # broker_url = options['broker_url']
-        # log_level = options['log_level']
-        # queues = options['queues']
-
-        # args = (broker_url, log_level, queues)
-
-        # close over args
-        def restart_celery_beat():
-            run_cmd('pkill -f "celery worker"')
-            run_cmd('celery beat -A config.celery')
-
         autoreload.run_with_reloader(restart_celery_beat)
