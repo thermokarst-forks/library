@@ -23,9 +23,7 @@ def setup_periodic_tasks(sender, **kwargs):
     # chron job - reindex staging server every tenish minutes
     staging_fp = os.path.join(conf.settings.CONDA_ASSET_PATH, 'qiime2', 'staging'),
     sender.add_periodic_task(
-        # TODO: revert this
-        # 600.0,  # seconds
-        60.0,
+        600.0,  # seconds
         reindex_conda_server.s(dict(), staging_fp, 'staging'),
         name='packages.reindex_staging',
     )
