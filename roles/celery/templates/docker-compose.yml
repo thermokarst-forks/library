@@ -16,3 +16,12 @@ services:
         --hostname=packages01@%h"
     volumes:
       - /usr/share/nginx/html/packages.qiime2.org/:/data
+
+  beat:
+    build:
+      context: .
+      args:
+        RUNENV: local
+    command: sh -c "celery beat -A config.celery"
+    volumes:
+      - /usr/share/nginx/html/packages.qiime2.org/:/data

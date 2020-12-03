@@ -1,3 +1,4 @@
+import os
 import pathlib
 import shutil
 import tempfile
@@ -7,12 +8,25 @@ from celery import chain
 from celery.decorators import task
 from celery.utils.log import get_task_logger
 import conda_build.api
+from django import conf
 
 from . import utils
 from ..packages.models import Package, PackageBuild
+from config.celery import app
 
 
 logger = get_task_logger(__name__)
+
+
+@app.on_after_finalize.connect
+def setup_periodic_tasks(sender, **kwargs):
+    # chron job - reindex staging server every tenish minutes
+    staging_fp = os.path.join(conf.settings.CONDA_ASSET_PATH, 'qiime2', 'staging'),
+    sender.add_periodic_task(
+        600.0,  # seconds
+        reindex_conda_server.s(dict(), staging_fp, 'staging'),
+        name='packages.reindex_staging',
+    )
 
 
 def handle_new_builds(ctx):

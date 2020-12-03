@@ -5,6 +5,8 @@ services:
     image: postgres
     ports:
       - 5432:5432
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
 
   mq:
     image: rabbitmq
@@ -23,6 +25,18 @@ services:
       - .:/code
       - ./data:/data
 
+  beat:
+    build:
+      context: .
+      args:
+        RUNENV: local
+    command: bash -c "python manage.py celery_beat"
+    depends_on:
+      - worker
+    volumes:
+      - .:/code
+      - ./data:/data
+
   web:
     build:
       context: .
@@ -32,6 +46,8 @@ services:
     depends_on:
       - db
       - mq
+      - worker
+      - beat
     environment:
       - GITHUB_TOKEN=${GITHUB_TOKEN}
     ports:
