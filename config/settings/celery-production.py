@@ -2,7 +2,6 @@ from .shared import (
     BASE_DIR,
     PROJ_DIR,
     SECRET_KEY,
-    DEBUG,
     ALLOWED_HOSTS,
     INSTALLED_APPS,
     MIDDLEWARE,
@@ -71,6 +70,7 @@ __all__ = [
     'CONDA_ASSET_PATH',
 ]
 
+DEBUG = False
 INTERNAL_IPS = ['127.0.0.1', 'localhost']
 INSTALLED_APPS = ['whitenoise.runserver_nostatic', *INSTALLED_APPS]
 CONDA_ASSET_PATH = '/data/'
