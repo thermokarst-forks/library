@@ -22,21 +22,13 @@ def setup_periodic_tasks(sender, **kwargs):
     # cron job - reindex staging server every tenish minutes
     staging_path = pathlib.Path(conf.settings.CONDA_ASSET_PATH) / 'qiime2' / 'staging'
 
-    # TODO: fix the recursive indexing
+    # TODO: stop hard-coding the release
 
     sender.add_periodic_task(
         600.0,  # seconds
-        reindex_conda_server.s(dict(), str(staging_path), 'staging'),
+        reindex_conda_server.s(dict(), str(staging_path), 'staging', '2020.11'),
         name='packages.reindex_staging',
     )
-
-    for path in staging_path.iterdir():
-        if path.is_dir():
-            sender.add_periodic_task(
-                600.0,  # seconds
-                reindex_conda_server.s(dict(), str(path), 'staging-%s' % path.name),
-                name='packages.reindex_staging_%s' % path.name,
-            )
 
 
 def handle_new_builds(ctx):
