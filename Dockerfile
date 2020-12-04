@@ -10,8 +10,8 @@ RUN conda install conda-build pip python=3.8 -y
 RUN mkdir /code
 RUN mkdir /data
 
-RUN useradd -r -s /bin/bash -g ubuntu -G ubuntu -u 1000 ubuntu
 USER ubuntu:ubuntu
+RUN useradd -r -s /bin/bash -g ubuntu -G ubuntu -u 1000 ubuntu
 RUN chown ubuntu:ubuntu /data
 
 WORKDIR /code
