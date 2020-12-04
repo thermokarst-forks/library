@@ -8,7 +8,6 @@ services:
         RUNENV: celery-production
     environment:
       DATABASE_URL: {{ DATABASE_URL }}
-    user: 1000:1000
     command: >
       sh -c "celery worker \
         -A config.celery \
@@ -23,7 +22,6 @@ services:
       context: .
       args:
         RUNENV: celery-production
-    user: 1000:1000
     command: sh -c "celery beat -A config.celery -b {{ RABBITMQ_URL }}"
     volumes:
       - /usr/share/nginx/html/packages.qiime2.org/:/data
