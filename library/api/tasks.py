@@ -1,4 +1,3 @@
-import os
 import pathlib
 import shutil
 import tempfile
@@ -20,13 +19,24 @@ logger = get_task_logger(__name__)
 
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
-    # chron job - reindex staging server every tenish minutes
-    staging_fp = os.path.join(conf.settings.CONDA_ASSET_PATH, 'qiime2', 'staging'),
+    # cron job - reindex staging server every tenish minutes
+    staging_path = pathlib.Path(conf.settings.CONDA_ASSET_PATH) / 'qiime2' / 'staging'
+
+    # TODO: fix the recursive indexing
+
     sender.add_periodic_task(
         600.0,  # seconds
-        reindex_conda_server.s(dict(), staging_fp, 'staging'),
+        reindex_conda_server.s(dict(), str(staging_path), 'staging'),
         name='packages.reindex_staging',
     )
+
+    for path in staging_path.iterdir():
+        if path.is_dir():
+            sender.add_periodic_task(
+                600.0,  # seconds
+                reindex_conda_server.s(dict(), str(path), 'staging-%s' % path.name),
+                name='packages.reindex_staging_%s' % path.name,
+            )
 
 
 def handle_new_builds(ctx):
