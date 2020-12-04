@@ -9,9 +9,8 @@ RUN conda install conda-build pip python=3.8 -y
 
 RUN mkdir /code
 RUN mkdir /data
-RUN chown ubuntu:ubuntu /data
-
 USER ubuntu
+RUN chown ubuntu:ubuntu /data
 
 WORKDIR /code
 COPY . /code/
