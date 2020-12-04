@@ -9,6 +9,7 @@ RUN conda install conda-build pip python=3.8 -y
 
 RUN mkdir /code
 RUN mkdir /data
+RUN mkdir /opt/conda/locks
 RUN chown 1000:1000 /code
 RUN chown 1000:1000 /data
 RUN chown 1000:1000 /opt/conda/locks
