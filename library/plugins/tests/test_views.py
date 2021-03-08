@@ -1,3 +1,11 @@
+# ----------------------------------------------------------------------------
+# Copyright (c) 2018-2021, QIIME 2 development team.
+#
+# Distributed under the terms of the Modified BSD License.
+#
+# The full license is in the file LICENSE, distributed with this software.
+# ----------------------------------------------------------------------------
+
 from django import test
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -45,7 +53,7 @@ class AnonymousUserAuthorizationTests(test.TestCase):
         LegacyPlugin.unsafe.create(**{**_BASE_PLUGIN, 'title': 'published_plugin_1'})
         LegacyPlugin.unsafe.create(**{**_BASE_PLUGIN, 'title': 'published_plugin_2'})
         LegacyPlugin.unsafe.create(
-                **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
+            **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
 
         response = self.client.get('/plugins/')
 
@@ -54,7 +62,7 @@ class AnonymousUserAuthorizationTests(test.TestCase):
 
     def test_legacy_plugin_detail_unpublished(self):
         plugin = LegacyPlugin.unsafe.create(
-                **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
+            **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
 
         response = self.client.get('/plugins/%s/' % plugin.slug)
 
@@ -76,7 +84,7 @@ class AnonymousUserAuthorizationTests(test.TestCase):
 
     def test_legacy_plugin_edit_unpublished(self):
         plugin = LegacyPlugin.unsafe.create(
-                **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
+            **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
 
         response = self.client.get('/plugins/%s/edit/' % plugin.slug)
 
@@ -84,7 +92,7 @@ class AnonymousUserAuthorizationTests(test.TestCase):
 
     def test_legacy_plugin_edit_published(self):
         plugin = LegacyPlugin.unsafe.create(
-                **{**_BASE_PLUGIN, 'title': 'published_plugin'})
+            **{**_BASE_PLUGIN, 'title': 'published_plugin'})
 
         response = self.client.get('/plugins/%s/edit/' % plugin.slug)
 
@@ -115,7 +123,7 @@ class LoggedInUserAuthorizationTests(test.TestCase):
         LegacyPlugin.unsafe.create(**{**_BASE_PLUGIN, 'title': 'published_plugin_1'})
         LegacyPlugin.unsafe.create(**{**_BASE_PLUGIN, 'title': 'published_plugin_2'})
         LegacyPlugin.unsafe.create(
-                **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
+            **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
 
         response = self.client.get('/plugins/')
 
@@ -124,7 +132,7 @@ class LoggedInUserAuthorizationTests(test.TestCase):
 
     def test_legacy_plugin_detail_unpublished(self):
         plugin = LegacyPlugin.unsafe.create(
-                **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
+            **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
 
         response = self.client.get('/plugins/%s/' % plugin.slug)
 
@@ -145,7 +153,7 @@ class LoggedInUserAuthorizationTests(test.TestCase):
 
     def test_legacy_plugin_edit_unpublished(self):
         plugin = LegacyPlugin.unsafe.create(
-                **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
+            **{**_BASE_PLUGIN, 'title': 'unpublished_plugin', 'published': False})
 
         response = self.client.get('/plugins/%s/edit/' % plugin.slug)
 
@@ -153,7 +161,7 @@ class LoggedInUserAuthorizationTests(test.TestCase):
 
     def test_legacy_plugin_edit_published(self):
         plugin = LegacyPlugin.unsafe.create(
-                **{**_BASE_PLUGIN, 'title': 'published_plugin'})
+            **{**_BASE_PLUGIN, 'title': 'published_plugin'})
 
         response = self.client.get('/plugins/%s/edit/' % plugin.slug)
 

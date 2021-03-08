@@ -1,3 +1,11 @@
+# ----------------------------------------------------------------------------
+# Copyright (c) 2018-2021, QIIME 2 development team.
+#
+# Distributed under the terms of the Modified BSD License.
+#
+# The full license is in the file LICENSE, distributed with this software.
+# ----------------------------------------------------------------------------
+
 import pathlib
 import shutil
 import tempfile
@@ -42,19 +50,19 @@ def handle_new_builds(ctx):
     channel_name = ctx.pop('channel_name')
 
     return chain(
-       create_package_build_record_and_update_package.s(
-           ctx, package_id, run_id, version, package_name, repository, artifact_name,
-       ),
+        create_package_build_record_and_update_package.s(
+            ctx, package_id, run_id, version, package_name, repository, artifact_name,
+        ),
 
-       fetch_package_from_github.s(
-           github_token, repository, run_id, channel, package_name, artifact_name,
-       ),
+        fetch_package_from_github.s(
+            github_token, repository, run_id, channel, package_name, artifact_name,
+        ),
 
-       reindex_conda_server.s(
-           channel, channel_name,
-       ),
+        reindex_conda_server.s(
+            channel, channel_name,
+        ),
 
-       package_build_record_unverified_channel_finished.s(),
+        package_build_record_unverified_channel_finished.s(),
     ).delay()
 
 
