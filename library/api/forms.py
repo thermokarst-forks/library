@@ -6,7 +6,7 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 
-import os
+import pathlib
 
 from django import forms, conf
 
@@ -22,6 +22,7 @@ class PackageIntegrationForm(forms.Form):
     artifact_name = forms.CharField(required=True)
 
     def is_known(self):
+        channel_path = pathlib.Path(conf.settings.CONDA_ASSET_PATH) / 'qiime2' / '2021.4' / 'tested'
         try:
             package = Package.objects.get(token=self.cleaned_data['token'])
 
@@ -33,8 +34,8 @@ class PackageIntegrationForm(forms.Form):
                 'repository': self.cleaned_data['repository'],
                 'artifact_name': self.cleaned_data['artifact_name'],
                 'github_token': conf.settings.GITHUB_TOKEN,
-                'channel': os.path.join(conf.settings.CONDA_ASSET_PATH, 'qiime2', 'unverified'),
-                'channel_name': 'qiime2/unverified',
+                'channel': channel_path,
+                'channel_name': '2021.4-tested',
             }
         except Package.DoesNotExist:
             config = None
