@@ -34,7 +34,7 @@ class PackageIntegrationForm(forms.Form):
                 'repository': self.cleaned_data['repository'],
                 'artifact_name': self.cleaned_data['artifact_name'],
                 'github_token': conf.settings.GITHUB_TOKEN,
-                'channel': channel_path,
+                'channel': str(channel_path),
                 'channel_name': '2021.4-tested',
             }
         except Package.DoesNotExist:
