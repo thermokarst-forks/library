@@ -44,12 +44,16 @@ def update_secrets(api, tokens):
         )
 
 
+def read_tokens(library_tokens_fp):
+    with open(library_tokens_fp) as fh:
+        return [t.strip().split(',') for t in fh.readlines()]
+
+
 if __name__ == '__main__':
     gh_token = sys.argv[1]
     api = GhApi(token=gh_token)
 
     library_tokens_fp = sys.argv[2]
-    with open(library_tokens_fp) as fh:
-        tokens = [t.strip().split(',') for t in fh.readlines()]
+    tokens = read_tokens(library_tokens_fp)
 
     update_secrets(api, tokens)
