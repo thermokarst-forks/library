@@ -88,7 +88,7 @@ def create_package_build_record_and_update_package(
 
 @task(name='packages.fetch_package_from_github',
       autoretry_for=[urllib.error.HTTPError, urllib.error.URLError, utils.GitHubNotReadyException],
-      max_retries=5, retry_backoff=180, retry_backoff_max=2400)
+      max_retries=5, retry_backoff=3 * 60, retry_backoff_max=90 * 60)
 def fetch_package_from_github(ctx, github_token, repository, run_id, channel, package_name, artifact_name):
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp_pathlib = pathlib.Path(tmpdir)
