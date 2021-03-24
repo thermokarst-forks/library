@@ -56,7 +56,7 @@ def handle_new_builds(ctx):
 
         fetch_package_from_github.s(
             github_token, repository, run_id, channel, package_name, artifact_name,
-        ),
+        ).apply_async(countdown=600),
 
         reindex_conda_server.s(
             channel, channel_name,
@@ -88,7 +88,7 @@ def create_package_build_record_and_update_package(
 
 @task(name='packages.fetch_package_from_github',
       autoretry_for=[urllib.error.HTTPError, urllib.error.URLError, utils.GitHubNotReadyException],
-      max_retries=5, retry_backoff=3 * 60, retry_backoff_max=90 * 60)
+      max_retries=12, retry_backoff=3 * 60, retry_backoff_max=90 * 60)
 def fetch_package_from_github(ctx, github_token, repository, run_id, channel, package_name, artifact_name):
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp_pathlib = pathlib.Path(tmpdir)
