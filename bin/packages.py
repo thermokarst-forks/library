@@ -1,5 +1,6 @@
 import sys
 
+import networkx as nx
 import yaml
 
 # README:
@@ -13,7 +14,17 @@ import yaml
 def read_packages(variables_fp):
     with open(variables_fp) as fh:
         variables = yaml.load(fh)
-    return [v['name'] for v in variables['projects']]
+
+    G = nx.DiGraph()
+
+    for project in variables['projects']:
+        G.add_node(project['name'])
+
+    for project in variables['projects']:
+        for dep in project.get('deps', []):
+            G.add_edge(project['name'], dep)
+
+    return list(reversed(list(nx.topological_sort(G))))
 
 
 def write_packages(packages_fp, packages):
