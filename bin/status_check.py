@@ -5,18 +5,22 @@ import conda.cli.python_api as conda
 from ghapi.all import GhApi
 
 
+ORG = 'qiime2'
+BRANCH = 'master'
+
+
 def latest_commit(package, api):
-    resp = api.repos.get_branch(owner='qiime2', repo=package, branch='master')
+    resp = api.repos.get_branch(owner=ORG, repo=package, branch=BRANCH)
     return (resp.commit.html_url, resp.commit.sha)
 
 
 def latest_action_run(package, api, latest_commit_sha):
     resp = api.actions.list_workflow_runs_for_repo(
-        owner='qiime2', repo=package, branch='master', event='push',
+        owner=ORG, repo=package, branch=BRANCH, event='push',
         per_page=1, page=1)
     run = resp.workflow_runs[0]
 
-    if run.head_branch != 'master':
+    if run.head_branch != BRANCH:
         raise ValueError('run branch %s != master' % (run.head_branch,))
 
     if run.head_sha != latest_commit_sha:
