@@ -18,6 +18,7 @@ import conda_build.api
 from django import conf
 
 from . import utils
+from . import forms
 from ..packages.models import Package, PackageBuild
 from config.celery import app
 
@@ -27,13 +28,13 @@ logger = get_task_logger(__name__)
 
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
-    tested_path = utils.BASE_PATH / 'tested'
+    tested_path = forms.BASE_PATH / 'tested'
     sender.add_periodic_task(
         600.0,  # seconds
         reindex_conda_server.s(dict(), str(tested_path), '%s-tested' % (conf.settings.QIIME2_RELEASE,)),
         name='packages.reindex_tested',
     )
-    staged_path = utils.BASE_PATH / 'staged'
+    staged_path = forms.BASE_PATH / 'staged'
     sender.add_periodic_task(
         600.0,  # seconds
         reindex_conda_server.s(dict(), str(staged_path), '%s-staged' % (conf.settings.QIIME2_RELEASE,)),
