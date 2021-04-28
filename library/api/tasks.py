@@ -27,15 +27,17 @@ logger = get_task_logger(__name__)
 
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
-    # cron jobs - reindex tested && staged channels every tenish minutes
-    for gate in ['tested', 'staged']:
-        path = utils.BASE_PATH / gate
-
-        sender.add_periodic_task(
-            600.0,  # seconds
-            reindex_conda_server.s(dict(), str(path), '%s-%s' % (conf.settings.QIIME2_RELEASE, gate,)),
-            name='packages.reindex_%s' % (gate,),
-        )
+    path = utils.BASE_PATH / gate
+    sender.add_periodic_task(
+        600.0,  # seconds
+        reindex_conda_server.s(dict(), str(path), '%s-tested' % (conf.settings.QIIME2_RELEASE,)),
+        name='packages.reindex_tested',
+    )
+    sender.add_periodic_task(
+        600.0,  # seconds
+        reindex_conda_server.s(dict(), str(path), '%s-staged' % (conf.settings.QIIME2_RELEASE,)),
+        name='packages.reindex_staged',
+    )
 
 
 def handle_new_builds(ctx):
