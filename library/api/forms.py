@@ -22,7 +22,7 @@ class PackageIntegrationForm(forms.Form):
     artifact_name = forms.CharField(required=True)
 
     def is_known(self):
-        channel_path = pathlib.Path(conf.settings.CONDA_ASSET_PATH) / 'qiime2' / '2021.4' / 'tested'
+        channel_path = pathlib.Path(conf.settings.CONDA_ASSET_PATH) / 'qiime2' / '2021.8' / 'tested'
         try:
             package = Package.objects.get(token=self.cleaned_data['token'])
 
@@ -35,7 +35,7 @@ class PackageIntegrationForm(forms.Form):
                 'artifact_name': self.cleaned_data['artifact_name'],
                 'github_token': conf.settings.GITHUB_TOKEN,
                 'channel': str(channel_path),
-                'channel_name': '2021.4-tested',
+                'channel_name': '2021.8-tested',
             }
         except Package.DoesNotExist:
             config = None
