@@ -27,15 +27,16 @@ logger = get_task_logger(__name__)
 
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
-    path = utils.BASE_PATH / gate
+    tested_path = utils.BASE_PATH / 'tested'
     sender.add_periodic_task(
         600.0,  # seconds
-        reindex_conda_server.s(dict(), str(path), '%s-tested' % (conf.settings.QIIME2_RELEASE,)),
+        reindex_conda_server.s(dict(), str(tested_path), '%s-tested' % (conf.settings.QIIME2_RELEASE,)),
         name='packages.reindex_tested',
     )
+    staged_path = utils.BASE_PATH / 'staged'
     sender.add_periodic_task(
         600.0,  # seconds
-        reindex_conda_server.s(dict(), str(path), '%s-staged' % (conf.settings.QIIME2_RELEASE,)),
+        reindex_conda_server.s(dict(), str(staged_path), '%s-staged' % (conf.settings.QIIME2_RELEASE,)),
         name='packages.reindex_staged',
     )
 
