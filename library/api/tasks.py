@@ -27,15 +27,15 @@ logger = get_task_logger(__name__)
 
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
-    # cron job - reindex staging server every tenish minutes
-    # TODO: stop hard-coding the release
-    staging_path = pathlib.Path(conf.settings.CONDA_ASSET_PATH) / 'qiime2' / '2021.8' / 'staged'
+    # cron jobs - reindex tested && staged channels every tenish minutes
+    for gate in ['tested', 'staged']:
+        path = utils.BASE_PATH / gate
 
-    sender.add_periodic_task(
-        600.0,  # seconds
-        reindex_conda_server.s(dict(), str(staging_path), '2021.8-staged'),
-        name='packages.reindex_staging',
-    )
+        sender.add_periodic_task(
+            600.0,  # seconds
+            reindex_conda_server.s(dict(), str(path), '%s-%s' % (conf.settings.QIIME2_RELEASE, gate,)),
+            name='packages.reindex_%s' % (gate,),
+        )
 
 
 def handle_new_builds(ctx):

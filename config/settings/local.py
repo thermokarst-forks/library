@@ -40,6 +40,7 @@ from .shared import (
     CELERY_TASK_ROUTES,
     GITHUB_TOKEN,
     CONDA_ASSET_PATH,
+    QIIME2_RELEASE,
 )
 
 
@@ -78,6 +79,7 @@ __all__ = [
     'CELERY_TASK_ROUTES',
     'GITHUB_TOKEN',
     'CONDA_ASSET_PATH',
+    'QIIME2_RELEASE',
 ]
 
 MIDDLEWARE.extend([
