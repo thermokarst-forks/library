@@ -10,9 +10,10 @@ services:
       DATABASE_URL: {{ DATABASE_URL }}
     user: 1000:1000
     command: >
-      sh -c "celery worker \
+      sh -c "celery \
         -A config.celery \
         -b {{ RABBITMQ_URL }} \
+        worker \
         -Q packages,git \
         --hostname=worker01@infrastructure.qiime2.org"
     volumes:
@@ -24,6 +25,6 @@ services:
       args:
         RUNENV: celery-production
     user: 1000:1000
-    command: sh -c "celery beat -A config.celery -b {{ RABBITMQ_URL }}"
+    command: sh -c "celery -A config.celery -b {{ RABBITMQ_URL }} beat"
     volumes:
       - /usr/share/nginx/html/packages.qiime2.org/:/data
