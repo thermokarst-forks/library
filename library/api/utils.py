@@ -172,8 +172,7 @@ class CondaBuildConfigManager:
 
         self.path = '%s/%s/conda_build_config.yaml' % (self.release, self.gate)
         self.commit_msg = 'updating %s: %s=%s' % (self.path, self.package_name, self.version)
-        # TODO: update the owner when done debugging and ready for prime-time
-        self.owner = 'thermokarst'
+        self.owner = 'qiime2'
         self.repo = 'package-integration'
         self.ghapi = None
 
