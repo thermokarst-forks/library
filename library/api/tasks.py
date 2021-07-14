@@ -14,6 +14,7 @@ import urllib.error
 
 from celery import chain
 from celery.decorators import task
+from celery.schedules import crontab
 from celery.utils.log import get_task_logger
 import conda_build.api
 from django import conf
@@ -29,19 +30,24 @@ from config.celery import app
 
 logger = get_task_logger(__name__)
 
+TIME = {
+    '03_MIN': 60 * 3,
+    '05_MIN': 60 * 5,
+    '10_MIN': 60 * 10,
+    '90_MIN': 60 * 90,
+    '02_HR': 60 * 60 * 2,
+}
 
-TIME_03_MIN = 60 * 3
-TIME_05_MIN = 60 * 5
-TIME_10_MIN = 60 * 10
-TIME_90_MIN = 60 * 90
-TIME_02_HR = 60 * 60 * 2
-TIME_24_HR = 60 * 60 * 24
+
+# For development purposes it's a lot nicer to have short cycle times (30 sec)
+if conf.settings.DEBUG:
+    TIME = {k: 30 for k in TIME.keys()}
 
 
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
-        TIME_24_HR,
+        crontab(minute=0, hour=4),  # daily at 4a
         celery_backend_cleanup.s(),
         name='db.clean_up_reindex_tasks'
     )
@@ -49,7 +55,7 @@ def setup_periodic_tasks(sender, **kwargs):
     for gate in ['tested', 'staged']:
         path = forms.BASE_PATH / gate
         sender.add_periodic_task(
-            TIME_05_MIN,
+            TIME['05_MIN'],
             reindex_conda_server.s(dict(), str(path), '%s-%s' % (conf.settings.QIIME2_RELEASE, gate)),
             name='packages.reindex_%s' % (gate,),
         )
@@ -99,7 +105,7 @@ def handle_new_builds(ctx):
         # open_pull_request.s(
         #     '%s-%s' % (package_name, version), conf.settings.QIIME2_RELEASE, 'staged', 'main'),
 
-    ).apply_async(countdown=TIME_10_MIN)
+    ).apply_async(countdown=TIME['10_MIN'])
 
 
 @task(name='db.create_package_build_record_and_update_package')
@@ -124,7 +130,7 @@ def create_package_build_record_and_update_package(
 
 @task(name='packages.fetch_package_from_github',
       autoretry_for=[urllib.error.HTTPError, urllib.error.URLError, utils.GitHubNotReadyException],
-      max_retries=12, retry_backoff=TIME_03_MIN, retry_backoff_max=TIME_90_MIN)
+      max_retries=12, retry_backoff=TIME['03_MIN'], retry_backoff_max=TIME['90_MIN'])
 def fetch_package_from_github(ctx, github_token, repository, run_id, channel, package_name, artifact_name):
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp_pathlib = pathlib.Path(tmpdir)
@@ -178,7 +184,7 @@ def package_build_record_set_unverified_true(ctx):
 
 @task(name='git.update_conda_build_config',
       autoretry_for=[utils.AdvisoryLockNotReadyException],
-      max_retries=12, retry_backoff=TIME_03_MIN, retry_backoff_max=TIME_02_HR)
+      max_retries=12, retry_backoff=TIME['03_MIN'], retry_backoff_max=TIME['02_HR'])
 def update_conda_build_config(ctx, github_token, branch, release, gate, package_name, version):
     # TODO: drop this when alpha2 is ready
     if not ctx['dev_mode']:
