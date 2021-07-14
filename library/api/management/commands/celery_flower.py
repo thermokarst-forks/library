@@ -20,7 +20,7 @@ def run_cmd(cmd):
 
 def restart_celery_flower():
     run_cmd('pkill -f "celery flower"')
-    run_cmd('celery flower -A config.celery --address=0.0.0.0 --port=5555')
+    run_cmd('celery -A config.celery flower --address=0.0.0.0 --port=5555')
 
 
 class Command(BaseCommand):

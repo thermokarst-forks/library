@@ -16,9 +16,11 @@ services:
       context: .
       args:
         RUNENV: local
-    command: bash -c "python manage.py celery_worker amqp://guest@mq/ info packages,db,default"
+    command: bash -c "python manage.py celery_worker amqp://guest@mq/ debug packages,db,git,default"
     depends_on:
       - mq
+    links:
+      - db
     environment:
       - GITHUB_TOKEN=${GITHUB_TOKEN}
     volumes:

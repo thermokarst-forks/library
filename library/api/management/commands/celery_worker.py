@@ -35,8 +35,8 @@ class Command(BaseCommand):
         def restart_celery_worker():
             run_cmd('pkill -f "celery worker"')
             run_cmd(
-                'celery worker -A config.celery -b %s '
-                '--loglevel=%s -Q %s' % args
+                'celery -A config.celery -b %s '
+                'worker --loglevel=%s -Q %s' % args
             )
 
         autoreload.run_with_reloader(restart_celery_worker)

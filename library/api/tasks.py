@@ -6,6 +6,7 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 
+import datetime
 import pathlib
 import shutil
 import tempfile
@@ -16,6 +17,9 @@ from celery.decorators import task
 from celery.utils.log import get_task_logger
 import conda_build.api
 from django import conf
+from django.db import transaction
+from django.utils import timezone
+from django_celery_results.models import TaskResult
 
 from . import utils
 from . import forms
@@ -26,15 +30,41 @@ from config.celery import app
 logger = get_task_logger(__name__)
 
 
+TIME_03_MIN = 60 * 3
+TIME_05_MIN = 60 * 5
+TIME_10_MIN = 60 * 10
+TIME_90_MIN = 60 * 90
+TIME_02_HR = 60 * 60 * 2
+TIME_24_HR = 60 * 60 * 24
+
+
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
+    sender.add_periodic_task(
+        TIME_24_HR,
+        celery_backend_cleanup.s(),
+        name='db.clean_up_reindex_tasks'
+    )
+
     for gate in ['tested', 'staged']:
         path = forms.BASE_PATH / gate
         sender.add_periodic_task(
-            300.0,  # seconds
+            TIME_05_MIN,
             reindex_conda_server.s(dict(), str(path), '%s-%s' % (conf.settings.QIIME2_RELEASE, gate)),
             name='packages.reindex_%s' % (gate,),
         )
+
+
+@task(name='db.celery_backend_cleanup')
+def celery_backend_cleanup():
+    with transaction.atomic():
+        TaskResult.objects.filter(
+            date_done__lt=timezone.now() - datetime.timedelta(seconds=conf.settings.CELERY_RESULT_EXPIRES),
+            task_name__in=[
+                'packages.reindex_conda_server',
+                'packages.celery_backend_cleanup',
+            ],
+        ).delete()
 
 
 def handle_new_builds(ctx):
@@ -61,8 +91,15 @@ def handle_new_builds(ctx):
             channel, channel_name,
         ),
 
-        package_build_record_unverified_channel_finished.s(),
-    ).apply_async(countdown=600)
+        package_build_record_set_unverified_true.s(),
+
+        update_conda_build_config.s(
+            github_token, 'main', conf.settings.QIIME2_RELEASE, 'tested', package_name, version),
+
+        # open_pull_request.s(
+        #     '%s-%s' % (package_name, version), conf.settings.QIIME2_RELEASE, 'staged', 'main'),
+
+    ).apply_async(countdown=TIME_10_MIN)
 
 
 @task(name='db.create_package_build_record_and_update_package')
@@ -87,7 +124,7 @@ def create_package_build_record_and_update_package(
 
 @task(name='packages.fetch_package_from_github',
       autoretry_for=[urllib.error.HTTPError, urllib.error.URLError, utils.GitHubNotReadyException],
-      max_retries=12, retry_backoff=3 * 60, retry_backoff_max=90 * 60)
+      max_retries=12, retry_backoff=TIME_03_MIN, retry_backoff_max=TIME_90_MIN)
 def fetch_package_from_github(ctx, github_token, repository, run_id, channel, package_name, artifact_name):
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp_pathlib = pathlib.Path(tmpdir)
@@ -98,12 +135,12 @@ def fetch_package_from_github(ctx, github_token, repository, run_id, channel, pa
         for filepath in tmp_filepaths:
             utils.unzip(filepath)
 
-        unverified_pkgs_fp = pathlib.Path(channel)
-        utils.bootstrap_pkgs_dir(unverified_pkgs_fp)
+        tested_pkgs_fp = pathlib.Path(channel)
+        utils.bootstrap_pkgs_dir(tested_pkgs_fp)
 
         filematcher = '**/*%s*.tar.bz2' % (package_name,)
         for from_path in tmp_pathlib.glob(filematcher):
-            to_path = unverified_pkgs_fp / from_path.parent.name / from_path.name
+            to_path = tested_pkgs_fp / from_path.parent.name / from_path.name
             shutil.copy(from_path, to_path)
 
     return ctx
@@ -123,11 +160,46 @@ def reindex_conda_server(ctx, channel, channel_name):
 
 
 @task(name='db.package_build_record_set_unverified_true')
-def package_build_record_unverified_channel_finished(ctx):
+def package_build_record_set_unverified_true(ctx):
     pk = ctx.pop('package_build_record')
 
     package_build_record = PackageBuild.objects.get(pk=pk)
     package_build_record.unverified = True
     package_build_record.save()
 
+    # needs to be JSON serializable, sets aren't roundtrippable though, so listify queryset
+    ctx['build_artifacts'] = list(PackageBuild.objects.filter(
+        package=package_build_record.package,
+        version=package_build_record.version,
+    ).distinct().values_list('artifact_name', flat=True))
+
     return ctx
+
+
+@task(name='git.update_conda_build_config',
+      autoretry_for=[utils.AdvisoryLockNotReadyException],
+      max_retries=12, retry_backoff=TIME_03_MIN, retry_backoff_max=TIME_02_HR)
+def update_conda_build_config(ctx, github_token, branch, release, gate, package_name, version):
+    # TODO: drop this when alpha2 is ready
+    if not ctx['dev_mode']:
+        return ctx
+
+    if set(ctx['build_artifacts']) != {'osx-64', 'linux-64'}:
+        return ctx
+
+    mgr = utils.CondaBuildConfigManager(github_token, branch, release, gate, package_name, version)
+    mgr.update()
+
+    return ctx
+
+
+# @task(name='git.open_pull_request')
+# def open_pull_request(ctx, branch, release, gate, base):
+#     # TODO: drop this when alpha2 is ready
+#     if not ctx['dev_mode']:
+#         return ctx
+#
+#     if ctx['build_artifacts'] != ('osx-64', 'linux-64'):
+#         return ctx
+#
+#     utils.update_conda_build_config(branch, release, gate)

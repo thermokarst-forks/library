@@ -20,7 +20,7 @@ def run_cmd(cmd):
 
 def restart_celery_beat():
     run_cmd('pkill -f "celery worker"')
-    run_cmd('celery beat -A config.celery')
+    run_cmd('celery -A config.celery beat')
 
 
 class Command(BaseCommand):

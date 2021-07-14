@@ -13,8 +13,8 @@ services:
       sh -c "celery worker \
         -A config.celery \
         -b {{ RABBITMQ_URL }} \
-        -Q packages \
-        --hostname=packages01@%h"
+        -Q packages,git \
+        --hostname=worker01@infrastructure.qiime2.org"
     volumes:
       - /usr/share/nginx/html/packages.qiime2.org/:/data
 

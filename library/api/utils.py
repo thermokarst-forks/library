@@ -6,13 +6,26 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 
+import base64
+import contextlib
 import json
+from packaging import version
 import shutil
 import urllib.request
+import urllib.error
 import zipfile
+
+from django.db import connection
+from fastcore.utils import HTTP404NotFoundError
+from ghapi.all import GhApi
+import yaml
 
 
 class GitHubNotReadyException(Exception):
+    pass
+
+
+class AdvisoryLockNotReadyException(Exception):
     pass
 
 
@@ -73,10 +86,13 @@ class GitHubArtifactManager:
         if download_pathlib.exists():
             raise Exception('TODO9')
 
-        request = self.build_request(url)
-        with urllib.request.urlopen(request) as resp, \
-                download_pathlib.open('wb') as save_fh:
-            shutil.copyfileobj(resp, save_fh)
+        try:
+            request = self.build_request(url)
+            with urllib.request.urlopen(request) as resp, \
+                    download_pathlib.open('wb') as save_fh:
+                shutil.copyfileobj(resp, save_fh)
+        except Exception:
+            raise urllib.error.HTTPError
 
     def fetch_artifact(self, record):
         download_path = self.root_pathlib / record['name']
@@ -127,3 +143,106 @@ def unzip(fp_pathlib):
 def bootstrap_pkgs_dir(fp_pathlib):
     for arch in ('linux-64', 'osx-64'):
         (fp_pathlib / arch).mkdir(parents=True, exist_ok=True)
+
+
+@contextlib.contextmanager
+def advisory_lock(lock_id):
+    lock_id = int(lock_id)
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute('SELECT pg_try_advisory_lock(%s);', (lock_id,))
+        acquired = cursor.fetchall()[0][0]
+        yield acquired
+    finally:
+        cursor.execute('SELECT pg_advisory_unlock(%s);', (lock_id,))
+        cursor.close()
+
+
+class CondaBuildConfigManager:
+    def __init__(self, github_token, branch, release, gate, package_name, version):
+        self.github_token = github_token
+        self.branch = branch
+        self.release = release
+        self.gate = gate
+        self.package_name = package_name.replace('-', '_')
+        self.version = version
+
+        self.validate_config()
+
+        self.path = '%s/%s/conda_build_config.yaml' % (self.release, self.gate)
+        self.commit_msg = 'updating %s: %s=%s' % (self.path, self.package_name, self.version)
+        # TODO: update the owner when done debugging and ready for prime-time
+        self.owner = 'thermokarst'
+        self.repo = 'package-integration'
+        self.ghapi = None
+
+    def validate_config(self):
+        if self.github_token == '':
+            raise Exception('TODO12')
+
+        if self.branch == '':
+            raise Exception('TODO13')
+
+        # TODO: wire up cycles from ALP
+        if self.release == '':
+            raise Exception('TODO14')
+
+        if self.gate not in ('tested', 'staged'):
+            raise Exception('TODO15')
+
+        if self.package_name == '':
+            raise Exception('TODO16')
+
+        if self.version == '':
+            raise Exception('TODO17')
+
+    def update(self):
+        with advisory_lock(42) as lock:
+            if lock:
+                # Wait until we get a lock before setting up ghapi
+                self.ghapi = GhApi(token=self.github_token)
+                cbc, sha = self.fetch_from_github()
+                if self.package_name in cbc:
+                    last_versions = cbc[self.package_name]
+                    if len(last_versions) != 1:
+                        raise Exception('TODO18')
+                    current_version = version.parse(str(self.version))
+                    last_version = version.parse(str(last_versions[0]))
+                    if current_version < last_version:
+                        raise Exception('TODO19')
+                cbc[self.package_name] = [self.version]
+                self.commit_to_github(cbc, sha)
+            else:
+                raise AdvisoryLockNotReadyException
+
+    def fetch_from_github(self):
+        try:
+            payload = self.ghapi.repos.get_content(
+                owner=self.owner,
+                repo=self.repo,
+                path=self.path,
+                ref=self.branch,
+            )
+
+            cbc = base64.b64decode(payload['content'])
+            parsed = yaml.load(cbc, Loader=yaml.FullLoader)
+
+            results = (parsed, payload['sha'])
+        except HTTP404NotFoundError:
+            results = (dict(), None)
+
+        return results
+
+    def commit_to_github(self, cbc, sha):
+        updated = yaml.dump(cbc)
+        content = base64.b64encode(updated.encode('utf-8')).decode('utf-8')
+
+        self.ghapi.repos.create_or_update_file_contents(
+            owner=self.owner,
+            repo=self.repo,
+            path=self.path,
+            message=self.commit_msg,
+            content=content,
+            sha=sha,
+        )

@@ -23,6 +23,7 @@ class PackageIntegrationForm(forms.Form):
     package_name = forms.CharField(required=True)
     repository = forms.CharField(required=True)
     artifact_name = forms.CharField(required=True)
+    dev_mode = forms.BooleanField(required=False, initial=False)
 
     def is_known(self):
         channel_path = BASE_PATH / 'tested'
@@ -39,6 +40,7 @@ class PackageIntegrationForm(forms.Form):
                 'github_token': conf.settings.GITHUB_TOKEN,
                 'channel': str(channel_path),
                 'channel_name': '%s-tested' % (conf.settings.QIIME2_RELEASE,),
+                'dev_mode': self.cleaned_data['dev_mode'],
             }
         except Package.DoesNotExist:
             config = None

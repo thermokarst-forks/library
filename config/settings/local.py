@@ -75,6 +75,7 @@ __all__ = [
     'RABBITMQ_URL',
     'CELERY_BROKER_URL',
     'CELERY_RESULT_BACKEND',
+    'CELERY_RESULT_EXPIRES',
     'CELERY_RESULT_SERIALIZER',
     'CELERY_TASK_ROUTES',
     'GITHUB_TOKEN',
@@ -87,3 +88,4 @@ MIDDLEWARE.extend([
 ])
 INTERNAL_IPS = ['127.0.0.1', 'localhost']
 INSTALLED_APPS = ['whitenoise.runserver_nostatic', *INSTALLED_APPS, 'debug_toolbar']
+CELERY_RESULT_EXPIRES = 60 * 10
