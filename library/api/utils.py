@@ -172,9 +172,10 @@ class CondaBuildConfigManager:
 
         self.path = '%s/%s/conda_build_config.yaml' % (self.release, self.gate)
         self.commit_msg = 'updating %s: %s=%s' % (self.path, self.package_name, self.version)
-        self.owner = 'qiime2'
+        self.owner = 'thermokarst'
         self.repo = 'package-integration'
         self.ghapi = None
+        self.main_branch = 'main'
 
     def validate_config(self):
         if self.github_token == '':
@@ -211,6 +212,7 @@ class CondaBuildConfigManager:
                     if current_version < last_version:
                         raise Exception('TODO19')
                 cbc[self.package_name] = [self.version]
+                self.add_branch_if_missing()
                 self.commit_to_github(cbc, sha)
             else:
                 raise AdvisoryLockNotReadyException
@@ -221,7 +223,8 @@ class CondaBuildConfigManager:
                 owner=self.owner,
                 repo=self.repo,
                 path=self.path,
-                ref=self.branch,
+                # always use latest main as a basis
+                ref=self.main_branch,
             )
 
             cbc = base64.b64decode(payload['content'])
@@ -232,6 +235,27 @@ class CondaBuildConfigManager:
             results = (dict(), None)
 
         return results
+
+    def add_branch_if_missing(self):
+        try:
+            self.ghapi.repos.get_branch(
+                owner=self.owner,
+                repo=self.repo,
+                branch=self.branch,
+            )
+        except HTTP404NotFoundError:
+            payload = self.ghapi.git.get_ref(
+                owner=self.owner,
+                repo=self.repo,
+                ref='heads/%s' % (self.main_branch,),
+            )
+            self.ghapi.git.create_ref(
+                owner=self.owner,
+                repo=self.repo,
+                ref='refs/heads/%s' % (self.branch,),
+                sha=payload['object']['sha'],
+            )
+
 
     def commit_to_github(self, cbc, sha):
         updated = yaml.dump(cbc)
@@ -244,4 +268,18 @@ class CondaBuildConfigManager:
             message=self.commit_msg,
             content=content,
             sha=sha,
+            branch=self.branch
         )
+
+    def open_pr(self):
+        payload = self.ghapi.pulls.create(
+            owner=self.owner,
+            repo=self.repo,
+            title=self.commit_msg,
+            head=self.branch,
+            base=self.main_branch,
+            maintainer_can_modify=True,
+            draft=False,
+        )
+
+        return payload['url']

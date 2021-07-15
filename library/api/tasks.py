@@ -11,6 +11,7 @@ import pathlib
 import shutil
 import tempfile
 import urllib.error
+import uuid
 
 from celery import chain
 from celery.decorators import task
@@ -100,10 +101,10 @@ def handle_new_builds(ctx):
         package_build_record_set_unverified_true.s(),
 
         update_conda_build_config.s(
-            github_token, 'main', conf.settings.QIIME2_RELEASE, 'tested', package_name, version),
+            github_token, conf.settings.QIIME2_RELEASE, package_name, version),
 
-        # open_pull_request.s(
-        #     '%s-%s' % (package_name, version), conf.settings.QIIME2_RELEASE, 'staged', 'main'),
+        open_pull_request.s(
+            github_token, conf.settings.QIIME2_RELEASE, package_name, version),
 
     ).apply_async(countdown=TIME['10_MIN'])
 
@@ -185,7 +186,7 @@ def package_build_record_set_unverified_true(ctx):
 @task(name='git.update_conda_build_config',
       autoretry_for=[utils.AdvisoryLockNotReadyException],
       max_retries=12, retry_backoff=TIME['03_MIN'], retry_backoff_max=TIME['02_HR'])
-def update_conda_build_config(ctx, github_token, branch, release, gate, package_name, version):
+def update_conda_build_config(ctx, github_token, release, package_name, version):
     # TODO: drop this when alpha2 is ready
     if not ctx['dev_mode']:
         return ctx
@@ -193,19 +194,28 @@ def update_conda_build_config(ctx, github_token, branch, release, gate, package_
     if set(ctx['build_artifacts']) != {'osx-64', 'linux-64'}:
         return ctx
 
-    mgr = utils.CondaBuildConfigManager(github_token, branch, release, gate, package_name, version)
+    mgr = utils.CondaBuildConfigManager(github_token, 'main', release, 'tested', package_name, version)
     mgr.update()
 
     return ctx
 
 
-# @task(name='git.open_pull_request')
-# def open_pull_request(ctx, branch, release, gate, base):
-#     # TODO: drop this when alpha2 is ready
-#     if not ctx['dev_mode']:
-#         return ctx
-#
-#     if ctx['build_artifacts'] != ('osx-64', 'linux-64'):
-#         return ctx
-#
-#     utils.update_conda_build_config(branch, release, gate)
+@task(name='git.open_pull_request',
+      autoretry_for=[utils.AdvisoryLockNotReadyException],
+      max_retries=12, retry_backoff=TIME['03_MIN'], retry_backoff_max=TIME['02_HR'])
+def open_pull_request(ctx, github_token, release, package_name, version):
+    # TODO: drop this when alpha2 is ready
+    if not ctx['dev_mode']:
+        return ctx
+
+    if set(ctx['build_artifacts']) != {'osx-64', 'linux-64'}:
+        return ctx
+
+    branch = str(uuid.uuid4())
+    mgr = utils.CondaBuildConfigManager(github_token, branch, release, 'staged', package_name, version)
+    mgr.update()
+
+    # TODO: do something with the PR url
+    mgr.open_pr()
+
+    return ctx
