@@ -5,7 +5,7 @@
 A simple docker-compose recipe is available for development:
 
 ```bash
-docker-compose -f docker-compose.dev.yml up --remove-orphans --build
+docker compose -f docker-compose.dev.yml up --remove-orphans --build
 ```
 
 ## Production Environment Variables

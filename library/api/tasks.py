@@ -44,6 +44,10 @@ TIME = {
 if conf.settings.DEBUG:
     TIME = {k: 30 for k in TIME.keys()}
 
+EPOCH = {
+    'dev': conf.settings.QIIME2_DEV,
+    'release': conf.settings.QIIME2_RELEASE,
+}
 
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
@@ -53,13 +57,34 @@ def setup_periodic_tasks(sender, **kwargs):
         name='db.clean_up_reindex_tasks'
     )
 
-    for gate in ['tested', 'staged']:
-        path = forms.BASE_PATH / gate
-        sender.add_periodic_task(
-            TIME['05_MIN'],
-            reindex_conda_server.s(dict(), str(path), '%s-%s' % (conf.settings.QIIME2_RELEASE, gate)),
-            name='packages.reindex_%s' % (gate,),
-        )
+    for gate in ('tested', 'staged'):
+        for epoch in EPOCH.values():
+            path = forms.BASE_PATH / epoch / gate
+            sender.add_periodic_task(
+                TIME['05_MIN'],
+                reindex_conda_server.s(dict(), str(path), '%s-%s' % (epoch, gate)),
+                name='packages.reindex_%s' % (gate,),
+            )
+
+    sender.add_periodic_task(
+        TIME['10_MIN'],
+        chain(
+            find_packages_ready_for_integration.s(dict(), 'dev'),
+            open_pull_request.s(conf.settings.GITHUB_TOKEN),
+            update_package_build_record_integration_pr_url.s(),
+        ),
+        name='git.batch_staged_packages_dev',
+    )
+
+    sender.add_periodic_task(
+        TIME['10_MIN'],
+        chain(
+            find_packages_ready_for_integration.s(dict(), 'release'),
+            open_pull_request.s(conf.settings.GITHUB_TOKEN),
+            update_package_build_record_integration_pr_url.s(),
+        ),
+        name='git.batch_staged_packages_release',
+    )
 
 
 @task(name='db.celery_backend_cleanup')
@@ -112,12 +137,19 @@ def handle_new_builds(ctx):
 @task(name='db.create_package_build_record_and_update_package')
 def create_package_build_record_and_update_package(
         ctx, package_id, run_id, version, package_name, repository, artifact_name):
-    package_build_record = PackageBuild.objects.create(
+    package_build_record, _ = PackageBuild.objects.get_or_create(
         package_id=package_id,
         github_run_id=run_id,
         version=version,
-        artifact_name=artifact_name,
     )
+
+    if artifact_name == 'linux-64':
+        package_build_record.linux_64 = True
+    elif artifact_name == 'osx-64':
+        package_build_record.osx_64 = True
+    else:
+        raise Exception('unknown build type')
+    package_build_record.save()
 
     package = Package.objects.get(pk=package_id)
     package.name = package_name
@@ -166,19 +198,14 @@ def reindex_conda_server(ctx, channel, channel_name):
     return ctx
 
 
-@task(name='db.package_build_record_set_unverified_true')
-def package_build_record_set_unverified_true(ctx):
-    pk = ctx.pop('package_build_record')
+@task(name='db.verify_all_architectures_present')
+def verify_all_architectures_present(ctx):
+    pk = ctx['package_build_record']
+    ctx['not_all_architectures_present'] = True
 
     package_build_record = PackageBuild.objects.get(pk=pk)
-    package_build_record.unverified = True
-    package_build_record.save()
-
-    # needs to be JSON serializable, sets aren't roundtrippable though, so listify queryset
-    ctx['build_artifacts'] = list(PackageBuild.objects.filter(
-        package=package_build_record.package,
-        version=package_build_record.version,
-    ).distinct().values_list('artifact_name', flat=True))
+    if package_build_record.linux_64 and package_build_record.osx_64:
+        ctx['not_all_architectures_present'] = False
 
     return ctx
 
@@ -191,11 +218,34 @@ def update_conda_build_config(ctx, github_token, release, package_name, version)
     if not ctx['dev_mode']:
         return ctx
 
-    if set(ctx['build_artifacts']) != {'osx-64', 'linux-64'}:
+    if ctx['not_all_architectures_present']:
         return ctx
 
-    mgr = utils.CondaBuildConfigManager(github_token, 'main', release, 'tested', package_name, version)
+    package_versions = {package_name: version}
+    mgr = utils.CondaBuildConfigManager(github_token, 'main', release, 'tested', package_versions)
     mgr.update()
+
+    return ctx
+
+
+@task(name='db.find_packages_ready_for_integration')
+def find_packages_ready_for_integration(ctx, build_target):
+    package_versions = dict()
+
+    for record in PackageBuild.objects.filter(
+                linux_64=True,
+                osx_64=True,
+                integration_pr_url='',
+                build_target=build_target,
+            ):
+        if record.package.name in package_versions:
+            if utils.compare_package_versions(package_versions[record.package.name], record.version):
+                package_versions[record.package.name] = record.version
+        else:
+            package_versions[record.package.name] = record.version
+
+    ctx['package_versions'] = package_versions
+    ctx['release'] = EPOCH[build_target]
 
     return ctx
 
@@ -203,19 +253,21 @@ def update_conda_build_config(ctx, github_token, release, package_name, version)
 @task(name='git.open_pull_request',
       autoretry_for=[utils.AdvisoryLockNotReadyException],
       max_retries=12, retry_backoff=TIME['03_MIN'], retry_backoff_max=TIME['02_HR'])
-def open_pull_request(ctx, github_token, release, package_name, version):
-    # TODO: drop this when alpha2 is ready
-    if not ctx['dev_mode']:
-        return ctx
-
-    if set(ctx['build_artifacts']) != {'osx-64', 'linux-64'}:
-        return ctx
-
+def open_pull_request(ctx, github_token):
     branch = str(uuid.uuid4())
-    mgr = utils.CondaBuildConfigManager(github_token, branch, release, 'staged', package_name, version)
-    mgr.update()
+    package_versions = ctx['package_versions']
+    release = ctx['release']
+    mgr = utils.CondaBuildConfigManager(github_token, branch, release, 'staged', package_versions)
+    ctx['pr_url'] = mgr.open_pr()
 
-    # TODO: do something with the PR url
-    mgr.open_pr()
+    return ctx
+
+
+@task(name='db.update_package_build_record_integration_pr_url')
+def update_package_build_record_integration_pr_url(ctx):
+    pk = ctx['package_build_record']
+    package_build_record = PackageBuild.objects.get(pk=pk)
+    package_build_record.integration_pr_url = url
+    package_build_record.save()
 
     return ctx

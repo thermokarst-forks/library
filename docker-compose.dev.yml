@@ -16,7 +16,7 @@ services:
       context: .
       args:
         RUNENV: local
-    command: bash -c "python manage.py celery_worker amqp://guest@mq/ debug packages,db,git,default"
+    command: bash -c "celery -A config.celery -b amqp://guest@mq/ worker --loglevel=info -Q packages,db,git,default"
     depends_on:
       - mq
     links:
@@ -32,9 +32,7 @@ services:
       context: .
       args:
         RUNENV: local
-    command: bash -c "python manage.py celery_beat"
-    depends_on:
-      - worker
+    command: bash -c "celery -A config.celery beat"
     volumes:
       - .:/code
       - ./data:/data
@@ -48,8 +46,6 @@ services:
     depends_on:
       - db
       - mq
-      - worker
-      - beat
     environment:
       - GITHUB_TOKEN=${GITHUB_TOKEN}
     ports:
@@ -70,9 +66,7 @@ services:
       context: .
       args:
         RUNENV: local
-    command: bash -c "python manage.py celery_flower"
-    depends_on:
-      - web
+    command: bash -c "celery -A config.celery flower --address=0.0.0.0 --port=5555"
     ports:
       - 5555:5555
     volumes:

@@ -160,18 +160,18 @@ def advisory_lock(lock_id):
 
 
 class CondaBuildConfigManager:
-    def __init__(self, github_token, branch, release, gate, package_name, version):
+    def __init__(self, github_token, branch, release, gate, package_versions):
         self.github_token = github_token
         self.branch = branch
         self.release = release
         self.gate = gate
-        self.package_name = package_name.replace('-', '_')
-        self.version = version
+        self.package_versions = {p.replace('-', '_'): v for p, v in package_versions.items()}
 
         self.validate_config()
 
         self.path = '%s/%s/conda_build_config.yaml' % (self.release, self.gate)
         self.commit_msg = 'updating %s: %s=%s' % (self.path, self.package_name, self.version)
+        # conditional setup
         self.owner = 'thermokarst'
         self.repo = 'package-integration'
         self.ghapi = None
@@ -191,11 +191,8 @@ class CondaBuildConfigManager:
         if self.gate not in ('tested', 'staged'):
             raise Exception('TODO15')
 
-        if self.package_name == '':
+        if len(self.package_versions) < 1:
             raise Exception('TODO16')
-
-        if self.version == '':
-            raise Exception('TODO17')
 
     def update(self):
         with advisory_lock(42) as lock:
@@ -203,15 +200,14 @@ class CondaBuildConfigManager:
                 # Wait until we get a lock before setting up ghapi
                 self.ghapi = GhApi(token=self.github_token)
                 cbc, sha = self.fetch_from_github()
-                if self.package_name in cbc:
-                    last_versions = cbc[self.package_name]
-                    if len(last_versions) != 1:
-                        raise Exception('TODO18')
-                    current_version = version.parse(str(self.version))
-                    last_version = version.parse(str(last_versions[0]))
-                    if current_version < last_version:
-                        raise Exception('TODO19')
-                cbc[self.package_name] = [self.version]
+                for package_name, version in self.package_versions.items():
+                    if package_name in cbc:
+                        last_versions = cbc[package_name]
+                        if len(last_versions) != 1:
+                            raise Exception('TODO17')
+                        if compare_package_versions(version, last_versions[0]):
+                            raise Exception('TODO18')
+                    cbc[package_name] = [version]
                 self.add_branch_if_missing()
                 self.commit_to_github(cbc, sha)
             else:
@@ -272,6 +268,8 @@ class CondaBuildConfigManager:
         )
 
     def open_pr(self):
+        self.update()
+
         payload = self.ghapi.pulls.create(
             owner=self.owner,
             repo=self.repo,
@@ -282,4 +280,10 @@ class CondaBuildConfigManager:
             draft=False,
         )
 
-        return payload['url']
+        return payload['html_url']
+
+
+def compare_package_versions(a, b):
+    a = version.parse(str(a))
+    b = version.parse(str(b))
+    return a < b

@@ -13,7 +13,7 @@ from django import forms, conf
 from ..packages.models import Package
 
 
-BASE_PATH = pathlib.Path(conf.settings.CONDA_ASSET_PATH) / 'qiime2' / conf.settings.QIIME2_RELEASE
+BASE_PATH = pathlib.Path(conf.settings.CONDA_ASSET_PATH) / 'qiime2'
 
 
 class PackageIntegrationForm(forms.Form):
@@ -24,6 +24,7 @@ class PackageIntegrationForm(forms.Form):
     repository = forms.CharField(required=True)
     artifact_name = forms.CharField(required=True)
     dev_mode = forms.BooleanField(required=False, initial=False)
+    build_target = forms.CharField(required=False, initial='dev')
 
     def is_known(self):
         channel_path = BASE_PATH / 'tested'
@@ -41,6 +42,7 @@ class PackageIntegrationForm(forms.Form):
                 'channel': str(channel_path),
                 'channel_name': '%s-tested' % (conf.settings.QIIME2_RELEASE,),
                 'dev_mode': self.cleaned_data['dev_mode'],
+                'build_target': self.cleaned_data['build_target'],
             }
         except Package.DoesNotExist:
             config = None
