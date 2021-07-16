@@ -40,14 +40,19 @@ TIME = {
 }
 
 
-# For development purposes it's a lot nicer to have short cycle times (30 sec)
-if conf.settings.DEBUG:
-    TIME = {k: 30 for k in TIME.keys()}
-
 EPOCH = {
     'dev': conf.settings.QIIME2_DEV,
     'release': conf.settings.QIIME2_RELEASE,
 }
+
+
+BASE_PATH = pathlib.Path(conf.settings.CONDA_ASSET_PATH) / 'qiime2'
+
+
+# For development purposes it's a lot nicer to have short cycle times (30 sec)
+if conf.settings.DEBUG:
+    TIME = {k: 30 for k in TIME.keys()}
+
 
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
@@ -59,32 +64,23 @@ def setup_periodic_tasks(sender, **kwargs):
 
     for gate in ('tested', 'staged'):
         for epoch in EPOCH.values():
-            path = forms.BASE_PATH / epoch / gate
+            path = BASE_PATH / epoch / gate
             sender.add_periodic_task(
                 TIME['05_MIN'],
                 reindex_conda_server.s(dict(), str(path), '%s-%s' % (epoch, gate)),
                 name='packages.reindex_%s' % (gate,),
             )
 
-    sender.add_periodic_task(
-        TIME['10_MIN'],
-        chain(
-            find_packages_ready_for_integration.s(dict(), 'dev'),
-            open_pull_request.s(conf.settings.GITHUB_TOKEN),
-            update_package_build_record_integration_pr_url.s(),
-        ),
-        name='git.batch_staged_packages_dev',
-    )
-
-    sender.add_periodic_task(
-        TIME['10_MIN'],
-        chain(
-            find_packages_ready_for_integration.s(dict(), 'release'),
-            open_pull_request.s(conf.settings.GITHUB_TOKEN),
-            update_package_build_record_integration_pr_url.s(),
-        ),
-        name='git.batch_staged_packages_release',
-    )
+    for epoch in EPOCH.keys():
+        sender.add_periodic_task(
+            TIME['10_MIN'],
+            chain(
+                find_packages_ready_for_integration.s(dict(), epoch),
+                open_pull_request.s(conf.settings.GITHUB_TOKEN),
+                update_package_build_record_integration_pr_url.s(),
+            ),
+            name='git.batch_staged_packages_%s' % (epoch,),
+        )
 
 
 @task(name='db.celery_backend_cleanup')
@@ -107,8 +103,11 @@ def handle_new_builds(ctx):
     repository = ctx.pop('repository')
     artifact_name = ctx.pop('artifact_name')
     github_token = ctx.pop('github_token')
-    channel = ctx.pop('channel')
     channel_name = ctx.pop('channel_name')
+    build_target = ctx.pop('build_target')
+
+    epoch = EPOCH[build_target]
+    channel = str(BASE_PATH / epoch / 'tested')
 
     return chain(
         create_package_build_record_and_update_package.s(
@@ -119,17 +118,13 @@ def handle_new_builds(ctx):
             github_token, repository, run_id, channel, package_name, artifact_name,
         ),
 
-        reindex_conda_server.s(
-            channel, channel_name,
-        ),
+        reindex_conda_server.s(channel, channel_name),
 
-        package_build_record_set_unverified_true.s(),
+        mark_uploaded.s(),
 
-        update_conda_build_config.s(
-            github_token, conf.settings.QIIME2_RELEASE, package_name, version),
+        find_packages_ready_for_integration.s(epoch),
 
-        open_pull_request.s(
-            github_token, conf.settings.QIIME2_RELEASE, package_name, version),
+        update_conda_build_config.s(github_token, epoch, package_name, version),
 
     ).apply_async(countdown=TIME['10_MIN'])
 
@@ -195,6 +190,27 @@ def reindex_conda_server(ctx, channel, channel_name):
         channel_name=channel_name,
     )
 
+    ctx['uploaded'] = True
+
+    return ctx
+
+
+@task(name='db.mark_uploaded')
+def mark_uploaded(ctx, artifact_name):
+    if 'uploaded' not in ctx:
+        raise
+
+    pk = ctx['package_build_record']
+    package_build_record = PackageBuild.objects.get(pk=pk)
+
+    if artifact_name == 'linux-64':
+        package_build_record.linux_64 = True
+    elif artifact_name == 'osx-64':
+        package_build_record.osx_64 = True
+    else:
+        raise Exception('unknown build type')
+    package_build_record.save()
+
     return ctx
 
 
@@ -229,23 +245,24 @@ def update_conda_build_config(ctx, github_token, release, package_name, version)
 
 
 @task(name='db.find_packages_ready_for_integration')
-def find_packages_ready_for_integration(ctx, build_target):
+def find_packages_ready_for_integration(ctx, epoch):
     package_versions = dict()
 
     for record in PackageBuild.objects.filter(
                 linux_64=True,
                 osx_64=True,
                 integration_pr_url='',
-                build_target=build_target,
+                epoch=epoch,
             ):
         if record.package.name in package_versions:
+            # in case multiple versions exist at this point, only consider the _newest_ one
             if utils.compare_package_versions(package_versions[record.package.name], record.version):
                 package_versions[record.package.name] = record.version
         else:
             package_versions[record.package.name] = record.version
 
     ctx['package_versions'] = package_versions
-    ctx['release'] = EPOCH[build_target]
+    ctx['epoch'] = epoch
 
     return ctx
 
@@ -256,8 +273,8 @@ def find_packages_ready_for_integration(ctx, build_target):
 def open_pull_request(ctx, github_token):
     branch = str(uuid.uuid4())
     package_versions = ctx['package_versions']
-    release = ctx['release']
-    mgr = utils.CondaBuildConfigManager(github_token, branch, release, 'staged', package_versions)
+    epoch = ctx['epoch']
+    mgr = utils.CondaBuildConfigManager(github_token, branch, epoch, 'staged', package_versions)
     ctx['pr_url'] = mgr.open_pr()
 
     return ctx

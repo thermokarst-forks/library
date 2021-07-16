@@ -13,9 +13,6 @@ from django import forms, conf
 from ..packages.models import Package
 
 
-BASE_PATH = pathlib.Path(conf.settings.CONDA_ASSET_PATH) / 'qiime2'
-
-
 class PackageIntegrationForm(forms.Form):
     token = forms.UUIDField(required=True)
     run_id = forms.CharField(required=True)
@@ -24,12 +21,13 @@ class PackageIntegrationForm(forms.Form):
     repository = forms.CharField(required=True)
     artifact_name = forms.CharField(required=True)
     dev_mode = forms.BooleanField(required=False, initial=False)
-    build_target = forms.CharField(required=False, initial='dev')
+    build_target = forms.CharField(required=False)
 
     def is_known(self):
-        channel_path = BASE_PATH / 'tested'
         try:
             package = Package.objects.get(token=self.cleaned_data['token'])
+            build_target = self.cleaned_data['build_target']
+            build_target = build_target if build_target != '' else 'dev'
 
             config = {
                 'package_id': package.pk,
@@ -39,10 +37,9 @@ class PackageIntegrationForm(forms.Form):
                 'repository': self.cleaned_data['repository'],
                 'artifact_name': self.cleaned_data['artifact_name'],
                 'github_token': conf.settings.GITHUB_TOKEN,
-                'channel': str(channel_path),
                 'channel_name': '%s-tested' % (conf.settings.QIIME2_RELEASE,),
                 'dev_mode': self.cleaned_data['dev_mode'],
-                'build_target': self.cleaned_data['build_target'],
+                'build_target': build_target,
             }
         except Package.DoesNotExist:
             config = None

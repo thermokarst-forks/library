@@ -19,7 +19,7 @@ def prepare_packages_for_integration(request):
         payload = {'status': 'error', 'errors': {'http_method': 'invalid http method'}}
         return http.JsonResponse(payload, status=405)
 
-    form = forms.PackageIntegrationForm(request.POST)
+    form = forms.PackageIntegrationForm(request.POST, initial={'build_target': 'dev'})
 
     # First line of checks: ensure that the payload is well formed
     if not form.is_valid():

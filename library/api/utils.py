@@ -160,18 +160,18 @@ def advisory_lock(lock_id):
 
 
 class CondaBuildConfigManager:
-    def __init__(self, github_token, branch, release, gate, package_versions):
+    def __init__(self, github_token, branch, epoch, gate, package_versions):
         self.github_token = github_token
         self.branch = branch
-        self.release = release
+        self.epoch = epoch
         self.gate = gate
         self.package_versions = {p.replace('-', '_'): v for p, v in package_versions.items()}
 
         self.validate_config()
 
-        self.path = '%s/%s/conda_build_config.yaml' % (self.release, self.gate)
+        self.path = '%s/%s/conda_build_config.yaml' % (self.epoch, self.gate)
         self.commit_msg = 'updating %s: %s=%s' % (self.path, self.package_name, self.version)
-        # conditional setup
+        # TODO: conditional setup
         self.owner = 'thermokarst'
         self.repo = 'package-integration'
         self.ghapi = None
@@ -184,8 +184,7 @@ class CondaBuildConfigManager:
         if self.branch == '':
             raise Exception('TODO13')
 
-        # TODO: wire up cycles from ALP
-        if self.release == '':
+        if self.epoch == '':
             raise Exception('TODO14')
 
         if self.gate not in ('tested', 'staged'):
