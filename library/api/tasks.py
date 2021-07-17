@@ -54,32 +54,50 @@ if conf.settings.DEBUG:
     TIME = {k: 30 for k in TIME.keys()}
 
 
+# NOTES:
+# 1. All periodic tasks should be registered in `setup_periodic_tasks`
+# 2. All tasks should take a context variable as the first argument, this should
+#    be a dict to play nicely with other tasks.
+# 3. All tasks should be prefixed with a queue (e.g. `git`, `db`, etc). This
+#    will allow for appropriate worker delegation.
+# 4. All tasks that interact directly with the database must run in `db` queue.
+# 5. All tasks that interact with packages.qiime2.org must run in the `packages` queue.
+# 6. If a task generates a lot of noisy results that aren't important, make sure to
+#    add it to `db.clean_up_reindex_tasks`.
+
+
+# TODO: prefix pipelines with their own special pipeline queue
+
+
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
         crontab(minute=0, hour=4),  # daily at 4a
         celery_backend_cleanup.s(),
-        name='db.clean_up_reindex_tasks'
     )
 
     for gate in ('tested', 'staged'):
         for epoch in EPOCH.values():
             path = BASE_PATH / epoch / gate
+
             sender.add_periodic_task(
                 TIME['05_MIN'],
                 reindex_conda_server.s(dict(), str(path), '%s-%s' % (epoch, gate)),
-                name='packages.reindex_%s' % (gate,),
             )
 
+    # TODO: sort out this task's registration, something isn't working
     for epoch in EPOCH.keys():
+        ctx = dict()
+
         sender.add_periodic_task(
             TIME['10_MIN'],
             chain(
-                find_packages_ready_for_integration.s(dict(), epoch),
-                open_pull_request.s(conf.settings.GITHUB_TOKEN),
+                find_packages_ready_for_integration.s(ctx, epoch),
+
+                open_pull_request.s(conf.settings.GITHUB_TOKEN, epoch),
+
                 update_package_build_record_integration_pr_url.s(),
             ),
-            name='git.batch_staged_packages_%s' % (epoch,),
         )
 
 
@@ -95,56 +113,55 @@ def celery_backend_cleanup():
         ).delete()
 
 
-def handle_new_builds(ctx):
-    package_id = ctx.pop('package_id')
-    run_id = ctx.pop('run_id')
-    version = ctx.pop('version')
-    package_name = ctx.pop('package_name')
-    repository = ctx.pop('repository')
-    artifact_name = ctx.pop('artifact_name')
-    github_token = ctx.pop('github_token')
-    channel_name = ctx.pop('channel_name')
-    build_target = ctx.pop('build_target')
+def handle_new_builds(initial_vals):
+    package_id = initial_vals['package_id']
+    run_id = initial_vals['run_id']
+    version = initial_vals['version']
+    package_name = initial_vals['package_name']
+    repository = initial_vals['repository']
+    artifact_name = initial_vals['artifact_name']
+    github_token = initial_vals['github_token']
+    channel_name = initial_vals['channel_name']
+    build_target = initial_vals['build_target']
+    dev_mode = initial_vals['dev_mode']
 
+    # `ctx` is implicitly passed as the first arg to each sub-task in the chain,
+    # this is where any chain-specific dynamic state should live (ids, urls, etc)
+    ctx = dict()
     epoch = EPOCH[build_target]
     channel = str(BASE_PATH / epoch / 'tested')
 
     return chain(
+        # explicitly pass ctx into the first subtask in the chaint
         create_package_build_record_and_update_package.s(
-            ctx, package_id, run_id, version, package_name, repository, artifact_name,
+            ctx, package_id, run_id, version, package_name, repository, artifact_name, epoch,
         ),
 
+        # ctx is implicitly applied as first arg for every other subtask in the chain
         fetch_package_from_github.s(
             github_token, repository, run_id, channel, package_name, artifact_name,
         ),
 
         reindex_conda_server.s(channel, channel_name),
 
-        mark_uploaded.s(),
+        mark_uploaded.s(artifact_name),
 
-        find_packages_ready_for_integration.s(epoch),
+        verify_all_architectures_present.s(),
 
-        update_conda_build_config.s(github_token, epoch, package_name, version),
+        update_conda_build_config.s(github_token, epoch, package_name, version, dev_mode),
 
     ).apply_async(countdown=TIME['10_MIN'])
 
 
 @task(name='db.create_package_build_record_and_update_package')
 def create_package_build_record_and_update_package(
-        ctx, package_id, run_id, version, package_name, repository, artifact_name):
+        ctx, package_id, run_id, version, package_name, repository, artifact_name, epoch):
     package_build_record, _ = PackageBuild.objects.get_or_create(
         package_id=package_id,
         github_run_id=run_id,
         version=version,
+        epoch=epoch,
     )
-
-    if artifact_name == 'linux-64':
-        package_build_record.linux_64 = True
-    elif artifact_name == 'osx-64':
-        package_build_record.osx_64 = True
-    else:
-        raise Exception('unknown build type')
-    package_build_record.save()
 
     package = Package.objects.get(pk=package_id)
     package.name = package_name
@@ -198,7 +215,7 @@ def reindex_conda_server(ctx, channel, channel_name):
 @task(name='db.mark_uploaded')
 def mark_uploaded(ctx, artifact_name):
     if 'uploaded' not in ctx:
-        raise
+        raise Exception('mark_as_uploaded called before reindex_conda_server')
 
     pk = ctx['package_build_record']
     package_build_record = PackageBuild.objects.get(pk=pk)
@@ -209,6 +226,7 @@ def mark_uploaded(ctx, artifact_name):
         package_build_record.osx_64 = True
     else:
         raise Exception('unknown build type')
+
     package_build_record.save()
 
     return ctx
@@ -229,9 +247,9 @@ def verify_all_architectures_present(ctx):
 @task(name='git.update_conda_build_config',
       autoretry_for=[utils.AdvisoryLockNotReadyException],
       max_retries=12, retry_backoff=TIME['03_MIN'], retry_backoff_max=TIME['02_HR'])
-def update_conda_build_config(ctx, github_token, release, package_name, version):
+def update_conda_build_config(ctx, github_token, release, package_name, version, dev_mode):
     # TODO: drop this when alpha2 is ready
-    if not ctx['dev_mode']:
+    if not dev_mode:
         return ctx
 
     if ctx['not_all_architectures_present']:
@@ -262,7 +280,6 @@ def find_packages_ready_for_integration(ctx, epoch):
             package_versions[record.package.name] = record.version
 
     ctx['package_versions'] = package_versions
-    ctx['epoch'] = epoch
 
     return ctx
 
@@ -270,7 +287,7 @@ def find_packages_ready_for_integration(ctx, epoch):
 @task(name='git.open_pull_request',
       autoretry_for=[utils.AdvisoryLockNotReadyException],
       max_retries=12, retry_backoff=TIME['03_MIN'], retry_backoff_max=TIME['02_HR'])
-def open_pull_request(ctx, github_token):
+def open_pull_request(ctx, github_token, epoch):
     branch = str(uuid.uuid4())
     package_versions = ctx['package_versions']
     epoch = ctx['epoch']
@@ -283,6 +300,8 @@ def open_pull_request(ctx, github_token):
 @task(name='db.update_package_build_record_integration_pr_url')
 def update_package_build_record_integration_pr_url(ctx):
     pk = ctx['package_build_record']
+    url = ctx['pr_url']
+
     package_build_record = PackageBuild.objects.get(pk=pk)
     package_build_record.integration_pr_url = url
     package_build_record.save()

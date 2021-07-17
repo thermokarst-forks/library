@@ -170,7 +170,11 @@ class CondaBuildConfigManager:
         self.validate_config()
 
         self.path = '%s/%s/conda_build_config.yaml' % (self.epoch, self.gate)
-        self.commit_msg = 'updating %s: %s=%s' % (self.path, self.package_name, self.version)
+
+        cmt_msg = 'updating %s %s packages\n\n' % (self.epoch, self.gate)
+        for pkg, ver in self.package_versions.items():
+            cmt_msg += '- %s=%s\n' % (pkg, ver)
+        self.commit_msg = cmt_msg
         # TODO: conditional setup
         self.owner = 'thermokarst'
         self.repo = 'package-integration'
