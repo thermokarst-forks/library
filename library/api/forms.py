@@ -6,8 +6,6 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 
-import pathlib
-
 from django import forms, conf
 
 from ..packages.models import Package
