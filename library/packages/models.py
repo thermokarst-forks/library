@@ -31,7 +31,7 @@ class PackageBuild(models.Model):
     linux_64 = models.BooleanField(default=False)
     osx_64 = models.BooleanField(default=False)
     integration_pr_url = models.URLField(default='')
-    epoch = models.CharField(max_length=50)
+    release = models.CharField(max_length=50)
 
     def __str__(self):
         return 'PackageBuild<github_run_id=%s, version=%s>' % (self.github_run_id, self.version)

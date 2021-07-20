@@ -16,7 +16,7 @@ services:
       context: .
       args:
         RUNENV: local
-    command: bash -c "celery -A config.celery -b amqp://guest@mq/ worker --loglevel=info -Q packages,db,git,default"
+    command: bash -c "celery -A config.celery -b amqp://guest@mq/ worker --loglevel=info -Q packages,db,git,default,periodic"
     depends_on:
       - mq
     links:

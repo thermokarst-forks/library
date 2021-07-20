@@ -37,6 +37,9 @@ TIME = {
     '10_MIN': 60 * 10,
     '90_MIN': 60 * 90,
     '02_HR': 60 * 60 * 2,
+
+    '4A_CRON': crontab(minute=0, hour=4),  # daily at 4a
+    'HRLY_CRON': crontab(minute=0),  # hourly
 }
 
 
@@ -72,7 +75,7 @@ if conf.settings.DEBUG:
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
-        crontab(minute=0, hour=4),  # daily at 4a
+        TIME['4A_CRON'],
         celery_backend_cleanup.s(),
     )
 
@@ -85,19 +88,10 @@ def setup_periodic_tasks(sender, **kwargs):
                 reindex_conda_server.s(dict(), str(path), '%s-%s' % (epoch, gate)),
             )
 
-    # TODO: sort out this task's registration, something isn't working
-    for epoch in EPOCH.keys():
-        ctx = dict()
-
+    for release in EPOCH.values():
         sender.add_periodic_task(
-            TIME['10_MIN'],
-            chain(
-                find_packages_ready_for_integration.s(ctx, epoch),
-
-                open_pull_request.s(conf.settings.GITHUB_TOKEN, epoch),
-
-                update_package_build_record_integration_pr_url.s(),
-            ),
+            TIME['HRLY_CRON'],
+            periodic_handle_staged_prs.s(release),
         )
 
 
@@ -111,6 +105,16 @@ def celery_backend_cleanup():
                 'packages.celery_backend_cleanup',
             ],
         ).delete()
+
+
+@task(name='periodic.handle_staged_prs')
+def periodic_handle_staged_prs(release):
+    ctx = dict()
+    return chain(
+        find_packages_ready_for_integration.s(ctx, release),
+        open_pull_request.s(conf.settings.GITHUB_TOKEN, release),
+        update_package_build_record_integration_pr_url.s(),
+    )()
 
 
 def handle_new_builds(initial_vals):
@@ -263,23 +267,27 @@ def update_conda_build_config(ctx, github_token, release, package_name, version,
 
 
 @task(name='db.find_packages_ready_for_integration')
-def find_packages_ready_for_integration(ctx, epoch):
+def find_packages_ready_for_integration(ctx, release):
     package_versions = dict()
+    package_build_ids = set()
 
     for record in PackageBuild.objects.filter(
                 linux_64=True,
                 osx_64=True,
                 integration_pr_url='',
-                epoch=epoch,
+                release=release,
             ):
         if record.package.name in package_versions:
             # in case multiple versions exist at this point, only consider the _newest_ one
             if utils.compare_package_versions(package_versions[record.package.name], record.version):
                 package_versions[record.package.name] = record.version
+                package_build_ids.add(record.id)
         else:
             package_versions[record.package.name] = record.version
+            package_build_ids.add(record.id)
 
     ctx['package_versions'] = package_versions
+    ctx['package_build_ids'] = list(package_build_ids)
 
     return ctx
 
@@ -287,11 +295,13 @@ def find_packages_ready_for_integration(ctx, epoch):
 @task(name='git.open_pull_request',
       autoretry_for=[utils.AdvisoryLockNotReadyException],
       max_retries=12, retry_backoff=TIME['03_MIN'], retry_backoff_max=TIME['02_HR'])
-def open_pull_request(ctx, github_token, epoch):
+def open_pull_request(ctx, github_token, release):
+    if len(ctx['package_versions']) < 1:
+        return ctx
+
     branch = str(uuid.uuid4())
     package_versions = ctx['package_versions']
-    epoch = ctx['epoch']
-    mgr = utils.CondaBuildConfigManager(github_token, branch, epoch, 'staged', package_versions)
+    mgr = utils.CondaBuildConfigManager(github_token, branch, release, 'staged', package_versions)
     ctx['pr_url'] = mgr.open_pr()
 
     return ctx
@@ -299,11 +309,17 @@ def open_pull_request(ctx, github_token, epoch):
 
 @task(name='db.update_package_build_record_integration_pr_url')
 def update_package_build_record_integration_pr_url(ctx):
-    pk = ctx['package_build_record']
+    if len(ctx['package_versions']) < 1:
+        return ctx
+
     url = ctx['pr_url']
 
-    package_build_record = PackageBuild.objects.get(pk=pk)
-    package_build_record.integration_pr_url = url
-    package_build_record.save()
+    with transaction.atomic():
+        for pk in ctx['package_build_ids']:
+            package_build_record = PackageBuild.objects.get(pk=pk)
+            if package_build_record.integration_pr_url != '':
+                raise Exception('a pr already exists for this package build')
+            package_build_record.integration_pr_url = url
+            package_build_record.save()
 
     return ctx
