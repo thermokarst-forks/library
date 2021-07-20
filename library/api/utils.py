@@ -203,14 +203,14 @@ class CondaBuildConfigManager:
                 # Wait until we get a lock before setting up ghapi
                 self.ghapi = GhApi(token=self.github_token)
                 cbc, sha = self.fetch_from_github()
-                for package_name, version in self.package_versions.items():
+                for package_name, ver in self.package_versions.items():
                     if package_name in cbc:
                         last_versions = cbc[package_name]
                         if len(last_versions) != 1:
                             raise Exception('TODO17')
-                        if compare_package_versions(version, last_versions[0]):
+                        if compare_package_versions(ver, last_versions[0]):
                             raise Exception('TODO18')
-                    cbc[package_name] = [version]
+                    cbc[package_name] = [ver]
                 self.add_branch_if_missing()
                 self.commit_to_github(cbc, sha)
             else:
@@ -254,7 +254,6 @@ class CondaBuildConfigManager:
                 ref='refs/heads/%s' % (self.branch,),
                 sha=payload['object']['sha'],
             )
-
 
     def commit_to_github(self, cbc, sha):
         updated = yaml.dump(cbc)

@@ -24,7 +24,6 @@ from django.utils import timezone
 from django_celery_results.models import TaskResult
 
 from . import utils
-from . import forms
 from ..packages.models import Package, PackageBuild
 from config.celery import app
 
